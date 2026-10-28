@@ -269,6 +269,28 @@ def test_container_config_maps_loopback_and_never_carries_credentials() -> None:
         S.container_config(config(), ["local/other"], "django/django")
 
 
+def test_container_config_carries_the_runs_policy_but_no_endpoint_of_it() -> None:
+    rules = [
+        {"name": "small-reads", "when": {"step_type": ["read"]}, "to": {"model": "big-model"}},
+    ]
+    policy = config(
+        policy={"rules": rules},
+        review={"second_opinion": True},
+        budgets={"usd": 0.5, "roles": {"review": {"effort": "none"}}},
+    )
+    data = tomllib.loads(S.container_config(policy, [LOCAL], "django/django"))
+    assert data["policy"] == {"rules": rules}
+    assert data["review"] == {"second_opinion": True}
+    assert data["budgets"]["usd"] == 0.5
+    assert data["budgets"]["roles"]["review"]["effort"] == "none"
+    assert [e["name"] for e in data["endpoints"]] == ["local"]  # the keyed one stays out
+    text = S.container_config(policy, [LOCAL], "django/django")
+    assert "SECRET-KEY" not in text and "keyed" not in text
+    # Without a policy, the container's settings are as before: no budgets of defaults.
+    plain = tomllib.loads(S.container_config(config(), [LOCAL], "django/django"))
+    assert not {"policy", "review", "budgets"} & set(plain)
+
+
 def test_the_django_wrapper_turns_selectors_into_labels(tmp_path: Path, monkeypatch: Any) -> None:
     namespace: dict[str, Any] = {}
     exec(compile(S.DJANGO_TESTS, "django_tests.py", "exec"), namespace)  # noqa: S102

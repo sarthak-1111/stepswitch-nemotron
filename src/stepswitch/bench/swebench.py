@@ -14,8 +14,11 @@ when the run ends; nothing else in Docker is touched).
   relocatable CPython and the locked packages); the source is copied in when the container
   starts. The container's configuration lists the contestant's workers only, each on an
   endpoint without credentials, with loopback addresses mapped to the Docker host: keys never
-  enter a container. The agent gets the problem statement and nothing else (no hints, no names
-  of the evaluation's tests). The project settings per repository (interpreter, test command,
+  enter a container. It also carries the run's routing policy (`--policy`: rules, review
+  settings and budgets), so the router inside routes as the bench says. Hosted models are
+  reached through a keyless endpoint on the host, such as `ssw proxy`, which holds the key.
+  The agent gets the problem statement and nothing else (no hints, no names of the
+  evaluation's tests). The project settings per repository (interpreter, test command,
   gates) are in `PROJECTS`. The prediction is the diff of the task's branch, whatever the
   run's status, as the other suites score a run's diff.
 * `mini-swe-agent:<worker>` runs mini-SWE-agent (pinned), the reference agent of the SWE-bench
@@ -627,7 +630,29 @@ def container_config(config: Any, workers: Sequence[str], repo: str) -> str:
     }
     if models:
         document["models"] = models
+    document.update(_policy_sections(config))
     return "# Written by the SWE-bench bench for one task run (ADR 0042).\n" + tomlw.dumps(document)
+
+
+def _policy_sections(config: Any) -> dict[str, Any]:
+    """The routing policy of the run (the project's settings with `--policy` layered over them):
+    its rules, review settings and the budgets set explicitly, so the router in the container
+    routes, reviews and stops as the bench's policy says. These sections name models and
+    limits, never an endpoint or a key."""
+    extra = getattr(config, "model_extra", None) or {}
+    sections: dict[str, Any] = {}
+    policy = extra.get("policy")
+    if isinstance(policy, Mapping) and policy.get("rules"):
+        sections["policy"] = {"rules": [dict(rule) for rule in policy["rules"]]}
+    review = extra.get("review")
+    if isinstance(review, Mapping) and review:
+        sections["review"] = dict(review)
+    budgets = getattr(config, "budgets", None)
+    if budgets is not None:
+        chosen = budgets.model_dump(exclude_unset=True, exclude_none=True)
+        if chosen:
+            sections["budgets"] = chosen
+    return sections
 
 
 # --------------------------------------------------------------------------------------------
