@@ -215,7 +215,7 @@ setup, and `ssw probe` tests how a model handles tool calls before you rely on i
 | Command | What it does |
 |---|---|
 | `ssw run "<task>"` | Runs a task: routing, the agent loop, the gates and a review |
-| `ssw policy check` | Shows which worker takes each step type, before and after an escalation, and flags rules that can never apply; calls no model |
+| `ssw policy check` | Shows which worker takes each step type, before and after an escalation, and flags rules that match no configured worker; calls no model |
 | `ssw run --best-of <n>` | Runs candidates on several model families and compares the passing ones |
 | `ssw run --track science` | Adds golden numerical cases with tolerances and protected constants |
 | `ssw dash` | Opens the dashboard and the local task API |
