@@ -4304,3 +4304,39 @@ Sources: the package installed from PyPI (`minisweagent/config/benchmarks/sweben
     `kv_transfer_params` keys, all null in these answers.
   - Per-model limits from the headers: Lightning and Ultra 1000 requests and 2,000,000 tokens
     per minute, Super 1000 and 1,000,000, gpt-oss-120b 600 and 500,000, Nano 100 and 800,000.
+
+### Reasoning effort, truncated thinking and prompt caching (checked 2026-10-28)
+
+- `reasoning_effort` per model, with small chat requests: the three Nemotron models answered
+  HTTP 200 to every level tried (`none`, `minimal`, `low`, `medium`, `high`, `xhigh`), and
+  `none` turned their thinking off (`reasoning_tokens` 0). gpt-oss-120b answered HTTP 400 to
+  `none` ("Harmony does not support reasoning_effort='none'") and to `minimal` ("Supported
+  values are: high, medium, low"). The registry's `efforts` key records this (ADR 0044).
+- Effort does not bound Ultra's thinking. Reviewing one recorded three-file change with the
+  agent's review prompt and a 4000-token cap, Ultra used all 4000 tokens on thinking and wrote
+  no verdict at `low` (two of two tries, and once more without the JSON Schema) and at `medium`
+  (two of two); at `none` it answered `{"approve": true, "issues": []}` in 12 tokens (two of
+  two). gpt-oss-120b at `low` answered in 65 tokens.
+- A reply cut off by `max_tokens` while the model is still thinking comes back with the
+  unfinished thinking in `content` and `reasoning_tokens` equal to `completion_tokens`
+  (Lightning at `low` with a 300-token cap; Ultra in reviews). When the thinking ends within
+  the cap, it arrives in `reasoning` and `reasoning_content` and `content` holds the answer.
+- Prompt caching in the Token Factory pilots: Super reported 128,432 of 203,625 input tokens as
+  cached over 47 calls; Ultra reported none of 295,672 over 101 calls, although its cached
+  price is listed; gpt-oss-120b 832 of 3,774.
+
+### Sandboxes (checked 2026-10-28)
+
+- Sandboxes (beta) run commands in a microVM per instance, from the Python SDK
+  (`contree-sdk`, 0.3.6 in the docs), a REST API under
+  `https://api.tokenfactory.nebius.com/sandboxes/v1`, a CLI (`contree-cli` 0.9.4) or an MCP
+  server. REST calls send the API key as a bearer token and the project ID in a `Project`
+  header. The docs name the project variable `NEBIUS_PROJECT_ID` for the SDK and REST, and
+  give the CLI a project variable with another name.
+- `GET /sandboxes/v1/whoami` with this project's key answered HTTP 200 with every permission
+  false (`spawn`, `spawn_disposable`, `list`, `import`, `cancel`, `set_image_tag`) and limits
+  of 3600 seconds per instance, 50 concurrent instances and 12 GiB per image layer. The
+  console's Sandboxes page offers "Request beta access"; runs are free during the beta.
+- Sources: https://docs.tokenfactory.nebius.com/sandboxes/start/set-up-access.md ,
+  https://docs.tokenfactory.nebius.com/api-reference/sandboxes/auth/get-current-token-information.md ,
+  https://docs.tokenfactory.nebius.com/sandboxes/sdk/python_sdk/running-commands.md
