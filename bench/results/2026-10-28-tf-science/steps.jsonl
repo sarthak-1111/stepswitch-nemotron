@@ -1,0 +1,36 @@
+{"task": "centroid-intensity-weights", "seed": 0, "contestant": "router", "seq": 9, "type": "decision", "step": 1, "step_type": "plan", "chosen": null, "switched": false, "rule": null, "level": 0}
+{"task": "centroid-intensity-weights", "seed": 0, "contestant": "router", "seq": 10, "type": "decision", "step": 1, "step_type": "navigate", "chosen": null, "switched": false, "rule": null, "level": 0}
+{"task": "centroid-intensity-weights", "seed": 0, "contestant": "router", "seq": 11, "type": "task_end", "status": "failed", "stop_reason": "no_worker"}
+{"task": "centroid-intensity-weights", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 8, "type": "decision", "step": 1, "step_type": "plan", "chosen": null, "switched": false, "rule": "--worker", "level": 3}
+{"task": "centroid-intensity-weights", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 9, "type": "decision", "step": 1, "step_type": "navigate", "chosen": null, "switched": false, "rule": "--worker", "level": 3}
+{"task": "centroid-intensity-weights", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 10, "type": "task_end", "status": "failed", "stop_reason": "no_worker"}
+{"task": "baseline-end-points", "seed": 0, "contestant": "router", "seq": 9, "type": "decision", "step": 1, "step_type": "plan", "chosen": null, "switched": false, "rule": null, "level": 0}
+{"task": "baseline-end-points", "seed": 0, "contestant": "router", "seq": 10, "type": "decision", "step": 1, "step_type": "navigate", "chosen": null, "switched": false, "rule": null, "level": 0}
+{"task": "baseline-end-points", "seed": 0, "contestant": "router", "seq": 11, "type": "task_end", "status": "failed", "stop_reason": "no_worker"}
+{"task": "baseline-end-points", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 8, "type": "decision", "step": 1, "step_type": "plan", "chosen": null, "switched": false, "rule": "--worker", "level": 3}
+{"task": "baseline-end-points", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 9, "type": "decision", "step": 1, "step_type": "navigate", "chosen": null, "switched": false, "rule": "--worker", "level": 3}
+{"task": "baseline-end-points", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 10, "type": "task_end", "status": "failed", "stop_reason": "no_worker"}
+{"task": "wavenumber-to-wavelength", "seed": 0, "contestant": "router", "seq": 9, "type": "decision", "step": 1, "step_type": "plan", "chosen": null, "switched": false, "rule": null, "level": 0}
+{"task": "wavenumber-to-wavelength", "seed": 0, "contestant": "router", "seq": 10, "type": "decision", "step": 1, "step_type": "navigate", "chosen": null, "switched": false, "rule": null, "level": 0}
+{"task": "wavenumber-to-wavelength", "seed": 0, "contestant": "router", "seq": 11, "type": "task_end", "status": "failed", "stop_reason": "no_worker"}
+{"task": "wavenumber-to-wavelength", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 8, "type": "decision", "step": 1, "step_type": "plan", "chosen": null, "switched": false, "rule": "--worker", "level": 3}
+{"task": "wavenumber-to-wavelength", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 9, "type": "decision", "step": 1, "step_type": "navigate", "chosen": null, "switched": false, "rule": "--worker", "level": 3}
+{"task": "wavenumber-to-wavelength", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 10, "type": "task_end", "status": "failed", "stop_reason": "no_worker"}
+{"task": "trapezoid-end-weights", "seed": 0, "contestant": "router", "seq": 9, "type": "decision", "step": 1, "step_type": "plan", "chosen": null, "switched": false, "rule": null, "level": 0}
+{"task": "trapezoid-end-weights", "seed": 0, "contestant": "router", "seq": 10, "type": "decision", "step": 1, "step_type": "navigate", "chosen": null, "switched": false, "rule": null, "level": 0}
+{"task": "trapezoid-end-weights", "seed": 0, "contestant": "router", "seq": 11, "type": "task_end", "status": "failed", "stop_reason": "no_worker"}
+{"task": "trapezoid-end-weights", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 8, "type": "decision", "step": 1, "step_type": "plan", "chosen": null, "switched": false, "rule": "--worker", "level": 3}
+{"task": "trapezoid-end-weights", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 9, "type": "decision", "step": 1, "step_type": "navigate", "chosen": null, "switched": false, "rule": "--worker", "level": 3}
+{"task": "trapezoid-end-weights", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 10, "type": "task_end", "status": "failed", "stop_reason": "no_worker"}
+{"task": "vectorize-gaussian-sum", "seed": 0, "contestant": "router", "seq": 9, "type": "decision", "step": 1, "step_type": "plan", "chosen": null, "switched": false, "rule": null, "level": 0}
+{"task": "vectorize-gaussian-sum", "seed": 0, "contestant": "router", "seq": 10, "type": "decision", "step": 1, "step_type": "navigate", "chosen": null, "switched": false, "rule": null, "level": 0}
+{"task": "vectorize-gaussian-sum", "seed": 0, "contestant": "router", "seq": 11, "type": "task_end", "status": "failed", "stop_reason": "no_worker"}
+{"task": "vectorize-gaussian-sum", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 8, "type": "decision", "step": 1, "step_type": "plan", "chosen": null, "switched": false, "rule": "--worker", "level": 3}
+{"task": "vectorize-gaussian-sum", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 9, "type": "decision", "step": 1, "step_type": "navigate", "chosen": null, "switched": false, "rule": "--worker", "level": 3}
+{"task": "vectorize-gaussian-sum", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 10, "type": "task_end", "status": "failed", "stop_reason": "no_worker"}
+{"task": "moving-average-alignment", "seed": 0, "contestant": "router", "seq": 9, "type": "decision", "step": 1, "step_type": "plan", "chosen": null, "switched": false, "rule": null, "level": 0}
+{"task": "moving-average-alignment", "seed": 0, "contestant": "router", "seq": 10, "type": "decision", "step": 1, "step_type": "navigate", "chosen": null, "switched": false, "rule": null, "level": 0}
+{"task": "moving-average-alignment", "seed": 0, "contestant": "router", "seq": 11, "type": "task_end", "status": "failed", "stop_reason": "no_worker"}
+{"task": "moving-average-alignment", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 8, "type": "decision", "step": 1, "step_type": "plan", "chosen": null, "switched": false, "rule": "--worker", "level": 3}
+{"task": "moving-average-alignment", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 9, "type": "decision", "step": 1, "step_type": "navigate", "chosen": null, "switched": false, "rule": "--worker", "level": 3}
+{"task": "moving-average-alignment", "seed": 0, "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b", "seq": 10, "type": "task_end", "status": "failed", "stop_reason": "no_worker"}

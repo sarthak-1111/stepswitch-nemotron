@@ -1,0 +1,64 @@
+# Every step on Token Factory, with the Nemotron ladder (ADR 0044). The models, their tiers and
+# their prices come from the `tokenfactory` provider preset (registry/providers/tokenfactory.toml).
+#
+#   Nemotron 3.5 Lightning   navigate, read, summarize, write-text   fast and cheap
+#   Nemotron 3 Super         edit, run, triage                        the work, at a mid price
+#   Nemotron 3 Ultra         plan, review, and the work steps after an escalation
+#   gpt-oss-120b             a second opinion on Ultra's review, from another model family
+#
+# The first matching rule with a `to` wins. `escalations` counts how often the gates failed
+# enough times to move the task up the ladder, so edits leave Super for Ultra after the first.
+schema = 1
+
+[privacy]
+mode = "default"
+redact = "remote"
+deny_paths = [".env", ".env.*", "secrets/**", "*.pem", "*.key"]
+
+[budgets]
+usd = 0.50                          # stop a task after 50 cents of hosted tokens
+wall_seconds = 1800
+
+# Summaries and short texts without thinking: at low effort Lightning thinks for several
+# hundred tokens first, and a summary cut off mid-thought comes back as its thinking.
+[budgets.roles.summarize]
+effort = "none"
+
+[budgets.roles.write-text]
+effort = "none"
+
+# Reviews without thinking as well. At low and at medium effort Ultra thought for more than
+# 4000 tokens about one three-file change and never wrote its verdict; without thinking it
+# answers in a few tokens. gpt-oss refuses `none` and gets `low`, its lowest effort.
+[budgets.roles.review]
+effort = "none"
+max_output_tokens = 2000
+
+[review]
+second_opinion = true               # Ultra reviews; a model of another family checks it
+
+[[policy.rules]]
+name = "lightning-reads-and-summarizes"
+when = { step_type = ["navigate", "read", "summarize", "write-text"] }
+to = { model = "nvidia/Nemotron-3_5-Lightning" }
+
+[[policy.rules]]
+name = "super-edits-and-triages"
+when = { step_type = ["edit", "run", "triage"], escalations = 0 }
+to = { model = "nvidia/nemotron-3-super-120b-a12b" }
+
+[[policy.rules]]
+name = "ultra-plans-reviews-and-takes-escalations"
+when = { step_type = ["plan", "review", "edit", "run", "triage"] }
+to = { model = "nvidia/Nemotron-3-Ultra-550b-a55b" }
+
+[tracks.general]
+gates = ["format", "lint", "typecheck", "impacted_tests", "full_tests"]
+
+# ---- for the bench only ------------------------------------------------------------------
+# This file is examples/tokenfactory/stepswitch.toml plus the table below
+# (tests/unit/test_examples.py keeps them in step). The mini-science suite's repositories are
+# toy data written for the bench, so its science tasks may use Token Factory here. A project
+# with real data keeps the default: science tasks run offline, on local models only.
+[tracks.science]
+offline = false

@@ -124,6 +124,19 @@ def test_tokenfactory_routes_each_step_to_its_nemotron_model(tmp_path: Path) -> 
         assert model(step_type) == ultra, step_type
 
 
+def test_the_bench_ladder_policy_is_the_example_plus_hosted_science() -> None:
+    import tomllib
+
+    example = tomllib.loads((EXAMPLES / "tokenfactory" / "stepswitch.toml").read_text("utf-8"))
+    bench = tomllib.loads(
+        (ROOT / "bench" / "policies" / "tokenfactory-ladder.toml").read_text("utf-8")
+    )
+    # The example leaves science tasks offline (the default); the bench's toy science may not.
+    assert "science" not in example["tracks"]
+    assert bench["tracks"].pop("science") == {"offline": False}
+    assert bench == example
+
+
 def test_slow_lane_workers_are_pin_only(tmp_path: Path) -> None:
     _root, config, catalog = load(tmp_path, "slow-lane")
     specs = {spec.id: spec for spec in catalog.specs()}

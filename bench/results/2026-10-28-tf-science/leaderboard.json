@@ -1,0 +1,103 @@
+{
+  "command": "ssw bench run --suite mini-science --workers router,tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b --seeds 1 --router-pool tokenfactory/nvidia/Nemotron-3_5-Lightning,tokenfactory/nvidia/nemotron-3-super-120b-a12b,tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b,tokenfactory/openai/gpt-oss-120b --budget-usd 0.5 --budget-usd-total 0.6 --allow-remote --interleave --policy examples/tokenfactory/stepswitch.toml",
+  "commit": "b3473a98ffe1",
+  "contestants": [
+    {
+      "cache_hit_rate": null,
+      "cached_input_tokens": 0,
+      "ci": {
+        "confidence": 0.95,
+        "high": 0.0,
+        "low": 0.0,
+        "method": "cluster bootstrap over tasks (percentile)",
+        "resamples": 10000
+      },
+      "contestant": "router",
+      "escalation_rate": 0.0,
+      "gpu_seconds": 0.0,
+      "input_tokens": 0,
+      "median_hosted_tokens": 0.0,
+      "median_tokens": 0.0,
+      "median_uncached_tokens": 0.0,
+      "median_wall_seconds": 1.6255000000000002,
+      "output_tokens": 0,
+      "pass_rate": 0.0,
+      "passed": 0,
+      "rank": 1,
+      "reference_cost": null,
+      "runs": 6,
+      "statuses": {
+        "failed": 6
+      },
+      "tasks": 6,
+      "tests_modified": 0
+    },
+    {
+      "cache_hit_rate": null,
+      "cached_input_tokens": 0,
+      "ci": {
+        "confidence": 0.95,
+        "high": 0.0,
+        "low": 0.0,
+        "method": "cluster bootstrap over tasks (percentile)",
+        "resamples": 10000
+      },
+      "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+      "escalation_rate": 0.0,
+      "gpu_seconds": 0.0,
+      "input_tokens": 0,
+      "median_hosted_tokens": 0.0,
+      "median_tokens": 0.0,
+      "median_uncached_tokens": 0.0,
+      "median_wall_seconds": 1.9140000000000001,
+      "output_tokens": 0,
+      "pass_rate": 0.0,
+      "passed": 0,
+      "rank": 2,
+      "reference_cost": null,
+      "runs": 6,
+      "statuses": {
+        "failed": 6
+      },
+      "tasks": 6,
+      "tests_modified": 0
+    }
+  ],
+  "date": "2026-10-28T03:12:46+00:00",
+  "hardware": {
+    "arch": "x86_64",
+    "cpu_cores": 32,
+    "gpu_memory_gb": [
+      51.53,
+      48.31,
+      51.53,
+      51.53
+    ],
+    "gpus": 4,
+    "os": "Windows",
+    "ram_gb": 1098.43
+  },
+  "interval": {
+    "confidence": 0.95,
+    "resamples": 10000,
+    "seed": 0
+  },
+  "prices": null,
+  "results_file": "results.jsonl",
+  "router_pool": [
+    "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+    "tokenfactory/nvidia/Nemotron-3_5-Lightning",
+    "tokenfactory/nvidia/nemotron-3-super-120b-a12b",
+    "tokenfactory/openai/gpt-oss-120b"
+  ],
+  "runs": 12,
+  "schema": 1,
+  "scoring": "passes when every acceptance command exits with 0 on a fresh copy with the run's diff applied and the suite's protected paths restored",
+  "seeds": [
+    0
+  ],
+  "sources": null,
+  "suite": "mini-science",
+  "tasks": 6,
+  "version": "0.1.0.dev0"
+}

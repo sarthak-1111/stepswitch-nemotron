@@ -524,7 +524,7 @@ def run_one(
     row["hosted_tokens"] = hosted_tokens(row["models"])
     row["infra_error"] = "error" in row
     if not options.keep:
-        workspace.remove_tree(place)
+        workspace.clean(place)
     if briefs:
         row["_handoffs"] = [
             {
@@ -648,7 +648,7 @@ def _run_native(
         }
     )
     if not options.keep:
-        workspace.remove_tree(place)
+        workspace.clean(place)
     return row
 
 
@@ -841,7 +841,7 @@ def run_bench(
     if spent:
         manifest["spent_usd"] = round(spent, 6)
     if not options.keep:
-        workspace.remove_tree(work)
+        workspace.clean(work)
     manifest["finished"] = _now()
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n")
     write_report(out_dir)
