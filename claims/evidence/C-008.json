@@ -20,10 +20,10 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-28T11:44:36+00:00",
+  "updated": "2026-10-28T12:11:05+00:00",
   "sections": {
     "mutations": {
-      "recorded": "2026-10-28T11:44:36+00:00",
+      "recorded": "2026-10-28T12:11:05+00:00",
       "project": "science_fixture.py: Gaussian peaks, golden case `peaks`",
       "python": "3.12.15",
       "numpy": "2.5.4",

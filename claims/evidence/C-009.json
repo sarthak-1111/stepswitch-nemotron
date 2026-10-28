@@ -20,10 +20,10 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-28T11:44:38+00:00",
+  "updated": "2026-10-28T12:11:07+00:00",
   "sections": {
     "without_allow": {
-      "recorded": "2026-10-28T11:44:37+00:00",
+      "recorded": "2026-10-28T12:11:06+00:00",
       "unchanged_values_pass": true,
       "python_constant_change": {
         "passed": false,
@@ -65,7 +65,7 @@
       }
     },
     "with_allow": {
-      "recorded": "2026-10-28T11:44:38+00:00",
+      "recorded": "2026-10-28T12:11:07+00:00",
       "allow_protected": [
         "SPEED_OF_LIGHT"
       ],

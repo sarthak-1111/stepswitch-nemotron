@@ -6,12 +6,14 @@ actions that only the maintainer can take. Phase checks: `uv run python scripts/
 
 ## After Phase 13: Token Factory, the Nemotron ladder and the hackathon submission
 
-Status: 2026-10-28. The prove workflow passed on Linux, macOS and Windows on commit 309ef4d
-(source digest 87a76a5a95a8), and its C-016 evidence is committed byte for byte (SHA-256
-ef6f0883...). `ssw prove --quick`: 23 passing, 0 failing, 4 pending (C-001, C-005, C-017 and
+Status: 2026-10-28. The prove workflow passed on Linux, macOS and Windows on commit f5068cc
+(source digest 63aa4fc42dad), and its C-016 evidence is committed byte for byte (SHA-256
+cdabf099...). `ssw prove --quick`: 23 passing, 0 failing, 4 pending (C-001, C-005, C-017 and
 C-019 need the local models, which this run left out; their evidence from 2026-10-27 is kept),
-3 withdrawn. `phase_check.py --upto 13`: 96 of 101; the five failures need the local models
-or the docs group (the docs workflow builds the site in CI). Tag `hackathon-2026-10`.
+4 withdrawn (C-032 by ADR 0048). `phase_check.py --upto 13`: 96 of 101; the five failures
+need the local models or the docs group (the docs workflow builds the site in CI). The tag
+`hackathon-2026-10` marks the state before the replication work; the `hackathon` branch has
+everything since.
 
 ### Done
 
@@ -85,7 +87,7 @@ or the docs group (the docs workflow builds the site in CI). Tag `hackathon-2026
 
 ### Waiting on the maintainer
 
-- Watch the 2:47 cut of the video (made outside the repository from `hackathon/VIDEO.md`),
+- Watch the 2:55 cut of the video (made outside the repository from `hackathon/VIDEO.md`),
   approve its voice, upload it as public, and put its link in the README's hackathon section
   and the form.
 - Fill the submission form (track: Coding and Agentic Engineering; leave the city empty) and

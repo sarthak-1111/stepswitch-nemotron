@@ -2,8 +2,8 @@
   "schema": 1,
   "mode": "quick",
   "source_digest": "63aa4fc42dadfe9c6fa942d209d64a8d823192d503f2c7818a08c61d6fad1221",
-  "created": "2026-10-28T11:47:41+00:00",
-  "duration_s": 227.26,
+  "created": "2026-10-28T12:14:13+00:00",
+  "duration_s": 230.58,
   "platform": {
     "os": "windows",
     "machine": "amd64",
@@ -17,9 +17,7 @@
   "selection": {
     "phase": null,
     "claims": [],
-    "skip": [
-      "C-016"
-    ]
+    "skip": []
   },
   "claims": {
     "C-001": {
@@ -154,6 +152,14 @@
       "parts": [],
       "notes": {}
     },
+    "C-016": {
+      "status": "passing",
+      "tests": {
+        "tests/claims/test_c016_platforms.py::test_prove_quick_passed_on_linux_macos_windows": "passed"
+      },
+      "parts": [],
+      "notes": {}
+    },
     "C-017": {
       "status": "pending",
       "tests": {
@@ -255,7 +261,7 @@
   },
   "summary": {
     "pending": 4,
-    "passing": 22,
+    "passing": 23,
     "failing": 0,
     "withdrawn": 4
   }

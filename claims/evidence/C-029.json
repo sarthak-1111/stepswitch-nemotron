@@ -26,10 +26,10 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-28T11:47:41+00:00",
+  "updated": "2026-10-28T12:14:12+00:00",
   "sections": {
     "comparison": {
-      "recorded": "2026-10-28T11:47:41+00:00",
+      "recorded": "2026-10-28T12:14:12+00:00",
       "contestants": {
         "ladder": "router",
         "single": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b"

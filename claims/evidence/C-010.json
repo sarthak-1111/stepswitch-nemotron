@@ -21,10 +21,10 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-28T11:44:38+00:00",
+  "updated": "2026-10-28T12:11:07+00:00",
   "sections": {
     "handoffs": {
-      "recorded": "2026-10-28T11:44:38+00:00",
+      "recorded": "2026-10-28T12:11:07+00:00",
       "runs": [
         "2026-10-19-mini-general-best-of-n",
         "2026-10-19-mini-general-local-comparison",

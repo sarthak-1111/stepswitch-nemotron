@@ -1,7 +1,7 @@
 # Prove report
 
 - Mode: quick
-- Created: 2026-10-28T11:47:41+00:00
+- Created: 2026-10-28T12:14:13+00:00
 - Source digest: `63aa4fc42dadfe9c6fa942d209d64a8d823192d503f2c7818a08c61d6fad1221`
 - Platform: windows amd64, Python 3.12.15
 
@@ -22,6 +22,7 @@
 | C-013 | passing | test_ambiguous_tasks_flagged_unambiguous_not: passed |
 | C-014 | passing | test_replay_reproduces_diffs_and_gate_results: passed |
 | C-015 | passing | test_bandit_regret_below_random_and_fixed_policies: passed |
+| C-016 | passing | test_prove_quick_passed_on_linux_macos_windows: passed |
 | C-017 | pending | test_install_to_first_task_under_five_minutes: skipped |
 | C-018 | passing | test_every_readme_number_has_evidence_and_command: passed |
 | C-019 | pending | test_ledger_matches_server_usage_within_one_percent: skipped |

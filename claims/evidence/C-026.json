@@ -26,10 +26,10 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-28T11:47:39+00:00",
+  "updated": "2026-10-28T12:14:10+00:00",
   "sections": {
     "swebench": {
-      "recorded": "2026-10-28T11:47:39+00:00",
+      "recorded": "2026-10-28T12:14:10+00:00",
       "runs": {
         "confirmatory": "2026-10-21-swebench-mini-confirmatory",
         "gold": "2026-10-20-swebench-gold"

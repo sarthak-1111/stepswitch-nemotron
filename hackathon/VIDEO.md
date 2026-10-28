@@ -48,8 +48,9 @@ and the bill line.
 The ladder spent 81.6% fewer dollars per task: about one cent against five and a half. It
 also sent fewer than half the uncached tokens, because Super and Lightning hit the prompt
 cache and Ultra rarely did. The second reviewer agreed with Ultra on 20 of 21 changes. We
-publish the whole bill: every hosted bench run, failed ones included, came to two dollars
-eighteen on our ledger, and two thirty-eight on the Token Factory console for the whole day."
+publish the whole bill: every hosted bench run, failed ones included, cost five dollars and
+forty-eight cents. We also ran it again, registered in advance. It landed at the same eighteen
+percent, but missed its bound on one task, so we withdrew that claim."
 
 ## 2:15 to 2:35: prove it yourself
 

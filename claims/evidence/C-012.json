@@ -19,10 +19,10 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-28T11:44:40+00:00",
+  "updated": "2026-10-28T12:11:09+00:00",
   "sections": {
     "comparison": {
-      "recorded": "2026-10-28T11:44:40+00:00",
+      "recorded": "2026-10-28T12:11:09+00:00",
       "confidence": 0.95,
       "suites": {
         "mini-general": {
