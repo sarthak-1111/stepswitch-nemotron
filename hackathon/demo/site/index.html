@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stepswitch Nemotron Replay</title>
+<meta name="description" content="Read-only replays of Stepswitch runs on Token Factory: each step of a coding task on the right Nemotron model, verified by tests and a reviewer from another model family.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">Nebius x NVIDIA Global AI Hackathon · Coding and Agentic Engineering</p>
+    <h1>Stepswitch on Token Factory</h1>
+    <p class="lead">Stepswitch sends each step of a coding task to the right Nemotron model on
+      Token Factory, verifies every change with your tests and a reviewer from another model
+      family, and makes every claim re-runnable with <code>ssw prove</code>.</p>
+    <p class="note">A read-only replay of recorded runs. This page calls no model and holds no
+      key: every number below is the one the bench recorded.
+      <a href="https://github.com/sarthak-1111/stepswitch-nemotron">Source and claims</a></p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="results" aria-labelledby="results-h">
+    <h2 id="results-h">Nemotron ladder vs Nemotron 3 Ultra alone</h2>
+    <p class="sub">Both contestants run every step on Token Factory, on the same tasks, with the
+      same tests deciding whether a task passed. The ladder routes each step by its type; Ultra
+      alone does every step itself.</p>
+    <div id="result-cards" class="cards"></div>
+    <div id="bill" class="bill"></div>
+    <h3 class="minor">Nemotron 3.5 Lightning alone, and the pilot</h3>
+    <p class="sub">The smallest model doing every step itself, in separate runs on the same tasks
+      after the main runs, and the five-task pilot that calibrated the dollar caps. Not part of
+      the comparison above.</p>
+    <div id="alone-cards" class="cards"></div>
+  </section>
+
+  <section id="ladder" aria-labelledby="ladder-h">
+    <h2 id="ladder-h">The ladder</h2>
+    <div class="table-wrap"><table id="ladder-table">
+      <thead><tr><th>Model</th><th>Steps</th><th>Price per million tokens (in / cached / out)</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <section id="replay" aria-labelledby="replay-h">
+    <h2 id="replay-h">Replay a task</h2>
+    <div class="controls">
+      <label>Run <select id="run-select"></select></label>
+      <label>Task <select id="task-select"></select></label>
+      <button id="play" type="button">Play</button>
+      <button id="show-all" type="button" class="secondary">Show all steps</button>
+      <button id="show-escalation" type="button" class="secondary">Watch an escalation</button>
+    </div>
+    <p id="task-tags" class="sub"></p>
+    <div id="lanes" class="lanes"></div>
+  </section>
+
+  <section id="reviews" aria-labelledby="reviews-h">
+    <h2 id="reviews-h">Two reviewers, two model families</h2>
+    <p class="sub">In the ladder, Nemotron 3 Ultra reviews each change and gpt-oss-120b gives a
+      second opinion on the same diff. The change is approved only when neither objects.</p>
+    <div id="review-stats" class="cards"></div>
+  </section>
+
+  <section id="step-types" aria-labelledby="step-types-h">
+    <h2 id="step-types-h">Per step type</h2>
+    <p class="sub">Model calls of each step type in the complete runs: which model the ladder
+      used, and what a call cost on average compared with Ultra doing the same kind of step.</p>
+    <div class="table-wrap"><table id="step-table">
+      <thead><tr><th>Step type</th><th>Ladder model</th><th>Calls (ladder / Ultra)</th>
+        <th>Tokens per call (ladder / Ultra)</th><th>Dollars per call (ladder / Ultra)</th>
+        <th>Tool errors (ladder / Ultra)</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <section id="provenance" aria-labelledby="prov-h">
+    <h2 id="prov-h">Where the numbers come from</h2>
+    <div id="prov"></div>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p>Dollars are the list prices of Token Factory applied to the tokens each call reported, as
+    Stepswitch's ledger records them. Re-run the comparison with the command shown for each run,
+    and check the claims with <code>uv run ssw prove --claim C-029</code>.</p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>
