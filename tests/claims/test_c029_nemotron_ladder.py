@@ -39,6 +39,12 @@ LADDER = "router"
 # The provider console's reading of the bill, entered by hand with the date it was read.
 CONSOLE_BILL = ROOT / "hackathon" / "bill.json"
 Key = tuple[str, str, int]
+# How the runs are made; each run's run.json records its own command.
+BENCH_COMMAND = (
+    "uv run ssw bench run --suite <suite> --workers router,<ultra> --router-pool <pool>"
+    " --allow-remote --policy bench/policies/tokenfactory-ladder.toml --interleave"
+    " --budget-usd 0.5 --budget-usd-total <cap> (each run's run.json records its command)"
+)
 
 
 def uncached(row: dict[str, Any]) -> int:
@@ -135,8 +141,11 @@ def prices(found: list[Run], names: list[str]) -> dict[str, Any]:
     return out
 
 
-def test_the_ladder_passes_as_many_tasks_as_ultra_for_less() -> None:
-    limits = evidence.thresholds("C-029")
+def compare(claim_id: str) -> tuple[dict[str, Any], list[str]]:
+    """The ladder against the single model on the runs a claim names in its thresholds: the
+    evidence section and the problems that keep the claim from holding (C-029, and C-032,
+    its replication)."""
+    limits = evidence.thresholds(claim_id)
     confidence = float(limits["confidence_level"])
     single = str(limits["single"])
     found = runs()
@@ -205,26 +214,25 @@ def test_the_ladder_passes_as_many_tasks_as_ultra_for_less() -> None:
     if len(excluded) > float(limits["max_excluded_share"]) * max(1, len(clusters) + len(excluded)):
         problems.append(f"{len(excluded)} task runs left out for infrastructure errors")
 
-    evidence.write(
-        "C-029",
-        "comparison",
-        {
-            "contestants": {"ladder": LADDER, "single": single},
-            "task_runs": len(rows[LADDER]),
-            "tasks": len(clusters),
-            "excluded": excluded,
-            "results": {"ladder": ladder, "single": ultra},
-            "cost_share": cost_share,
-            "ladder_dollars_by_model": by_model(rows[LADDER]),
-            "prices_per_million": prices(found, list(limits["runs"])),
-            "per_suite": per_suite,
-            "bill": bill(found),
-            "problems": problems,
-            # How the runs were made; `command` is the prove command that checks them (C-018).
-            "bench_command": "uv run ssw bench run --suite <suite> --workers router,<ultra>"
-            " --router-pool <pool> --allow-remote --policy bench/policies/tokenfactory-ladder.toml"
-            " --interleave --budget-usd 0.5 --budget-usd-total <cap> (each run's run.json"
-            " records its command)",
-        },
-    )
+    data = {
+        "contestants": {"ladder": LADDER, "single": single},
+        "task_runs": len(rows[LADDER]),
+        "tasks": len(clusters),
+        "excluded": excluded,
+        "results": {"ladder": ladder, "single": ultra},
+        "cost_share": cost_share,
+        "ladder_dollars_by_model": by_model(rows[LADDER]),
+        "prices_per_million": prices(found, list(limits["runs"])),
+        "per_suite": per_suite,
+        "bill": bill(found),
+        "problems": problems,
+        # How the runs were made; `command` is the prove command that checks them (C-018).
+        "bench_command": BENCH_COMMAND,
+    }
+    return data, problems
+
+
+def test_the_ladder_passes_as_many_tasks_as_ultra_for_less() -> None:
+    data, problems = compare("C-029")
+    evidence.write("C-029", "comparison", data)
     assert not problems, problems

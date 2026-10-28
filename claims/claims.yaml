@@ -884,3 +884,32 @@ claims:
       - {key: sections.steps.reviews.agreeing, label: changes both reviewers judged alike}
       - {key: sections.steps.reviews.changes, label: changes reviewed by both}
     status: passing
+
+  - id: C-032
+    text: "On a second pair of runs, made on a later commit, the Nemotron ladder on Token Factory again passes as many task runs as Nemotron 3 Ultra alone on the mini suites, for under a quarter of its dollars per task run."
+    scope: >-
+      A replication of C-029, registered before its runs (ADR 0047): the same contestants,
+      pool, ladder policy, per-task and per-run dollar caps, one task run per task and suite
+      (seed 0), interleaved, without local models, on the commit that fixed git's long paths
+      on Windows, after the tool fixes made since C-029. The thresholds are C-029's and were
+      set before the runs. An earlier attempt at this replication is committed and billed but
+      not used: a long-path bug in the gates' git queries hit Ultra alone's side on every
+      science task run (ADR 0047).
+    proof: >-
+      Bench evidence on the mini suites, compared exactly as C-029's runs are: the ladder
+      passes at least as many task runs as Ultra alone, and its dollars as a share of Ultra's,
+      with the whole 95% cluster-bootstrap interval over tasks, lie below the threshold.
+    kind: bench
+    phase: 13
+    tests:
+      - tests/claims/test_c032_ladder_replication.py::test_the_ladder_holds_on_a_second_pair_of_runs
+    thresholds:
+      runs: [2026-10-28-tf-mini-general-replication-2, 2026-10-28-tf-mini-science-replication-2]
+      single: tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b
+      confidence_level: 0.95
+      cost_share_max_percent: 25
+      max_excluded_share: 0.1
+    evidence: [claims/evidence/C-032.json]
+    readme_numbers:
+      - {key: sections.comparison.cost_share.saving_percent, label: fewer dollars per task run than Ultra alone on the second pair of runs, unit: "%", digits: 1}
+    status: pending
