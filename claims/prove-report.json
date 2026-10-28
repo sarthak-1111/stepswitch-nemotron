@@ -2,8 +2,8 @@
   "schema": 1,
   "mode": "quick",
   "source_digest": "87a76a5a95a8aa7a25da1dffa421e716a301ce68a3f52f9e08adf7356d4bc159",
-  "created": "2026-10-28T05:37:38+00:00",
-  "duration_s": 246.23,
+  "created": "2026-10-28T06:22:31+00:00",
+  "duration_s": 232.36,
   "platform": {
     "os": "windows",
     "machine": "amd64",
@@ -153,14 +153,12 @@
       "notes": {}
     },
     "C-016": {
-      "status": "pending",
+      "status": "passing",
       "tests": {
-        "tests/claims/test_c016_platforms.py::test_prove_quick_passed_on_linux_macos_windows": "skipped"
+        "tests/claims/test_c016_platforms.py::test_prove_quick_passed_on_linux_macos_windows": "passed"
       },
       "parts": [],
-      "notes": {
-        "tests/claims/test_c016_platforms.py::test_prove_quick_passed_on_linux_macos_windows": "pending: the platform evidence was produced from other sources; run the CI workflow on this commit (ADR 0014)"
-      }
+      "notes": {}
     },
     "C-017": {
       "status": "pending",
@@ -261,8 +259,8 @@
     "C-025": "docs/decisions/0041-claims-withdrawn-after-phase-12.md"
   },
   "summary": {
-    "pending": 5,
-    "passing": 22,
+    "pending": 4,
+    "passing": 23,
     "failing": 0,
     "withdrawn": 3
   }

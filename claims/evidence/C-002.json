@@ -20,11 +20,11 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-28T05:33:40+00:00",
+  "updated": "2026-10-28T06:18:47+00:00",
   "sections": {
     "trajectory": {
-      "recorded": "2026-10-28T05:33:40+00:00",
-      "task_id": "t20261028-143335-a91954",
+      "recorded": "2026-10-28T06:18:47+00:00",
+      "task_id": "t20261028-151842-1ea37b",
       "status": "done",
       "endpoints": [
         "alpha",
@@ -101,7 +101,7 @@
       "switches": [
         {
           "seq": 12,
-          "ts": 1793165615.571,
+          "ts": 1793168323.231,
           "type": "switch",
           "step": 2,
           "step_type": "navigate",
@@ -114,12 +114,12 @@
             "seconds": 0.788,
             "tokens": 1182.0
           },
-          "expected_gain": -10.072,
+          "expected_gain": -63.952,
           "handoff": false
         },
         {
           "seq": 28,
-          "ts": 1793165618.268,
+          "ts": 1793168325.851,
           "type": "switch",
           "step": 7,
           "step_type": "review",
@@ -132,7 +132,7 @@
             "seconds": 0.155,
             "tokens": 232.0
           },
-          "expected_gain": 11.015,
+          "expected_gain": 64.895,
           "handoff": false
         }
       ],

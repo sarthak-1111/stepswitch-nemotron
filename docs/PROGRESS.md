@@ -6,7 +6,12 @@ actions that only the maintainer can take. Phase checks: `uv run python scripts/
 
 ## After Phase 13: Token Factory, the Nemotron ladder and the hackathon submission
 
-Status: 2026-10-28. STATUS_LINE
+Status: 2026-10-28. The prove workflow passed on Linux, macOS and Windows on commit 309ef4d
+(source digest 87a76a5a95a8), and its C-016 evidence is committed byte for byte (SHA-256
+ef6f0883...). `ssw prove --quick`: 23 passing, 0 failing, 4 pending (C-001, C-005, C-017 and
+C-019 need the local models, which this run left out; their evidence from 2026-10-27 is kept),
+3 withdrawn. `phase_check.py --upto 13`: 96 of 101; the five failures need the local models
+or the docs group (the docs workflow builds the site in CI). Tag `hackathon-2026-10`.
 
 ### Done
 
@@ -64,8 +69,9 @@ Status: 2026-10-28. STATUS_LINE
 
 ### Waiting on the maintainer
 
-- Record the video from `hackathon/VIDEO.md` (voiceover, the tapes or a screen recorder),
-  upload it as public, and put its link in the README's hackathon section and the form.
+- Watch the 2:47 cut of the video (made outside the repository from `hackathon/VIDEO.md`),
+  approve its voice, upload it as public, and put its link in the README's hackathon section
+  and the form.
 - Fill the submission form (track: Coding and Agentic Engineering; leave the city empty) and
   press Submit before 2026-10-30 10:00 PT.
 - Optional: request Sandboxes beta access on the console for C-031.

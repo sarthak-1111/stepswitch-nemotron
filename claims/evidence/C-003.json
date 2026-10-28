@@ -20,10 +20,10 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-28T05:33:41+00:00",
+  "updated": "2026-10-28T06:18:48+00:00",
   "sections": {
     "property": {
-      "recorded": "2026-10-28T05:33:41+00:00",
+      "recorded": "2026-10-28T06:18:48+00:00",
       "seed": 20261019,
       "scenarios": 4000,
       "cost_model_decisions": 2597,

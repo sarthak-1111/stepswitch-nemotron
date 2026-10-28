@@ -220,7 +220,7 @@
       }
      },
      "problems": [],
-     "recorded": "2026-10-28T05:37:37+00:00",
+     "recorded": "2026-10-28T06:22:30+00:00",
      "results": {
       "ladder": {
        "cost_per_task_usd": 0.010141,
@@ -258,7 +258,7 @@
     "steps": {
      "bench_command": "the C-029 runs and the small tier alone (`ssw bench run --workers <small> --allow-remote --policy bench/policies/tokenfactory-ladder.toml`, each run.json records its command)",
      "problems": [],
-     "recorded": "2026-10-28T05:37:37+00:00",
+     "recorded": "2026-10-28T06:22:30+00:00",
      "reviews": {
       "agreeing": 20,
       "agreement_percent": 95.2,
