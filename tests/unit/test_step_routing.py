@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from stepswitch.router.cost import estimate, should_switch
@@ -101,6 +103,46 @@ def test_a_pinning_rule_that_matches_nothing_is_skipped_with_a_note() -> None:
     assert decision.chosen == MID.id
     assert decision.rule is None
     assert any("ghost" in note for note in decision.notes)
+
+
+def test_a_pin_to_a_worker_nobody_serves_is_named_once_on_the_console(tmp_path: Path) -> None:
+    from stepswitch.config import Config
+    from stepswitch.core.orchestrator import run_task
+    from stepswitch.core.task import TaskSpec
+    from stepswitch.router.rules import unmatched_pins
+    from stepswitch.workers.base import Worker
+    from stepswitch.workers.catalog import Catalog
+    from stepswitch.workers.fake import Action, ScriptedModel
+    from tests.claims.toy import TOY_INSTRUCTION, toy_repo
+
+    pins = [
+        {"name": "ghost", "when": {"step_type": "edit"}, "to": {"model": "nope"}},
+        {"name": "mid-edits", "when": {"step_type": "edit"}, "to": {"model": "mid"}},
+    ]
+    assert [r.name for r in unmatched_pins(parse_rules(pins), WORKERS)] == ["ghost"]
+    assert unmatched_pins(parse_rules([{"name": "x", "exclude": {"model": "nope"}}]), WORKERS) == []
+
+    model = ScriptedModel(
+        lambda request, index: (
+            Action(tool="finish", arguments={"summary": "Done."})
+            if request.tools
+            else Action(text="APPROVE")
+        )
+    )
+    spec = WorkerSpec(id="fake/mid", endpoint="fake", model="mid", harness="fake", tier="t2")
+    repo = toy_repo("calc-bug", tmp_path / "repo")
+    lines: list[str] = []
+    run_task(
+        TaskSpec(instruction=TOY_INSTRUCTION, repo=repo, max_steps=4),
+        root=repo,
+        config=Config.model_validate({"policy": {"rules": pins}}),
+        catalog=Catalog([Worker(spec, model)]),
+        echo=lines.append,
+    )
+    notes = [line for line in lines if "sends steps to no configured worker" in line]
+    assert notes == [
+        "  note: rule ghost sends steps to no configured worker (model = nope); the router skips it"
+    ]
 
 
 def test_switching_follows_the_cost_rule() -> None:

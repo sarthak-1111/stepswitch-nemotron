@@ -23,6 +23,7 @@ auth = "bearer"
 api_key_env = "NEBIUS_API_KEY"
 default_models = [
   "nvidia/Nemotron-3_5-Lightning",
+  "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
   "nvidia/nemotron-3-super-120b-a12b",
   "nvidia/Nemotron-3-Ultra-550b-a55b",
   "openai/gpt-oss-120b",

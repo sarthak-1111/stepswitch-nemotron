@@ -33,7 +33,13 @@ from stepswitch.core.task import Budgets, TaskResult, TaskSpec, new_task_id
 from stepswitch.ledger import Ledger, LedgerRow, usage_row_fields
 from stepswitch.router.escalation import RUNG_NAMES, Ladder, start_level
 from stepswitch.router.features import TaskFeatures
-from stepswitch.router.rules import Rule, RuleError, rules_from_config
+from stepswitch.router.rules import (
+    Rule,
+    RuleError,
+    describe_selector,
+    rules_from_config,
+    unmatched_pins,
+)
 from stepswitch.state import StateDB, open_project_state
 from stepswitch.trajectory.record import Trajectory
 from stepswitch.workers.base import SLOW_TIER
@@ -401,6 +407,11 @@ def run_task(
         relay = _relay(spec, catalog)
         for note in catalog.notes:
             say(f"  note: {note}")
+        for rule in unmatched_pins(rules, catalog.specs()):
+            say(
+                f"  note: rule {rule.name} sends steps to no configured worker"
+                f" ({describe_selector(rule.to or {})}); the router skips it"
+            )
         if replay is not None:
             features = _recorded_features(
                 replay, catalog=catalog, ledger=ledger, budget=budget, trajectory=trajectory

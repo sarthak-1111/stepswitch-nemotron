@@ -163,6 +163,22 @@ def test_the_escalation_demo_policies_change_only_who_works_first(
     assert demo_rules[2] == ladder_rules[2]
 
 
+def test_every_token_factory_policy_pins_only_models_the_preset_serves(tmp_path: Path) -> None:
+    """A rule whose model no endpoint serves is skipped at every step, so its steps silently go
+    to the next rule: the Nano-first demo once ran its edits on Ultra that way."""
+    import tomllib
+
+    from stepswitch.router.rules import parse_rules, unmatched_pins
+
+    _root, _config, catalog = load(tmp_path, "tokenfactory")
+    policies = [EXAMPLES / "tokenfactory" / "stepswitch.toml"]
+    policies += sorted((ROOT / "bench" / "policies").glob("tokenfactory-*.toml"))
+    assert len(policies) >= 4
+    for path in policies:
+        rules = parse_rules(tomllib.loads(path.read_text("utf-8"))["policy"]["rules"])
+        assert unmatched_pins(rules, catalog.specs()) == [], path.name
+
+
 def test_slow_lane_workers_are_pin_only(tmp_path: Path) -> None:
     _root, config, catalog = load(tmp_path, "slow-lane")
     specs = {spec.id: spec for spec in catalog.specs()}

@@ -144,6 +144,21 @@ def parse_rules(raw: Sequence[Mapping[str, Any]]) -> list[Rule]:
     return rules
 
 
+def unmatched_pins(rules: Sequence[Rule], specs: Sequence[WorkerSpec]) -> list[Rule]:
+    """The pinning rules whose `to` matches none of `specs`: the router skips them at every
+    step, so their steps go to the next matching rule (a model missing from an endpoint's
+    `models`, for example)."""
+    return [
+        rule
+        for rule in rules
+        if rule.to is not None and not any(selector_matches(rule.to, spec) for spec in specs)
+    ]
+
+
+def describe_selector(selector: Mapping[str, Any]) -> str:
+    return ", ".join(f"{key} = {value}" for key, value in selector.items())
+
+
 def rules_from_config(config: Any) -> list[Rule]:
     """`[[policy.rules]]` from a stepswitch Config (unknown sections are kept as extras)."""
     policy = getattr(config, "policy", None)
