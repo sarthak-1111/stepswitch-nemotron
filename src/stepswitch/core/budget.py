@@ -22,6 +22,7 @@ class BudgetTracker:
     tokens: int = 0
     gpu_seconds: float = 0.0
     escalations: int = 0
+    usd: float = 0.0
     started: float = field(default=0.0)
     # True once someone asked the task to stop.
     cancelled: Callable[[], bool] | None = None
@@ -29,9 +30,10 @@ class BudgetTracker:
     def __post_init__(self) -> None:
         self.started = self.clock()
 
-    def charge(self, *, tokens: int = 0, gpu_seconds: float = 0.0) -> None:
+    def charge(self, *, tokens: int = 0, gpu_seconds: float = 0.0, usd: float = 0.0) -> None:
         self.tokens += max(0, tokens)
         self.gpu_seconds += max(0.0, gpu_seconds)
+        self.usd += max(0.0, usd)
 
     def escalate(self) -> None:
         self.escalations += 1
@@ -53,6 +55,8 @@ class BudgetTracker:
             return "budget_gpu_seconds"
         if limits.escalations is not None and self.escalations > limits.escalations:
             return "budget_escalations"
+        if limits.usd is not None and self.usd >= limits.usd:
+            return "budget_usd"
         return None
 
     def can_escalate(self) -> bool:
@@ -72,6 +76,7 @@ class BudgetTracker:
             "escalations": None
             if limits.escalations is None
             else max(0, limits.escalations - self.escalations),
+            "usd": None if limits.usd is None else max(0.0, round(limits.usd - self.usd, 6)),
         }
 
     def snapshot(self) -> dict[str, float | int]:

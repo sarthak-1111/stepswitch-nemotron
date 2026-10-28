@@ -1,0 +1,88 @@
+# Token Factory: a hosted chat-completions service (ADR 0044). An endpoint uses this preset
+# with `preset = "tokenfactory"` in .stepswitch/local.toml; the key stays in the environment.
+#
+# Model IDs come from `GET /v1/models` and prices from `GET /v1/models?verbose=true`, whose
+# `pricing` gives US dollars per token (`prompt`, `input_cache_read`, `completion`). The
+# console's price list showed the same prices. Both were checked on 2026-10-28; see
+# RESEARCH.md, "Token Factory". Prices here are US dollars per million tokens, without taxes.
+#
+# Tiers place the models on the escalation ladder: the small Nemotron on T1, Super on T3 and
+# Ultra on the top rung. The reviewer from another family sits on T3.
+schema = 1
+
+[provider]
+id = "tokenfactory"
+title = "Token Factory"
+url = "https://api.tokenfactory.nebius.com/v1"
+format = "chat-completions"
+auth = "bearer"
+api_key_env = "NEBIUS_API_KEY"
+default_models = [
+  "nvidia/Nemotron-3_5-Lightning",
+  "nvidia/nemotron-3-super-120b-a12b",
+  "nvidia/Nemotron-3-Ultra-550b-a55b",
+  "openai/gpt-oss-120b",
+]
+currency = "USD"
+prices_checked = "2026-10-28"
+prices_source = "GET /v1/models?verbose=true (pricing per token), matching the console price list"
+
+[models."nvidia/Nemotron-3_5-Lightning"]
+family = "nemotron"
+tier = "t1"
+roles = ["router", "summarizer", "classifier", "log_triage", "commit_message"]
+reasoning = true
+context = 1048576
+price_input = 0.06
+price_cached_input = 0.03
+price_output = 0.24
+
+[models."nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"]
+family = "nemotron"
+tier = "t1"
+roles = ["router", "summarizer", "classifier", "log_triage", "commit_message"]
+reasoning = true
+context = 262144
+price_input = 0.06
+price_cached_input = 0.012
+price_output = 0.24
+
+[models."nvidia/nemotron-3-super-120b-a12b"]
+family = "nemotron"
+tier = "t3"
+roles = ["editor", "coder", "log_triage"]
+reasoning = true
+context = 262144
+price_input = 0.30
+price_cached_input = 0.06
+price_output = 0.90
+
+[models."nvidia/Nemotron-3.5-Super-VL"]
+family = "nemotron"
+tier = "t3"
+roles = ["editor", "coder"]
+reasoning = true
+context = 1048576
+price_input = 0.30
+price_cached_input = 0.06
+price_output = 0.90
+
+[models."nvidia/Nemotron-3-Ultra-550b-a55b"]
+family = "nemotron"
+tier = "remote"
+roles = ["planner", "reviewer", "editor", "coder"]
+reasoning = true
+context = 1048576
+price_input = 1.00
+price_cached_input = 0.12
+price_output = 3.00
+
+[models."openai/gpt-oss-120b"]
+family = "gpt-oss"
+tier = "t3"
+roles = ["reviewer"]
+reasoning = true
+context = 131072
+price_input = 0.15
+price_cached_input = 0.10
+price_output = 0.60

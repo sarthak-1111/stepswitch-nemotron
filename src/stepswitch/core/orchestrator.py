@@ -58,6 +58,7 @@ def _budgets(spec: TaskSpec, config: Config) -> Budgets:
         else defaults.wall_seconds,
         gpu_seconds=given.gpu_seconds if given.gpu_seconds is not None else defaults.gpu_seconds,
         escalations=given.escalations if given.escalations is not None else defaults.escalations,
+        usd=given.usd if given.usd is not None else defaults.usd,
     )
 
 

@@ -120,6 +120,7 @@ const STOP_REASONS: Readonly<Record<string, string>> = {
   budget_tokens: "token budget reached",
   budget_wall_seconds: "time budget reached",
   budget_gpu_seconds: "GPU-seconds budget reached",
+  budget_usd: "dollar budget reached",
   budget_escalations: "escalation budget reached",
   max_steps: "step limit reached",
   stuck: "stuck without progress",

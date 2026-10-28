@@ -106,6 +106,10 @@ MIGRATIONS: list[str] = [
     CREATE INDEX jobs_status ON jobs(status, created);
     CREATE INDEX jobs_task ON jobs(task_id, created);
     """,
+    # 6: the dollar cost of a ledger row at its model's prices (ADR 0044)
+    """
+    ALTER TABLE ledger ADD COLUMN cost_usd REAL;
+    """,
 ]
 
 

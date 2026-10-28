@@ -14,6 +14,7 @@ from typing import Any, Literal, Protocol, runtime_checkable
 
 from stepswitch.compat.client import Completion
 from stepswitch.compat.ir import Request
+from stepswitch.pricing import Prices
 
 ToolProtocol = Literal["native", "fallback"]
 
@@ -65,6 +66,8 @@ class WorkerSpec:
     # Models that are not meant to drive agent turns (completion-only models) are used only
     # when `--worker` pins them.
     pin_only: bool = False
+    # US dollars per million tokens, for hosted models with a price (ADR 0044).
+    prices: Prices | None = None
 
     @property
     def level(self) -> int:
@@ -95,6 +98,7 @@ class WorkerSpec:
             "reasoning": self.reasoning,
             "tokenizer": self.tokenizer,
             "cache_ratio": self.cache_ratio,
+            "prices": self.prices.as_dict() if self.prices is not None else None,
         }
 
 

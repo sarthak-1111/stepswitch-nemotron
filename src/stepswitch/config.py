@@ -12,7 +12,7 @@ import tomllib
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from stepswitch import paths
 from stepswitch.net import is_local_url
@@ -44,6 +44,24 @@ class EndpointConfig(BaseModel):
     # `engine = "llama-swap"`, its YAML config (peers and proxy URLs, `compat.forwarding`).
     # A relative path is relative to the project root.
     engine_config: str | None = None
+    # A hosted provider from `registry/providers/` (ADR 0044): it fills in the URL, format,
+    # authentication and models the endpoint does not set, and the models' tiers and prices.
+    preset: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _apply_preset(cls, data: Any) -> Any:
+        if not isinstance(data, dict) or not data.get("preset"):
+            return data
+        from stepswitch import providers
+
+        name = str(data["preset"])
+        known = providers.load()
+        provider = known.get(name)
+        if provider is None:
+            listed = ", ".join(sorted(known)) or "none"
+            raise ValueError(f"unknown provider preset {name!r}; known: {listed}")
+        return {**provider.endpoint_defaults(), **data}
 
     @field_validator("tool_parser")
     @classmethod
@@ -97,6 +115,8 @@ class BudgetConfig(BaseModel):
     wall_seconds: float | None = None
     gpu_seconds: float | None = None
     escalations: int | None = None
+    # US dollars, from the prices of hosted models (ADR 0044).
+    usd: float | None = None
 
 
 class Config(BaseModel):

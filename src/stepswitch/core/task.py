@@ -31,6 +31,7 @@ StopReason = Literal[
     "budget_wall_seconds",
     "budget_gpu_seconds",
     "budget_escalations",
+    "budget_usd",
     "max_steps",
     "stuck",
     "cancelled",
@@ -54,6 +55,8 @@ class Budgets(BaseModel):
     wall_seconds: float | None = None
     gpu_seconds: float | None = None
     escalations: int | None = None
+    # US dollars at the prices of hosted models (ADR 0044).
+    usd: float | None = None
 
 
 class TaskSpec(BaseModel):

@@ -318,7 +318,8 @@ class Catalog:
         include_managed: bool = True,
         timeout: float = 600.0,
     ) -> Catalog:
-        from stepswitch import registry
+        from stepswitch import providers, registry
+        from stepswitch.pricing import prices_from_table
 
         entries = registry.load()
         by_name: dict[str, ModelEntry] = {}
@@ -334,8 +335,13 @@ class Catalog:
         notes: list[str] = []
         for endpoint in config.endpoints:
             fmt = endpoint.primary_format()
+            provider = providers.for_endpoint(endpoint.preset, endpoint.url)
             for model in endpoint.models:
-                table = config.models.get(model) or {}
+                # A provider's facts for the model, then the user's own table over them.
+                table = {
+                    **(provider.model_table(model) if provider is not None else {}),
+                    **(config.models.get(model) or {}),
+                }
                 # A local endpoint can still forward a model to a hosted service (SPEC §15).
                 forwards = endpoint.is_local() and forwarding.static_reason(
                     model=model,
@@ -379,6 +385,7 @@ class Catalog:
                     reasoning=facts.reasoning,
                     tokenizer=facts.tokenizer,
                     cache_ratio=facts.cache_ratio,
+                    prices=prices_from_table(table),
                 )
                 factory = _endpoint_factory(endpoint, spec, egress, task_id, timeout, root)
                 workers.append(Worker(spec, factory=factory))

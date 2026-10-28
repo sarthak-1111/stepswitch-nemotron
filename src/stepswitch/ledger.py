@@ -34,6 +34,7 @@ COLUMNS = (
     "wall_seconds",
     "gpu_seconds",
     "usage_source",
+    "cost_usd",
     "data",
 )
 
@@ -54,6 +55,8 @@ class LedgerRow:
     # "server": reported by the model server; "estimate": characters / 4; other values name
     # the source a worker declared (scripted workers say "scripted").
     usage_source: str = "server"
+    # US dollars at the worker's prices (ADR 0044); None for models without a price.
+    cost_usd: float | None = None
     ts: float = field(default_factory=time.time)
     data: dict[str, Any] = field(default_factory=dict)
 
@@ -136,9 +139,15 @@ def summarize(rows: Any) -> dict[str, Any]:
         "wall_seconds": 0.0,
         "gpu_seconds": 0.0,
         "estimated_calls": 0,
+        "cost_usd": 0.0,
+        "priced_calls": 0,
     }
     for row in rows:
         totals["calls"] += 1
+        cost = row.get("cost_usd")
+        if cost is not None:
+            totals["cost_usd"] += float(cost)
+            totals["priced_calls"] += 1
         for key in ("input_tokens", "output_tokens", "cached_input_tokens", "reasoning_tokens"):
             totals[key] += int(row[key] or 0)
         totals["wall_seconds"] += float(row["wall_seconds"] or 0.0)
@@ -148,13 +157,14 @@ def summarize(rows: Any) -> dict[str, Any]:
     totals["tokens"] = totals["input_tokens"] + totals["output_tokens"]
     totals["wall_seconds"] = round(totals["wall_seconds"], 3)
     totals["gpu_seconds"] = round(totals["gpu_seconds"], 3)
+    totals["cost_usd"] = round(totals["cost_usd"], 6)
     return totals
 
 
-def by_worker(rows: Iterable[LedgerRow]) -> dict[tuple[str, str], dict[str, int]]:
+def by_worker(rows: Iterable[LedgerRow]) -> dict[tuple[str, str], dict[str, Any]]:
     """Calls and tokens per (endpoint, model): input (cached included), cached_input and
-    output."""
-    totals: dict[tuple[str, str], dict[str, int]] = {}
+    output; and `cost_usd` when the rows have a price."""
+    totals: dict[tuple[str, str], dict[str, Any]] = {}
     for row in rows:
         counts = totals.setdefault(
             (row.endpoint, row.model), {"calls": 0, "input": 0, "cached_input": 0, "output": 0}
@@ -163,6 +173,8 @@ def by_worker(rows: Iterable[LedgerRow]) -> dict[tuple[str, str], dict[str, int]
         counts["input"] += int(row.input_tokens or 0)
         counts["cached_input"] += int(row.cached_input_tokens or 0)
         counts["output"] += int(row.output_tokens or 0)
+        if row.cost_usd is not None:
+            counts["cost_usd"] = round(float(counts.get("cost_usd", 0.0)) + row.cost_usd, 6)
     return totals
 
 
