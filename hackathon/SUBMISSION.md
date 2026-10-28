@@ -170,8 +170,9 @@ second model family, and publishes only numbers that anyone can re-run.
   errors, against none of Ultra's 61: it guessed absolute paths such as `/repo/todo/model.py`,
   read the tool's message ("paths are relative to the repository root") and corrected itself.
   No task failed because of it. Clear tool errors are part of the routing design.
-- **The smallest model alone is not the low-cost choice it looks like.** Lightning alone, on the
-  same 21 tasks in separate runs, passed 19 (both failures ran out of steps at 40). It cost
+- **The ladder's smallest model alone is not the low-cost choice it looks like.** Lightning
+  alone, on the same 21 tasks in separate runs, passed 19 (both failures ran out of steps at
+  40). It cost
   US$ 0.0071 per task run, 70% of the ladder's 0.0101, but used 130,369 tokens per task run:
   2.8 times the ladder's 47,156 and 2.5 times Ultra alone's 53,067. On the science suite it
   cost more per task run than the ladder (0.0100 against 0.0089) and took 1.24 minutes against

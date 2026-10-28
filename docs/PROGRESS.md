@@ -75,6 +75,11 @@ everything since.
   the long-path diagnosis included); US$ 5.64 on the console at 11:39 UTC, tax included, probes,
   canary calls and test runs outside the bench included. The account had US$ 24.36 left of a
   US$ 5.00 card payment and US$ 25.00 of program credits.
+- Story first: the README's hackathon section, `hackathon/SUBMISSION.md`, the demo hero and the
+  video's opening now lead with the same comparison, 21 tasks passed for US$ 1.16 on Ultra
+  alone and for US$ 0.21 on the ladder (C-029's totals); the demo hero draws both totals as
+  bars from the evidence. The replication sits under "why you can trust these numbers". No
+  number or claim changed.
 
 ### Research that changed the plan
 
@@ -87,7 +92,7 @@ everything since.
 
 ### Waiting on the maintainer
 
-- Watch the 2:55 cut of the video (made outside the repository from `hackathon/VIDEO.md`),
+- Watch the 2:56 cut of the video (made outside the repository from `hackathon/VIDEO.md`),
   approve its voice, upload it as public, and put its link in the README's hackathon section
   and the form.
 - Fill the submission form (track: Coding and Agentic Engineering; leave the city empty) and
