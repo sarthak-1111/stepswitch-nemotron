@@ -1,0 +1,74 @@
+{
+  "command": "ssw bench run --suite mini-general --workers router --seeds 1 --tasks billing-month-end,temperature-units --router-pool tokenfactory/nvidia/Nemotron-3_5-Lightning,tokenfactory/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B,tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b,tokenfactory/openai/gpt-oss-120b --max-steps 60 --budget-usd 0.1 --budget-usd-total 0.2 --allow-remote --policy bench/policies/tokenfactory-nano-first.toml",
+  "commit": "c436b3345384",
+  "contestants": [
+    {
+      "cache_hit_rate": 0.22669333269077854,
+      "cached_input_tokens": 84672,
+      "ci": {
+        "confidence": 0.95,
+        "high": 1.0,
+        "low": 1.0,
+        "method": "cluster bootstrap over tasks (percentile)",
+        "resamples": 10000
+      },
+      "contestant": "router",
+      "escalation_rate": 1.0,
+      "gpu_seconds": 0.0,
+      "input_tokens": 373509,
+      "median_hosted_tokens": 206771.0,
+      "median_tokens": 206771.0,
+      "median_uncached_tokens": 164435.0,
+      "median_wall_seconds": 280.57,
+      "output_tokens": 40033,
+      "pass_rate": 1.0,
+      "passed": 2,
+      "rank": 1,
+      "reference_cost": null,
+      "runs": 2,
+      "statuses": {
+        "done": 1,
+        "stopped": 1
+      },
+      "tasks": 2,
+      "tests_modified": 0
+    }
+  ],
+  "date": "2026-10-28T03:59:14+00:00",
+  "hardware": {
+    "arch": "x86_64",
+    "cpu_cores": 32,
+    "gpu_memory_gb": [
+      51.53,
+      48.31,
+      51.53,
+      51.53
+    ],
+    "gpus": 4,
+    "os": "Windows",
+    "ram_gb": 1098.43
+  },
+  "interval": {
+    "confidence": 0.95,
+    "resamples": 10000,
+    "seed": 0
+  },
+  "prices": null,
+  "results_file": "results.jsonl",
+  "router_pool": [
+    "tokenfactory/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+    "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+    "tokenfactory/nvidia/Nemotron-3_5-Lightning",
+    "tokenfactory/openai/gpt-oss-120b"
+  ],
+  "runs": 2,
+  "schema": 1,
+  "scoring": "passes when every acceptance command exits with 0 on a fresh copy with the run's diff applied and the suite's protected paths restored",
+  "seeds": [
+    0
+  ],
+  "sources": null,
+  "suite": "mini-general",
+  "tasks": 2,
+  "version": "0.1.0.dev0"
+}

@@ -1,0 +1,73 @@
+{
+  "command": "ssw bench run --suite mini-general --workers router --seeds 1 --tasks billing-month-end --router-pool tokenfactory/nvidia/Nemotron-3_5-Lightning,tokenfactory/nvidia/nemotron-3-super-120b-a12b,tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b,tokenfactory/openai/gpt-oss-120b --max-steps 60 --budget-usd 0.2 --budget-usd-total 0.2 --allow-remote --policy bench/policies/tokenfactory-cheapest-first.toml",
+  "commit": "c436b3345384",
+  "contestants": [
+    {
+      "cache_hit_rate": 0.5916266549536281,
+      "cached_input_tokens": 293632,
+      "ci": {
+        "confidence": 0.95,
+        "high": 1.0,
+        "low": 0.20654931437723745,
+        "method": "Wilson score interval over runs",
+        "resamples": 0
+      },
+      "contestant": "router",
+      "escalation_rate": 0.0,
+      "gpu_seconds": 0.0,
+      "input_tokens": 496313,
+      "median_hosted_tokens": 514904.0,
+      "median_tokens": 514904.0,
+      "median_uncached_tokens": 221272.0,
+      "median_wall_seconds": 170.094,
+      "output_tokens": 18591,
+      "pass_rate": 1.0,
+      "passed": 1,
+      "rank": 1,
+      "reference_cost": null,
+      "runs": 1,
+      "statuses": {
+        "done": 1
+      },
+      "tasks": 1,
+      "tests_modified": 0
+    }
+  ],
+  "date": "2026-10-28T03:48:55+00:00",
+  "hardware": {
+    "arch": "x86_64",
+    "cpu_cores": 32,
+    "gpu_memory_gb": [
+      51.53,
+      48.31,
+      51.53,
+      51.53
+    ],
+    "gpus": 4,
+    "os": "Windows",
+    "ram_gb": 1098.43
+  },
+  "interval": {
+    "confidence": 0.95,
+    "resamples": 10000,
+    "seed": 0
+  },
+  "prices": null,
+  "results_file": "results.jsonl",
+  "router_pool": [
+    "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+    "tokenfactory/nvidia/Nemotron-3_5-Lightning",
+    "tokenfactory/nvidia/nemotron-3-super-120b-a12b",
+    "tokenfactory/openai/gpt-oss-120b"
+  ],
+  "runs": 1,
+  "schema": 1,
+  "scoring": "passes when every acceptance command exits with 0 on a fresh copy with the run's diff applied and the suite's protected paths restored",
+  "seeds": [
+    0
+  ],
+  "sources": null,
+  "suite": "mini-general",
+  "tasks": 1,
+  "version": "0.1.0.dev0"
+}

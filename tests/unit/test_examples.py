@@ -137,6 +137,32 @@ def test_the_bench_ladder_policy_is_the_example_plus_hosted_science() -> None:
     assert bench == example
 
 
+@pytest.mark.parametrize(
+    ("policy", "first_model"),
+    [
+        ("tokenfactory-cheapest-first.toml", "nvidia/Nemotron-3_5-Lightning"),
+        ("tokenfactory-nano-first.toml", "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"),
+    ],
+)
+def test_the_escalation_demo_policies_change_only_who_works_first(
+    policy: str, first_model: str
+) -> None:
+    """The demo policies are the bench ladder with the work steps starting on a smaller model;
+    everything else, Ultra after an escalation included, is the ladder's."""
+    import tomllib
+
+    policies = ROOT / "bench" / "policies"
+    ladder = tomllib.loads((policies / "tokenfactory-ladder.toml").read_text("utf-8"))
+    demo = tomllib.loads((policies / policy).read_text("utf-8"))
+    ladder_rules, demo_rules = ladder["policy"].pop("rules"), demo["policy"].pop("rules")
+    assert demo == ladder
+    assert len(demo_rules) == len(ladder_rules) == 3
+    assert demo_rules[0] == ladder_rules[0]
+    assert demo_rules[1]["when"] == ladder_rules[1]["when"]
+    assert demo_rules[1]["to"] == {"model": first_model}
+    assert demo_rules[2] == ladder_rules[2]
+
+
 def test_slow_lane_workers_are_pin_only(tmp_path: Path) -> None:
     _root, config, catalog = load(tmp_path, "slow-lane")
     specs = {spec.id: spec for spec in catalog.specs()}
