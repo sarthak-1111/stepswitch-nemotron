@@ -1,0 +1,68 @@
+{
+  "command": "ssw bench run --suite mini-science --workers tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b --seeds 1 --tasks baseline-end-points --budget-usd 0.2 --budget-usd-total 0.2 --allow-remote --policy bench/policies/tokenfactory-ladder.toml",
+  "commit": "3802071091f8",
+  "contestants": [
+    {
+      "cache_hit_rate": 0.1607743174849459,
+      "cached_input_tokens": 34816,
+      "ci": {
+        "confidence": 0.95,
+        "high": 1.0,
+        "low": 0.20654931437723745,
+        "method": "Wilson score interval over runs",
+        "resamples": 0
+      },
+      "contestant": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+      "escalation_rate": 0.0,
+      "gpu_seconds": 0.0,
+      "input_tokens": 216552,
+      "median_hosted_tokens": 223284.0,
+      "median_tokens": 223284.0,
+      "median_uncached_tokens": 188468.0,
+      "median_wall_seconds": 158.36,
+      "output_tokens": 6732,
+      "pass_rate": 1.0,
+      "passed": 1,
+      "rank": 1,
+      "reference_cost": null,
+      "runs": 1,
+      "statuses": {
+        "stopped": 1
+      },
+      "tasks": 1,
+      "tests_modified": 0
+    }
+  ],
+  "date": "2026-10-28T10:49:05+00:00",
+  "hardware": {
+    "arch": "x86_64",
+    "cpu_cores": 32,
+    "gpu_memory_gb": [
+      51.53,
+      48.31,
+      51.53,
+      51.53
+    ],
+    "gpus": 4,
+    "os": "Windows",
+    "ram_gb": 1098.43
+  },
+  "interval": {
+    "confidence": 0.95,
+    "resamples": 10000,
+    "seed": 0
+  },
+  "prices": null,
+  "results_file": "results.jsonl",
+  "router_pool": null,
+  "runs": 1,
+  "schema": 1,
+  "scoring": "passes when every acceptance command exits with 0 on a fresh copy with the run's diff applied and the suite's protected paths restored",
+  "seeds": [
+    0
+  ],
+  "sources": null,
+  "suite": "mini-science",
+  "tasks": 1,
+  "version": "0.1.0.dev0"
+}
