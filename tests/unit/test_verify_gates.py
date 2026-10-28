@@ -756,6 +756,40 @@ def test_changed_files_come_from_git(repo: Path, fake: Path, tmp_path: Path) -> 
     assert calls(tmp_path) == [["format", "a.py", "new.py"]]  # b.py is gone
 
 
+def test_git_queries_take_long_paths_on_windows(monkeypatch: pytest.MonkeyPatch) -> None:
+    seen: list[list[str]] = []
+
+    def fake_run(argv: list[str], **_: Any) -> subprocess.CompletedProcess[bytes]:
+        seen.append(argv)
+        return subprocess.CompletedProcess(argv, 0, b"", b"")
+
+    monkeypatch.setattr(commands.subprocess, "run", fake_run)
+    commands.git(Path(), "rev-parse", "HEAD")
+    assert seen[0][1:] == [*commands.GIT_OPTIONS, "rev-parse", "HEAD"]
+    assert ("core.longpaths=true" in commands.GIT_OPTIONS) == (sys.platform == "win32")
+
+
+@needs_git
+@pytest.mark.skipif(sys.platform != "win32", reason="the 260-character limit is Git for Windows'")
+def test_the_base_commit_resolves_in_a_deep_checkout(tmp_path: Path) -> None:
+    # A bench task worktree sits deep enough that its git objects pass 260 characters: the
+    # base commit did not resolve, so the protected gate failed with an error (Ultra alone,
+    # whose contestant name is long, on every science task of a bench run).
+    repo = tmp_path
+    while len(str(repo)) < 220:
+        repo = repo / "deep-directory"
+    repo.mkdir(parents=True)
+    git(repo, "-c", "core.longpaths=true", "init", "-q")
+    write(repo, {"a.py": "x = 1\n"})
+    git(repo, "-c", "core.longpaths=true", "add", "-A")
+    git(repo, "-c", "core.longpaths=true", "commit", "-q", "-m", "base")
+    head = git(repo, "-c", "core.longpaths=true", "rev-parse", "HEAD").strip()
+    assert max(len(str(p)) for p in (repo / ".git").rglob("*")) > 260
+    assert commands.resolve_commit(repo, head) == head
+    write(repo, {"a.py": "x = 2\n"})
+    assert commands.changed_files(repo, head) == ["a.py"]
+
+
 def test_project_python_resolution(tmp_path: Path) -> None:
     repo = tmp_path
     assert commands.project_python(repo) == sys.executable

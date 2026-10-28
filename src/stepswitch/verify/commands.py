@@ -48,6 +48,10 @@ PROBE_TIMEOUT = 60.0
 PROBE_MODULES = ("ruff", "mypy", "pytest", "testmon", "jupytext")
 KEY_PACKAGES = ("numpy", "scipy", "pandas")
 _NO_WINDOW: int = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+# Git for Windows stops at 260 characters unless told otherwise, and a bench task's worktree
+# sits several directories deep: its objects were "Filename too long", so the base commit did
+# not resolve and the protected gate failed with an error. Other platforms have no such limit.
+GIT_OPTIONS: tuple[str, ...] = ("-c", "core.longpaths=true") if sys.platform == "win32" else ()
 _ANSI_RE = re.compile(r"\x1b\[[0-9;?]*[ -/]*[@-~]")
 # Directories that hold no project source: environments, caches, build output, VCS data.
 SKIP_DIRS = frozenset(
@@ -254,7 +258,7 @@ def git(repo: Path, *args: str, timeout: float = 60.0) -> subprocess.CompletedPr
         return None
     try:
         return subprocess.run(
-            [program, *args],
+            [program, *GIT_OPTIONS, *args],
             cwd=repo,
             stdin=subprocess.DEVNULL,
             capture_output=True,

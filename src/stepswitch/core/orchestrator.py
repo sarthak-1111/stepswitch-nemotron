@@ -79,9 +79,11 @@ def _ensure_state_dir(root: Path) -> Path:
 
 def repo_overview(path: Path, test_command: list[str] | None, limit: int = OVERVIEW_FILES) -> str:
     """A short description of the checkout for the agent's prompt: test command and files."""
+    from stepswitch.verify.commands import GIT_OPTIONS
+
     try:
         listed = subprocess.run(
-            ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+            ["git", *GIT_OPTIONS, "ls-files", "--cached", "--others", "--exclude-standard"],
             cwd=path,
             capture_output=True,
             text=True,
