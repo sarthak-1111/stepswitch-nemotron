@@ -368,6 +368,55 @@ def test_old_text_copied_with_read_prefixes_is_taken_when_the_hashes_agree(tmp_p
     assert path.read_text(encoding="utf-8") == source
 
 
+def test_read_prefixes_in_new_text_are_not_written_into_the_file(tmp_path: Path) -> None:
+    # Recorded: an anchored replace whose text kept read's row prefix, once or twice, wrote
+    # `4:zw|4:dd|def format_duration(...)` into a module, and every import of it failed.
+    source = "import math\n\n\ndef format_duration(minutes):\n    return f'{minutes} min'\n"
+    path = tmp_path / "fmt.py"
+    path.write_text(source, encoding="utf-8")
+    hashes = E.line_hashes(source.split("\n"))
+    anchor = f"4:{hashes[3]}"
+    done = E.edit_file(
+        path,
+        edits=[
+            {
+                "start": anchor,
+                "end": f"5:{hashes[4]}",
+                "text": f"4:zz|{anchor}|def format_duration(minutes: int) -> str:\n"
+                "    return f'{minutes // 60}h {minutes % 60:02d}m'",
+            }
+        ],
+    )
+    assert path.read_text(encoding="utf-8").splitlines()[3:] == [
+        "def format_duration(minutes: int) -> str:",
+        "    return f'{minutes // 60}h {minutes % 60:02d}m'",
+    ]
+    assert done.notes and "prefixes from 1 line" in done.notes[0]
+    # Whole new content with every row prefixed, as read showed it.
+    pairs = zip(hashes, source.split("\n"), strict=True)
+    rows = "\n".join(f"{n}:{h}|{line}" for n, (h, line) in enumerate(pairs, 1))
+    E.edit_file(path, text=rows.rsplit("\n", 1)[0])
+    assert path.read_text(encoding="utf-8") == source
+    # Left alone: the bare `ab|` form (a shell pipe) and an unverified prefix in mixed text.
+    script = tmp_path / "run.sh"
+    script.write_text("echo start\n", encoding="utf-8")
+    first = f"1:{E.line_hashes(['echo start'])[0]}"
+    kept = E.edit_file(
+        script, edits=[{"start": first, "text": "ps|grep python\n12:zz|literal\necho done"}]
+    )
+    assert script.read_text(encoding="utf-8") == "ps|grep python\n12:zz|literal\necho done\n"
+    assert kept.notes == []
+
+
+def test_the_edit_tool_says_when_it_removed_read_prefixes(box: T.Toolbox, root: Path) -> None:
+    rows = box.execute("read", {"path": "pkg/twins.py"}).text.split("\n")[1:3]
+    done = edit(box, {"path": "pkg/twins.py", "text": "\n".join(rows)})
+    assert not done.is_error, done.text
+    assert done.text.startswith("[removed read's `line:hash|` prefixes from 2 lines")
+    assert done.data["notes"]
+    assert "|" not in (root / "pkg" / "twins.py").read_text(encoding="utf-8").split("\n")[0]
+
+
 def test_new_without_old_never_replaces_a_whole_file(box: T.Toolbox, root: Path) -> None:
     refused = edit(box, {"path": "pager.py", "new": FIXED_LINE})
     assert refused.is_error and "`new` needs `old`" in refused.text

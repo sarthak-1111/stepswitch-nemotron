@@ -1250,6 +1250,9 @@ class Toolbox:
                 f"(now {result.total_lines} lines)\n{diff}\n"
                 f"updated lines with fresh anchors:\n{result.preview}"
             )
+        if result.notes:
+            data["notes"] = list(result.notes)
+            text = "".join(f"[{note}]\n" for note in result.notes) + text
         if asked is not None:
             data["asked"] = asked
             note = f"[{asked} does not exist: the edit went to {rel}, the only file of that name]"

@@ -25,7 +25,7 @@ import shutil
 import time
 from collections import defaultdict
 from collections.abc import Mapping, MutableMapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -1048,6 +1048,52 @@ class EditResult:
     total_lines: int = 0
     preview: str = ""  # changed regions with fresh anchors
     regions: list[tuple[int, int]] = field(default_factory=list)
+    notes: list[str] = field(default_factory=list)  # what was read differently from what was sent
+
+
+_ROW_PREFIX = re.compile(rf"[Ll]?(\d+)\s*[:#]\s*([A-Za-z]{{{HASH_LEN}}})\|")
+
+
+def _row_prefix(line: str) -> tuple[int, list[tuple[int, str]]]:
+    """The length of read's row prefixes at the start of a line (`12:ab|`, now and then twice,
+    `12:ab|12:ab|`) and their (line, hash) pairs."""
+    at, pairs = 0, []
+    while match := _ROW_PREFIX.match(line, at):
+        pairs.append((int(match.group(1)), match.group(2).lower()))
+        at = match.end()
+    return at, pairs
+
+
+def strip_row_prefixes(lines: Sequence[str], hashes: Sequence[str]) -> tuple[list[str], int]:
+    """New text copied from read output with the rows' `12:ab|` prefixes, which would otherwise
+    be written into the file and break it (recorded: `4:dd|def format_duration(...)` in a Python
+    module). A line's prefixes are removed when one of them names a line of the file with the
+    hash read shows for it, or when every non-blank line of the text has them. The bare form
+    `ab|` is left alone in new text: `ps|grep` is a shell line. Returns the lines and how many
+    changed."""
+    found = [_row_prefix(line) for line in lines]
+    filled = [i for i, line in enumerate(lines) if line.strip()]
+    every = bool(filled) and all(found[i][0] for i in filled)
+    out: list[str] = []
+    changed = 0
+    for line, (size, pairs) in zip(lines, found, strict=True):
+        known = any(1 <= n <= len(hashes) and hashes[n - 1] == h for n, h in pairs)
+        if size and (every or known):
+            out.append(line[size:])
+            changed += 1
+        else:
+            out.append(line)
+    return out, changed
+
+
+def _prefix_note(count: int) -> list[str]:
+    if not count:
+        return []
+    rows = "line" if count == 1 else "lines"
+    return [
+        f"removed read's `line:hash|` prefixes from {count} {rows} of the new text: they "
+        "show where a line is, they are not part of it"
+    ]
 
 
 def _preview(doc: TextDoc, regions: list[tuple[int, int]], seen: Seen | None) -> str:
@@ -1138,11 +1184,14 @@ def edit_file(
             raise EditError(
                 f"{display} does not exist; to create it pass `create: true` and `text`"
             )
-        new = TextDoc.from_lines(text_lines(text))
+        lines, stripped = strip_row_prefixes(text_lines(text), [])
+        new = TextDoc.from_lines(lines)
         path.parent.mkdir(parents=True, exist_ok=True)
         atomic_write(path, new.encode())
         regions = [(1, len(new.lines))] if new.lines else []
-        return _result(display, TextDoc([], []), new, regions, created=True, seen=seen)
+        result = _result(display, TextDoc([], []), new, regions, created=True, seen=seen)
+        result.notes = _prefix_note(stripped)
+        return result
     if not exists:
         raise EditError(f"{display} does not exist; to create it pass `create: true` and `text`")
     if path.is_dir():
@@ -1150,6 +1199,8 @@ def edit_file(
     if not os.access(path, os.W_OK):
         raise EditError(f"{display} is read-only")
     old = TextDoc.decode(path.read_bytes(), display)
+    hashes = line_hashes(old.lines)
+    stripped = 0
     if edits is None:
         if text is None:
             raise EditError(f"nothing to do: give `edits` with anchors from read, e.g. [{EXAMPLE}]")
@@ -1158,13 +1209,20 @@ def edit_file(
                 f"{display} has {len(old.lines)} lines; replacing a whole file is only allowed "
                 f"up to {small_file_lines} lines. Use anchored edits instead, e.g. [{EXAMPLE}]"
             )
-        new = TextDoc(text_lines(text), [], old.newline, old.bom)
+        lines, stripped = strip_row_prefixes(text_lines(text), hashes)
+        new = TextDoc(lines, [], old.newline, old.bom)
         new.endings = [old.newline] * len(new.lines)
         _fix_endings(new, final_newline=old.final_newline or not old.lines)
         regions = [(1, len(new.lines))] if new.lines else []
     else:
-        new, regions = apply_ops(old, parse_edits(edits), seen=seen)
+        ops = []
+        for op in parse_edits(edits):
+            lines, count = strip_row_prefixes(op.lines, hashes)
+            stripped += count
+            ops.append(replace(op, lines=tuple(lines)) if count else op)
+        new, regions = apply_ops(old, ops, seen=seen)
     result = _result(display, old, new, regions, created=False, seen=seen)
+    result.notes = _prefix_note(stripped)
     if result.changed:
         atomic_write(path, new.encode())
     return result
