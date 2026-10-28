@@ -1,0 +1,316 @@
+{
+  "schema": 1,
+  "kind": "stepswitch-probe-result",
+  "date": "2026-10-28",
+  "model": "openai/gpt-oss-120b",
+  "model_hash": null,
+  "model_hash_source": null,
+  "engine": null,
+  "engine_version": null,
+  "format": "chat-completions",
+  "tool_parser": null,
+  "endpoint": {
+    "scheme": "https",
+    "local": false
+  },
+  "quick": false,
+  "hardware": {
+    "os": {
+      "system": "Windows",
+      "machine": "AMD64"
+    },
+    "cpu": {
+      "cores_physical": 16,
+      "cores_logical": 32
+    },
+    "ram_gb": 1098.43,
+    "gpus": [
+      {
+        "vram_gb": 51.53,
+        "backend": "cuda"
+      },
+      {
+        "vram_gb": 48.31,
+        "backend": "cuda"
+      },
+      {
+        "vram_gb": 51.53,
+        "backend": "cuda"
+      },
+      {
+        "vram_gb": 51.53,
+        "backend": "cuda"
+      }
+    ]
+  },
+  "checks": {
+    "basic_chat": {
+      "ok": true,
+      "seconds": 1.157,
+      "detail": "replied 'pong'",
+      "data": {
+        "latency_s": 0.682,
+        "finish_reason": "stop"
+      }
+    },
+    "system_prompt": {
+      "ok": true,
+      "seconds": 0.55,
+      "detail": "followed the system prompt: 'MANGO-17'"
+    },
+    "native_tool_call": {
+      "ok": true,
+      "seconds": 0.592,
+      "detail": "called get_weather({\"city\": \"Paris\"})",
+      "data": {
+        "calls": [
+          "get_weather"
+        ],
+        "finish_reason": "tool_calls"
+      }
+    },
+    "parallel_tool_calls": {
+      "ok": false,
+      "seconds": 0.725,
+      "detail": "one call per reply (get_weather({\"city\": \"Paris\"}))",
+      "data": {
+        "calls": [
+          "get_weather"
+        ]
+      }
+    },
+    "fallback_tool_protocol": {
+      "ok": false,
+      "seconds": 0.809,
+      "detail": "a valid action, but a final answer instead of the tool",
+      "data": {
+        "constrained": true,
+        "honoured": true,
+        "valid_first_try": true,
+        "repaired": false
+      }
+    },
+    "json_schema": {
+      "ok": true,
+      "seconds": 0.732,
+      "detail": "schema-valid JSON",
+      "data": {
+        "constrained": true,
+        "exact": true
+      }
+    },
+    "streaming": {
+      "ok": true,
+      "seconds": 0.699,
+      "detail": "6 text chunks, first after 371.8 ms",
+      "data": {
+        "ttft_ms": 371.8,
+        "text_deltas": 6,
+        "finish_reason": "stop"
+      }
+    },
+    "usage": {
+      "ok": true,
+      "seconds": 0.0,
+      "detail": "token counts in non-streaming and streaming replies",
+      "data": {
+        "non_streaming": true,
+        "streaming": true,
+        "example": {
+          "input_tokens": 74,
+          "output_tokens": 54,
+          "cached_input_tokens": 64
+        }
+      }
+    },
+    "reasoning_field": {
+      "ok": true,
+      "seconds": 0.0,
+      "detail": "reasoning in 'reasoning'",
+      "data": {
+        "field": "reasoning",
+        "needs_effort": false
+      }
+    },
+    "context_length": {
+      "ok": true,
+      "seconds": 5.599,
+      "detail": "found the needle at 14463 prompt tokens",
+      "data": {
+        "limit": null,
+        "limit_source": null,
+        "results": [
+          {
+            "target": 2048,
+            "input_tokens": 1910,
+            "found": true,
+            "seconds": 0.67
+          },
+          {
+            "target": 4096,
+            "input_tokens": 3710,
+            "found": true,
+            "seconds": 0.93
+          },
+          {
+            "target": 8192,
+            "input_tokens": 7304,
+            "found": true,
+            "seconds": 2.3
+          },
+          {
+            "target": 16384,
+            "input_tokens": 14463,
+            "found": true,
+            "seconds": 1.7
+          }
+        ],
+        "ok_tokens": 14463
+      }
+    },
+    "prefix_cache": {
+      "ok": true,
+      "seconds": 0.924,
+      "detail": "1232 of 1251 prompt tokens came from the cache",
+      "data": {
+        "cold_input": 1252,
+        "warm_input": 1251,
+        "warm_cached": 1232,
+        "cold_ttft_ms": 430.0,
+        "warm_ttft_ms": 365.1,
+        "speedup": 1.18,
+        "source": "usage",
+        "cached_share": 0.985
+      }
+    },
+    "throughput": {
+      "ok": true,
+      "seconds": 0.708,
+      "detail": "prefill 2763 tok/s (client), decode 353.8 tok/s (client)",
+      "data": {
+        "prefill_tps": 2763.0,
+        "decode_tps": 353.8,
+        "ttft_ms": 348.8,
+        "sources": {
+          "prefill_tps": "client",
+          "decode_tps": "client"
+        },
+        "prefill_tokens": 1252,
+        "decode_tokens": 128
+      }
+    },
+    "tool_call_ids": {
+      "ok": true,
+      "seconds": 0.0,
+      "detail": "server ids on all 3 calls",
+      "data": {
+        "source": "server",
+        "calls": 3,
+        "synthesized": 0
+      }
+    },
+    "forced_tool_choice": {
+      "ok": false,
+      "seconds": 0.642,
+      "detail": "tool_choice ignored: called get_weather",
+      "data": {
+        "forced": "get_time",
+        "calls": [
+          "get_weather"
+        ]
+      }
+    },
+    "assistant_prefill": {
+      "ok": false,
+      "seconds": 0.575,
+      "detail": "started a new reply instead of continuing",
+      "data": {
+        "reply": "'1, 2, 3, 4, 5, 6, 7, 8, 9, 10'",
+        "echoes_prefix": false
+      }
+    },
+    "streamed_tool_args": {
+      "ok": true,
+      "seconds": 0.808,
+      "detail": "streamed get_weather({ \"city\": \"Paris\" }) (in fragments)",
+      "data": {
+        "calls": [
+          "get_weather"
+        ],
+        "argument_fragments": 3,
+        "incremental": true
+      }
+    },
+    "structured_output_under_reasoning": {
+      "ok": true,
+      "seconds": 0.725,
+      "detail": "reasoned, then answered with schema-valid JSON",
+      "data": {
+        "reasoning_kept": true,
+        "schema_valid": true
+      }
+    },
+    "reasoning_retention": {
+      "ok": true,
+      "seconds": 2.323,
+      "detail": "policy keep-for-tool-turns",
+      "data": {
+        "policy": "keep-for-tool-turns",
+        "prompt_delta_after_user": 0,
+        "prompt_delta_in_tool_turn": 33
+      }
+    },
+    "usage_semantics": {
+      "ok": null,
+      "seconds": 0.85,
+      "detail": "no cached tokens reported for a repeated prompt; unknown",
+      "data": {
+        "cold_input": 328,
+        "warm_input": 328,
+        "cold_cached": 64,
+        "warm_cached": 64,
+        "includes_cached": null
+      }
+    },
+    "formats_served": {
+      "ok": true,
+      "seconds": 1.823,
+      "detail": "chat-completions",
+      "data": {
+        "evidence": {
+          "chat-completions": "GET /v1/models"
+        },
+        "engine": null,
+        "health": 200
+      }
+    }
+  },
+  "capabilities": {
+    "native_tools": true,
+    "parallel_tools": false,
+    "streamed_tool_args": true,
+    "tool_call_ids": "server",
+    "forced_tool_choice": false,
+    "assistant_prefill": false,
+    "json_schema": true,
+    "fallback_tools": false,
+    "streaming": true,
+    "usage": true,
+    "usage_includes_cached": null,
+    "reasoning_field": "reasoning",
+    "reasoning_retention": true,
+    "context_ok_tokens": 14463,
+    "prefix_cache": true
+  },
+  "throughput": {
+    "prefill_tps": 2763.0,
+    "decode_tps": 353.8,
+    "ttft_ms": 348.8,
+    "sources": {
+      "prefill_tps": "client",
+      "decode_tps": "client"
+    },
+    "prefill_tokens": 1252,
+    "decode_tokens": 128
+  }
+}

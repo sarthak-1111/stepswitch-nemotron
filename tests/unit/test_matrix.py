@@ -169,3 +169,20 @@ def test_a_check_that_never_got_an_answer_shows_as_error(tmp_path: Path) -> None
     assert (loaded.shown("json_schema"), loaded.shown("streaming")) == ("error", "no")
     assert (loaded.shown("basic_chat"), loaded.shown("parallel_tool_calls")) == ("yes", "skipped")
     assert "| JSON Schema output | error |" in matrix.render(root)
+
+
+def test_a_hosted_result_names_its_provider_and_no_hardware(tmp_path: Path) -> None:
+    hosted = result(
+        "nvidia/Nemotron-3-Ultra-550b-a55b",
+        PASSING,
+        engine=None,
+        engine_version=None,
+        endpoint={"scheme": "https", "local": False},
+    )
+    root = make_root(tmp_path, {"nemotron-3-ultra-550b-a55b--tokenfactory.json": hosted})
+    loaded = matrix.load_results(root)[0]
+    assert loaded.hosted
+    text = matrix.render(root)
+    row = next(line for line in text.splitlines() if line.startswith("| nvidia/"))
+    assert "| nemotron | hosted: Token Factory |" in row
+    assert "| `nemotron-3-ultra-550b-a55b--tokenfactory.json` | hosted endpoint |" in text

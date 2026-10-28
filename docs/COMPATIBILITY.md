@@ -23,31 +23,36 @@ a failure.
 | phi-3.5-mini-instruct | phi3.5 | llamacpp b11669-620d2225c | chat-completions | passes | fallback | `phi-3.5-mini-instruct--llamacpp.json` | 2026-10-16 |
 | smollm2-1.7b-instruct | smollm2 | llamacpp b11669-620d2225c | chat-completions | passes | fallback | `smollm2-1.7b-instruct--llamacpp.json` | 2026-10-16 |
 | granite-3.3-2b-instruct | granite3.3 | llamacpp b11669-620d2225c | chat-completions | passes | native, parsed from text (`granite`) | `granite-3.3-2b-instruct--llamacpp.json` | 2026-10-16 |
+| nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B | nemotron | hosted: Token Factory | chat-completions | passes | native | `nemotron-3-nano-30b-a3b--tokenfactory.json` | 2026-10-28 |
+| nvidia/Nemotron-3-Ultra-550b-a55b | nemotron | hosted: Token Factory | chat-completions | passes | native | `nemotron-3-ultra-550b-a55b--tokenfactory.json` | 2026-10-28 |
+| nvidia/Nemotron-3_5-Lightning | nemotron | hosted: Token Factory | chat-completions | fails: system_prompt | native | `nemotron-3_5-lightning--tokenfactory.json` | 2026-10-28 |
+| nvidia/nemotron-3-super-120b-a12b | nemotron | hosted: Token Factory | chat-completions | passes | native | `nemotron-3-super-120b-a12b--tokenfactory.json` | 2026-10-28 |
+| openai/gpt-oss-120b | gpt-oss | hosted: Token Factory | chat-completions | passes | native | `gpt-oss-120b--tokenfactory.json` | 2026-10-28 |
 
 ## Checks
 
-| Check | qwen3-4b-instruct-2507 | phi-3.5-mini-instruct | smollm2-1.7b-instruct | granite-3.3-2b-instruct |
-|---|---|---|---|---|
-| basic chat | yes | yes | yes | yes |
-| system prompt | yes | yes | yes | yes |
-| native tool call | yes | no | no | yes |
-| parallel tool calls | yes | no | no | yes |
-| fallback tool protocol | yes | yes | yes | no |
-| JSON Schema output | yes | error | yes | yes |
-| streaming | yes | yes | yes | yes |
-| usage reporting | yes | yes | yes | yes |
-| reasoning field | yes | no | no | yes |
-| context length | yes | yes | yes | yes |
-| prefix cache | yes | yes | yes | yes |
-| throughput | yes | yes | yes | yes |
-| tool-call IDs | yes | skipped | skipped | no |
-| forced tool choice | no | no | no | no |
-| assistant prefill | yes | yes | yes | yes |
-| streamed tool arguments | yes | no | no | yes |
-| structured output with reasoning | yes | skipped | skipped | error |
-| reasoning retention | skipped | skipped | skipped | skipped |
-| usage semantics | yes | yes | yes | yes |
-| formats served | yes | yes | yes | yes |
+| Check | qwen3-4b-instruct-2507 | phi-3.5-mini-instruct | smollm2-1.7b-instruct | granite-3.3-2b-instruct | nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B | nvidia/Nemotron-3-Ultra-550b-a55b | nvidia/Nemotron-3_5-Lightning | nvidia/nemotron-3-super-120b-a12b | openai/gpt-oss-120b |
+|---|---|---|---|---|---|---|---|---|---|
+| basic chat | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| system prompt | yes | yes | yes | yes | yes | yes | no | yes | yes |
+| native tool call | yes | no | no | yes | yes | yes | yes | yes | yes |
+| parallel tool calls | yes | no | no | yes | yes | yes | yes | yes | no |
+| fallback tool protocol | yes | yes | yes | no | yes | yes | yes | yes | no |
+| JSON Schema output | yes | error | yes | yes | yes | yes | yes | yes | yes |
+| streaming | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| usage reporting | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| reasoning field | yes | no | no | yes | yes | yes | yes | yes | yes |
+| context length | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| prefix cache | yes | yes | yes | yes | no | no | no | no | yes |
+| throughput | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| tool-call IDs | yes | skipped | skipped | no | yes | yes | yes | yes | yes |
+| forced tool choice | no | no | no | no | yes | yes | yes | yes | no |
+| assistant prefill | yes | yes | yes | yes | no | yes | no | no | no |
+| streamed tool arguments | yes | no | no | yes | yes | yes | yes | yes | yes |
+| structured output with reasoning | yes | skipped | skipped | error | yes | yes | yes | yes | yes |
+| reasoning retention | skipped | skipped | skipped | skipped | yes | yes | skipped | yes | yes |
+| usage semantics | yes | yes | yes | yes | skipped | skipped | skipped | yes | skipped |
+| formats served | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 
 "skipped" means the check did not apply or was not run; "error" means it could not
 complete (a timeout or a failed request), so the capability is unknown.
@@ -60,3 +65,8 @@ complete (a timeout or a failed request), so the capability is unknown.
 | `phi-3.5-mini-instruct--llamacpp.json` | Windows | AMD64 | 32 | 1098.43 | 4 (51.53 GB, 48.31 GB, 51.53 GB, 51.53 GB) |
 | `smollm2-1.7b-instruct--llamacpp.json` | Windows | AMD64 | 32 | 1098.43 | 4 (51.53 GB, 48.31 GB, 51.53 GB, 51.53 GB) |
 | `granite-3.3-2b-instruct--llamacpp.json` | Windows | AMD64 | 32 | 1098.43 | 4 (51.53 GB, 48.31 GB, 51.53 GB, 51.53 GB) |
+| `nemotron-3-nano-30b-a3b--tokenfactory.json` | hosted endpoint | - | - | - | - |
+| `nemotron-3-ultra-550b-a55b--tokenfactory.json` | hosted endpoint | - | - | - | - |
+| `nemotron-3_5-lightning--tokenfactory.json` | hosted endpoint | - | - | - | - |
+| `nemotron-3-super-120b-a12b--tokenfactory.json` | hosted endpoint | - | - | - | - |
+| `gpt-oss-120b--tokenfactory.json` | hosted endpoint | - | - | - | - |

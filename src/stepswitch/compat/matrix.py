@@ -77,6 +77,8 @@ class ProbeResult:
     tool_parser: str | None = None
     hardware: dict[str, Any] = field(default_factory=dict)
     checks: dict[str, dict[str, Any]] = field(default_factory=dict)
+    # Probed on a hosted endpoint (the export's `endpoint.local` is false).
+    hosted: bool = False
 
     def ok(self, check: str) -> bool | None:
         value = (self.checks.get(check) or {}).get("ok")
@@ -137,6 +139,7 @@ def load_result(path: Path) -> ProbeResult:
         model_hash=data.get("model_hash"),
         tool_parser=data["tool_parser"] if isinstance(data.get("tool_parser"), str) else None,
         hardware=dict(data.get("hardware") or {}),
+        hosted=(data.get("endpoint") or {}).get("local") is False,
         checks={k: dict(v) for k, v in data["checks"].items() if isinstance(v, dict)},
     )
 
@@ -198,11 +201,19 @@ def _hardware_text(hardware: Mapping[str, Any]) -> list[str]:
     ]
 
 
+def _provider(result: ProbeResult, known: Mapping[str, Any]) -> Any:
+    """The hosted provider a result was probed on: `<model>--<provider id>.json` (ADR 0044)."""
+    if not result.hosted:
+        return None
+    return known.get(result.path.stem.rsplit("--", 1)[-1])
+
+
 def render(root: Path) -> str:
     """The text of `docs/COMPATIBILITY.md` for the results in `probes/`."""
-    from stepswitch import registry
+    from stepswitch import providers, registry
 
     entries = registry.load()
+    hosts = providers.load()
     try:
         ci_models = load_ci_set(root).models
     except (OSError, MatrixError):
@@ -235,11 +246,18 @@ def render(root: Path) -> str:
         lines.append("| _no probe results yet_ | | | | | | | |")
     for result in results:
         entry = entries.get(result.model)
+        host = _provider(result, hosts)
+        family = entry.family if entry and entry.family else None
+        if family is None and host is not None:
+            family = host.model_table(result.model).get("family")
+        engine = _engine_text(result)
+        if engine == "-" and host is not None:
+            engine = f"hosted: {host.title}"
         outcome = verdict(result)
         suite = "passes" if outcome.passed else "fails: " + ", ".join(outcome.failed)
         lines.append(
-            f"| {result.model} | {entry.family if entry and entry.family else '-'}"
-            f" | {_engine_text(result)} | {result.format or '-'} | {suite}"
+            f"| {result.model} | {family or '-'}"
+            f" | {engine} | {result.format or '-'} | {suite}"
             f" | {_tool_text(outcome, result)} | `{result.path.name}` | {result.date or '-'} |"
         )
     if results:
@@ -260,7 +278,11 @@ def render(root: Path) -> str:
             "|---|---|---|---|---|---|",
         ]
         for result in results:
-            cells = _hardware_text(result.hardware)
+            if result.hosted:
+                # The model ran on the provider's servers; the probing machine says nothing.
+                cells = ["hosted endpoint", "-", "-", "-", "-"]
+            else:
+                cells = _hardware_text(result.hardware)
             lines.append(f"| `{result.path.name}` | " + " | ".join(cells) + " |")
     return "\n".join(lines) + "\n"
 

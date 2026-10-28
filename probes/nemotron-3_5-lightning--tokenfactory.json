@@ -1,0 +1,317 @@
+{
+  "schema": 1,
+  "kind": "stepswitch-probe-result",
+  "date": "2026-10-28",
+  "model": "nvidia/Nemotron-3_5-Lightning",
+  "model_hash": null,
+  "model_hash_source": null,
+  "engine": null,
+  "engine_version": null,
+  "format": "chat-completions",
+  "tool_parser": null,
+  "endpoint": {
+    "scheme": "https",
+    "local": false
+  },
+  "quick": false,
+  "hardware": {
+    "os": {
+      "system": "Windows",
+      "machine": "AMD64"
+    },
+    "cpu": {
+      "cores_physical": 16,
+      "cores_logical": 32
+    },
+    "ram_gb": 1098.43,
+    "gpus": [
+      {
+        "vram_gb": 51.53,
+        "backend": "cuda"
+      },
+      {
+        "vram_gb": 48.31,
+        "backend": "cuda"
+      },
+      {
+        "vram_gb": 51.53,
+        "backend": "cuda"
+      },
+      {
+        "vram_gb": 51.53,
+        "backend": "cuda"
+      }
+    ]
+  },
+  "checks": {
+    "basic_chat": {
+      "ok": true,
+      "seconds": 0.606,
+      "detail": "replied 'Here\\'s a thinking process: 1. **Analyze User Input:** The user says \"Reply wi...'",
+      "data": {
+        "latency_s": 0.602,
+        "finish_reason": "length"
+      }
+    },
+    "system_prompt": {
+      "ok": false,
+      "seconds": 0.625,
+      "detail": "the reply lacks the code word from the system prompt: 'Here\\'s a thinking process: 1. **Analyze User Input:** The user is asking \"Wha...'"
+    },
+    "native_tool_call": {
+      "ok": true,
+      "seconds": 0.587,
+      "detail": "called get_weather({\"city\":\"Paris\"})",
+      "data": {
+        "calls": [
+          "get_weather"
+        ],
+        "finish_reason": "tool_calls"
+      }
+    },
+    "parallel_tool_calls": {
+      "ok": true,
+      "seconds": 0.696,
+      "detail": "2 calls in one reply",
+      "data": {
+        "calls": [
+          "get_weather",
+          "get_time"
+        ]
+      }
+    },
+    "fallback_tool_protocol": {
+      "ok": true,
+      "seconds": 1.4,
+      "detail": "called get_weather({\"city\": \"Paris\"}) through a JSON action (constrained decoding honoured)",
+      "data": {
+        "constrained": true,
+        "honoured": true,
+        "valid_first_try": true,
+        "repaired": false
+      }
+    },
+    "json_schema": {
+      "ok": true,
+      "seconds": 2.415,
+      "detail": "schema-valid JSON",
+      "data": {
+        "constrained": true,
+        "exact": true
+      }
+    },
+    "streaming": {
+      "ok": true,
+      "seconds": 0.757,
+      "detail": "one text chunk, first after 425.6 ms",
+      "data": {
+        "ttft_ms": 425.6,
+        "text_deltas": 1,
+        "finish_reason": "length"
+      }
+    },
+    "usage": {
+      "ok": true,
+      "seconds": 0.0,
+      "detail": "token counts in non-streaming and streaming replies",
+      "data": {
+        "non_streaming": true,
+        "streaming": true,
+        "example": {
+          "input_tokens": 24,
+          "output_tokens": 32,
+          "cached_input_tokens": 0
+        }
+      }
+    },
+    "reasoning_field": {
+      "ok": true,
+      "seconds": 0.0,
+      "detail": "reasoning in 'reasoning_content'",
+      "data": {
+        "field": "reasoning_content",
+        "needs_effort": false
+      }
+    },
+    "context_length": {
+      "ok": true,
+      "seconds": 6.631,
+      "detail": "found the needle at 14956 prompt tokens",
+      "data": {
+        "limit": null,
+        "limit_source": null,
+        "results": [
+          {
+            "target": 2048,
+            "input_tokens": 1944,
+            "found": true,
+            "seconds": 1.32
+          },
+          {
+            "target": 4096,
+            "input_tokens": 3804,
+            "found": true,
+            "seconds": 1.72
+          },
+          {
+            "target": 8192,
+            "input_tokens": 7516,
+            "found": true,
+            "seconds": 1.55
+          },
+          {
+            "target": 16384,
+            "input_tokens": 14956,
+            "found": true,
+            "seconds": 2.03
+          }
+        ],
+        "ok_tokens": 14956
+      }
+    },
+    "prefix_cache": {
+      "ok": false,
+      "seconds": 0.974,
+      "detail": "only 0 of 1434 prompt tokens came from the cache",
+      "data": {
+        "cold_input": 1435,
+        "warm_input": 1434,
+        "warm_cached": 0,
+        "cold_ttft_ms": 407.6,
+        "warm_ttft_ms": 404.3,
+        "speedup": 1.01,
+        "source": "usage",
+        "cached_share": 0.0
+      }
+    },
+    "throughput": {
+      "ok": true,
+      "seconds": 0.916,
+      "detail": "prefill 3520 tok/s (client), decode 247.8 tok/s (client)",
+      "data": {
+        "prefill_tps": 3520.3,
+        "decode_tps": 247.8,
+        "ttft_ms": 403.6,
+        "sources": {
+          "prefill_tps": "client",
+          "decode_tps": "client"
+        },
+        "prefill_tokens": 1435,
+        "decode_tokens": 128
+      }
+    },
+    "tool_call_ids": {
+      "ok": true,
+      "seconds": 0.0,
+      "detail": "server ids on all 4 calls",
+      "data": {
+        "source": "server",
+        "calls": 4,
+        "synthesized": 0
+      }
+    },
+    "forced_tool_choice": {
+      "ok": true,
+      "seconds": 0.667,
+      "detail": "the named tool get_time was called",
+      "data": {
+        "forced": "get_time",
+        "calls": [
+          "get_time"
+        ]
+      }
+    },
+    "assistant_prefill": {
+      "ok": false,
+      "seconds": 1.508,
+      "detail": "started a new reply instead of continuing",
+      "data": {
+        "reply": "'1, 2, 3, 4, 5, 6, 7, 8, 9, 10'",
+        "echoes_prefix": false
+      }
+    },
+    "streamed_tool_args": {
+      "ok": true,
+      "seconds": 0.607,
+      "detail": "streamed get_weather({\"city\":\"Paris\"}) (whole)",
+      "data": {
+        "calls": [
+          "get_weather"
+        ],
+        "argument_fragments": 1,
+        "incremental": false
+      }
+    },
+    "structured_output_under_reasoning": {
+      "ok": true,
+      "seconds": 2.216,
+      "detail": "reasoned, then answered with schema-valid JSON",
+      "data": {
+        "reasoning_kept": true,
+        "schema_valid": true
+      }
+    },
+    "reasoning_retention": {
+      "ok": null,
+      "seconds": 1.957,
+      "detail": "earlier reasoning is dropped after a new user message; no tool turn with reasoning to test",
+      "data": {
+        "policy": null,
+        "prompt_delta_after_user": 0,
+        "prompt_delta_in_tool_turn": null
+      }
+    },
+    "usage_semantics": {
+      "ok": null,
+      "seconds": 0.967,
+      "detail": "no cached tokens reported for a repeated prompt; unknown",
+      "data": {
+        "cold_input": 298,
+        "warm_input": 298,
+        "cold_cached": 0,
+        "warm_cached": 0,
+        "includes_cached": null
+      }
+    },
+    "formats_served": {
+      "ok": true,
+      "seconds": 2.424,
+      "detail": "chat-completions",
+      "data": {
+        "evidence": {
+          "chat-completions": "GET /v1/models"
+        },
+        "engine": null,
+        "health": 200
+      }
+    }
+  },
+  "capabilities": {
+    "native_tools": true,
+    "parallel_tools": true,
+    "streamed_tool_args": true,
+    "tool_call_ids": "server",
+    "forced_tool_choice": true,
+    "assistant_prefill": false,
+    "json_schema": true,
+    "fallback_tools": true,
+    "streaming": true,
+    "usage": true,
+    "usage_includes_cached": null,
+    "reasoning_field": "reasoning_content",
+    "reasoning_retention": null,
+    "context_ok_tokens": 14956,
+    "prefix_cache": false
+  },
+  "throughput": {
+    "prefill_tps": 3520.3,
+    "decode_tps": 247.8,
+    "ttft_ms": 403.6,
+    "sources": {
+      "prefill_tps": "client",
+      "decode_tps": "client"
+    },
+    "prefill_tokens": 1435,
+    "decode_tokens": 128
+  }
+}
