@@ -668,7 +668,7 @@ ssw bench run --suite <name> [--workers a,b] [--seeds N] ; ssw bench report
 ssw dash                       # start API + dashboard
 ssw replay <run> --from-step K --worker X
 ssw prove [--quick|--full] [--claim ID] [--render-readme]
-ssw policy show|edit ; ssw audit
+ssw policy show|edit|check ; ssw audit
 ```
 
 ## §20 Config files

@@ -934,6 +934,45 @@ def policy_edit(ctx: typer.Context) -> None:
     typer.echo(f"{path} is valid.")
 
 
+@policy_app.command("check")
+def policy_check(
+    ctx: typer.Context,
+    track: Annotated[str, typer.Option("--track", help="general or science.")] = "general",
+    local_only: Annotated[
+        bool,
+        typer.Option("--local-only", help="Leave remote workers out, as without --allow-remote."),
+    ] = False,
+    json_out: Annotated[bool, typer.Option("--json", help="Print as JSON.")] = False,
+) -> None:
+    """Check the routing policy against the configured workers without calling a model: which
+    worker takes each step type before and after an escalation, and the rules or workers that
+    cannot work as written. Exits 1 when a rule can never apply or a step type has no worker."""
+    from stepswitch.router.check import check_policy, render
+    from stepswitch.router.rules import rules_from_config
+    from stepswitch.workers.catalog import Catalog
+
+    state = _state(ctx)
+    with _user_errors():
+        catalog = Catalog.from_config(state.config, state.root)
+        report = check_policy(
+            rules_from_config(state.config),
+            catalog.specs(),
+            budget_usd=state.config.budgets.usd,
+            allow_remote=not local_only,
+            track=track,
+        )
+    if json_out:
+        _print_json(report.to_dict())
+    else:
+        typer.echo(f"# project: {state.root}")
+        for note in catalog.notes:
+            typer.echo(f"note: {note}")
+        for line in render(report):
+            typer.echo(line)
+    if not report.ok:
+        raise typer.Exit(1)
+
+
 @router_app.command("stats")
 def router_stats(
     ctx: typer.Context,

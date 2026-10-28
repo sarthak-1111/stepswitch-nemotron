@@ -87,7 +87,8 @@ uv run ssw bench run --suite mini-science --tasks wavenumber-to-wavelength --wor
 ```
 
 On your own repository, put the policy in your `stepswitch.toml`
-([`examples/tokenfactory/stepswitch.toml`](examples/tokenfactory/stepswitch.toml)) and use
+([`examples/tokenfactory/stepswitch.toml`](examples/tokenfactory/stepswitch.toml)), run
+`ssw policy check` to see which model takes each step before anything is billed, and use
 `ssw run "<task>"`.
 <!-- hackathon:end -->
 
@@ -214,6 +215,7 @@ setup, and `ssw probe` tests how a model handles tool calls before you rely on i
 | Command | What it does |
 |---|---|
 | `ssw run "<task>"` | Runs a task: routing, the agent loop, the gates and a review |
+| `ssw policy check` | Shows which worker takes each step type, before and after an escalation, and flags rules that can never apply; calls no model |
 | `ssw run --best-of <n>` | Runs candidates on several model families and compares the passing ones |
 | `ssw run --track science` | Adds golden numerical cases with tolerances and protected constants |
 | `ssw dash` | Opens the dashboard and the local task API |
