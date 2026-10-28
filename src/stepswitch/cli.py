@@ -1355,6 +1355,10 @@ def cmd_run(
     budget_escalations: Annotated[
         int | None, typer.Option("--budget-escalations", help="Escalate at most this often.")
     ] = None,
+    budget_usd: Annotated[
+        float | None,
+        typer.Option("--budget-usd", help="Stop after this many US dollars of hosted models."),
+    ] = None,
     worker: Annotated[
         str | None,
         typer.Option("--worker", help="Run every step on this worker (<endpoint>/<model>)."),
@@ -1429,6 +1433,7 @@ def cmd_run(
                 wall_seconds=budget_seconds,
                 gpu_seconds=budget_gpu_seconds,
                 escalations=budget_escalations,
+                usd=budget_usd,
             ),
             best_of=candidates,
             on_disagreement=on_disagreement,  # type: ignore[arg-type]
@@ -1610,6 +1615,39 @@ def bench_run(
     budget_seconds: Annotated[
         float | None, typer.Option("--budget-seconds", help="Wall-time budget per task.")
     ] = None,
+    budget_usd: Annotated[
+        float | None,
+        typer.Option("--budget-usd", help="Dollar budget per task, at the workers' prices."),
+    ] = None,
+    budget_usd_total: Annotated[
+        float | None,
+        typer.Option(
+            "--budget-usd-total",
+            help="Dollar cap on the whole bench: no run starts once the runs cost this much.",
+        ),
+    ] = None,
+    allow_remote: Annotated[
+        bool,
+        typer.Option(
+            "--allow-remote",
+            help="Let the router, best-of-n and harness contestants use hosted endpoints.",
+        ),
+    ] = False,
+    policy: Annotated[
+        Path | None,
+        typer.Option(
+            "--policy",
+            help="A stepswitch.toml-style file layered over the project's configuration for"
+            " this bench: rules, review and budgets (recorded in run.json).",
+        ),
+    ] = None,
+    interleave: Annotated[
+        bool,
+        typer.Option(
+            "--interleave",
+            help="Run every contestant on a task before the next task (fair stops at a cap).",
+        ),
+    ] = False,
     price_in: Annotated[
         float | None,
         typer.Option("--price-in", help="Reference price per million input tokens."),
@@ -1710,12 +1748,24 @@ def bench_run(
             raise ValueError("--resume needs --out, the directory of the run to continue")
         stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
         out_dir = out or state.root / "bench" / "results" / f"{selected.name}-{stamp}"
+        policy_file = None
+        if policy is not None:
+            from stepswitch import config as config_module
+
+            state._config = config_module.load(
+                state.root, overrides=config_module.read_toml(policy)
+            )
+            policy_file = runner.policy_file_record(policy, state.root)
         options = runner.BenchOptions(
             seeds=seeds,
             review=review,
             max_steps=max_steps,
-            budgets=Budgets(tokens=budget_tokens, wall_seconds=budget_seconds),
+            budgets=Budgets(tokens=budget_tokens, wall_seconds=budget_seconds, usd=budget_usd),
             keep=keep,
+            allow_remote=allow_remote,
+            budget_usd_total=budget_usd_total,
+            interleave=interleave,
+            policy_file=policy_file,
             router_pool=pool,
             optimize=not baseline,
             relay=relay_pair or None,
@@ -1747,6 +1797,13 @@ def bench_run(
         args += ["--max-steps", str(max_steps)] if max_steps else []
         args += ["--budget-tokens", str(budget_tokens)] if budget_tokens else []
         args += ["--budget-seconds", str(budget_seconds)] if budget_seconds else []
+        args += ["--budget-usd", str(budget_usd)] if budget_usd is not None else []
+        args += (
+            ["--budget-usd-total", str(budget_usd_total)] if budget_usd_total is not None else []
+        )
+        args += ["--allow-remote"] if allow_remote else []
+        args += ["--interleave"] if interleave else []
+        args += ["--policy", policy_file["file"]] if policy_file else []
         if options.prices:
             args += ["--price-in", str(price_in), "--price-out", str(price_out)]
         args += ["--resume"] if resume else []

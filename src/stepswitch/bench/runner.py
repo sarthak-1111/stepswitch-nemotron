@@ -44,7 +44,7 @@ import platform
 import shutil
 import subprocess
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
@@ -149,6 +149,16 @@ class BenchOptions:
     preflight: bool = True
     # Continue the interrupted SWE-bench run in the results directory.
     resume: bool = False
+    # Hosted endpoints for the `router`, `best-of-n` and `harness:` contestants too (pinned
+    # contestants on a hosted worker always may), and a dollar cap on the whole bench: no run
+    # starts once the bench's runs cost this much, and each run's dollar budget is at most
+    # what is left (ADR 0044).
+    allow_remote: bool = False
+    budget_usd_total: float | None = None
+    # Run every contestant on a task before the next task, so a cap stops at a fair point.
+    interleave: bool = False
+    # The `--policy` file layered over the project's configuration: path and SHA-256.
+    policy_file: dict[str, str] | None = None
 
 
 def _now() -> str:
@@ -397,6 +407,7 @@ def run_one(
         learning=options.learning,
         harness=contestant.harness,
         isolated=contestant.harness is not None,
+        allow_remote=options.allow_remote,
     )
     catalog = fakes.catalog_for(contestant.fake, task) if contestant.fake else None
     row: dict[str, Any] = {
@@ -465,9 +476,14 @@ def run_one(
         worker: {
             **{k: int(counts.get(k) or 0) for k in ("calls", "input", "cached_input", "output")},
             "hosted": not counts.get("local"),
+            **({"cost_usd": counts["cost_usd"]} if "cost_usd" in counts else {}),
         }
         for worker, counts in sorted(usage.items())
     }
+    # Dollars at the workers' prices (ADR 0044); None when no call had a price.
+    row["cost_usd"] = (
+        round(float(tokens.get("cost_usd") or 0.0), 6) if tokens.get("priced_calls") else None
+    )
     row["hosted_tokens"] = hosted_tokens(row["models"])
     row["infra_error"] = "error" in row
     if not options.keep:
@@ -661,6 +677,16 @@ def run_bench(
         "optimize": options.optimize,
         "scoring": SCORING,
     }
+    if options.allow_remote:
+        manifest["allow_remote"] = True
+    if options.budget_usd_total is not None:
+        manifest["budget_usd_total"] = options.budget_usd_total
+    if options.budgets.usd is not None:
+        manifest["budget_usd"] = options.budgets.usd
+    manifest["policy"] = policy_record(config, options.policy_file)
+    worker_prices = _worker_prices(root, config, egress)
+    if worker_prices:
+        manifest["worker_prices"] = worker_prices
     if any(c.name == RELAY for c in contestants):
         manifest["relay"] = {"workers": list(options.relay or []), "step": options.relay_step}
     if any(c.name == BEST_OF_N for c in contestants):
@@ -691,39 +717,112 @@ def run_bench(
     if manifest["preflight"].get("ok") is False:
         raise preflight.PreflightFailed(preflight.failure_message(manifest["preflight"]))
     total = len(contestants) * len(suite.tasks) * options.seeds
-    done = 0
-    for contestant in contestants:
-        for task in suite.tasks:
-            for seed in range(options.seeds):
-                done += 1
-                echo(f"[{done}/{total}] {contestant.name} {task.id} seed {seed}")
-                row = run_one(
-                    task,
-                    contestant,
-                    seed,
-                    suite=suite,
-                    root=root,
-                    work=work,
-                    options=options,
-                    config=config,
-                    egress=egress,
-                    run_task=run_task,
-                )
-                briefs = row.pop("_handoffs", [])
-                with results.open("a", encoding="utf-8", newline="\n") as handle:
-                    handle.write(json.dumps(row, sort_keys=True) + "\n")
-                if briefs:
-                    with handoffs.open("a", encoding="utf-8", newline="\n") as handle:
-                        for record in briefs:
-                            handle.write(json.dumps(record, ensure_ascii=False) + "\n")
-                verdict = "passed" if row["passed"] else "failed"
-                echo(f"    {verdict} ({row['status']}, {row['wall_seconds']:.0f} s)")
+    spent = 0.0
+    for done, (contestant, task, seed) in enumerate(
+        _schedule(contestants, suite.tasks, options), start=1
+    ):
+        cap = options.budget_usd_total
+        if cap is not None and spent >= cap:
+            manifest["stopped"] = {
+                "reason": "budget_usd_total",
+                "spent_usd": round(spent, 6),
+                "runs": done - 1,
+                "of": total,
+            }
+            echo(f"stopped: the bench's runs cost ${spent:.4f}, the cap is ${cap:.4f}")
+            break
+        echo(f"[{done}/{total}] {contestant.name} {task.id} seed {seed}")
+        run_options = options
+        if cap is not None:
+            left = round(cap - spent, 6)
+            per_task = options.budgets.usd
+            usd = left if per_task is None else min(per_task, left)
+            run_options = replace(options, budgets=options.budgets.model_copy(update={"usd": usd}))
+        row = run_one(
+            task,
+            contestant,
+            seed,
+            suite=suite,
+            root=root,
+            work=work,
+            options=run_options,
+            config=config,
+            egress=egress,
+            run_task=run_task,
+        )
+        spent += float(row.get("cost_usd") or 0.0)
+        briefs = row.pop("_handoffs", [])
+        with results.open("a", encoding="utf-8", newline="\n") as handle:
+            handle.write(json.dumps(row, sort_keys=True) + "\n")
+        if briefs:
+            with handoffs.open("a", encoding="utf-8", newline="\n") as handle:
+                for record in briefs:
+                    handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+        verdict = "passed" if row["passed"] else "failed"
+        cost = f", ${row['cost_usd']:.4f}" if row.get("cost_usd") is not None else ""
+        echo(f"    {verdict} ({row['status']}, {row['wall_seconds']:.0f} s{cost})")
+    if spent:
+        manifest["spent_usd"] = round(spent, 6)
     if not options.keep:
         workspace.remove_tree(work)
     manifest["finished"] = _now()
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n")
     write_report(out_dir)
     return out_dir
+
+
+def policy_file_record(path: Path, root: Path) -> dict[str, str]:
+    """A `--policy` file as run.json records it: its path (relative to the project when it is
+    inside it) and the SHA-256 of its bytes."""
+    import hashlib
+
+    resolved = path.resolve()
+    try:
+        shown = resolved.relative_to(root.resolve()).as_posix()
+    except ValueError:
+        shown = path.name
+    return {"file": shown, "sha256": hashlib.sha256(resolved.read_bytes()).hexdigest()}
+
+
+def policy_record(config: Any, policy_file: Mapping[str, str] | None = None) -> dict[str, Any]:
+    """The routing policy the runs used: the rules, the review settings and the budgets."""
+    extra = (getattr(config, "model_extra", None) or {}) if config is not None else {}
+    raw_policy, raw_review = extra.get("policy"), extra.get("review")
+    policy: dict[str, Any] = raw_policy if isinstance(raw_policy, dict) else {}
+    review: dict[str, Any] = raw_review if isinstance(raw_review, dict) else {}
+    budgets = getattr(config, "budgets", None)
+    record: dict[str, Any] = {
+        "rules": list(policy.get("rules") or []),
+        "review": dict(review),
+        "budgets": budgets.model_dump(exclude_none=True) if budgets is not None else {},
+    }
+    if policy_file:
+        record["file"] = dict(policy_file)
+    return record
+
+
+def _schedule(
+    contestants: Sequence[Contestant], tasks: Sequence[Any], options: BenchOptions
+) -> list[tuple[Contestant, Any, int]]:
+    """The order of the runs: each contestant through every task and seed, or with
+    `interleave`, every contestant on a task and seed before the next."""
+    seeds = range(options.seeds)
+    if options.interleave:
+        return [(c, t, s) for t in tasks for s in seeds for c in contestants]
+    return [(c, t, s) for c in contestants for t in tasks for s in seeds]
+
+
+def _worker_prices(root: Path, config: Any, egress: Any) -> dict[str, dict[str, Any]]:
+    """The prices of every configured worker that has one, as the manifest records them."""
+    from stepswitch.workers.catalog import Catalog
+
+    if config is None:
+        return {}
+    try:
+        catalog = Catalog.from_config(config, root, egress=egress, include_managed=False)
+    except Exception:  # noqa: BLE001 - prices are a record, never a reason to fail the bench
+        return {}
+    return {spec.id: spec.prices.as_dict() for spec in catalog.specs() if spec.prices is not None}
 
 
 def _run_swebench(
