@@ -50,8 +50,16 @@ MEASURES: dict[str, Callable[[Row], int]] = {"tokens": tokens, "uncached": uncac
 
 
 def newest_run(suite: str, contestant: str, found: Sequence[Run]) -> Run | None:
-    """The newest run of `suite` with `contestant` among its contestants."""
-    having = [r for r in found if r.suite == suite and contestant in r.meta.get("contestants", [])]
+    """The newest run of `suite` with `contestant` among its contestants. Runs that let the
+    router use hosted models (`run.json` `allow_remote`, ADR 0044) are another experiment: the
+    claims here are about local workers, so those runs are not read."""
+    having = [
+        r
+        for r in found
+        if r.suite == suite
+        and contestant in r.meta.get("contestants", [])
+        and not r.meta.get("allow_remote")
+    ]
     return max(having, key=lambda r: str(r.meta.get("started", "")), default=None)
 
 

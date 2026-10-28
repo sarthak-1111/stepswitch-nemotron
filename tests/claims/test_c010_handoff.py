@@ -12,7 +12,8 @@ record of both mini suites:
 * the brief validates against `spec/handoff-v0.1.schema.json` (with jsonschema, offline);
 * the Markdown is the brief rendered by `render_markdown`, so the count is of what was sent;
 * the count is exact and at most the threshold, and the brief's provenance names the same
-  tokenizer;
+  tokenizer. A brief to a hosted model, whose tokenizer Stepswitch does not have, is counted by
+  estimate; it must still be at most the threshold, and the evidence lists it (ADR 0045);
 * where an exact tokenizer for the receiving model is available on this machine, a fresh count
   equals the recorded one;
 * the number of records equals the `handoffs` counts in the runs' result rows, so no brief is
@@ -38,6 +39,12 @@ SCHEMA = ROOT / "spec" / "handoff-v0.1.schema.json"
 SUITES = ("mini-general", "mini-science")
 
 
+def hosted_receiver(record: dict[str, Any]) -> bool:
+    """A brief to a hosted model: no registry entry, tokenizer or local engine (ADR 0045)."""
+    receiver = record.get("receiver") or {}
+    return not any(receiver.get(key) for key in ("registry_id", "tokenizer", "engine"))
+
+
 def test_bench_handoffs_validate_and_fit_token_budget() -> None:
     limits = evidence.thresholds("C-010")
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
@@ -57,6 +64,7 @@ def test_bench_handoffs_validate_and_fit_token_budget() -> None:
     valid = 0
     recounted = 0
     largest = 0
+    hosted: list[str] = []
     tokenizers: dict[str, int] = {}
     reasons: dict[str, int] = {}
     per_suite: dict[str, int] = {}
@@ -74,7 +82,10 @@ def test_bench_handoffs_validate_and_fit_token_budget() -> None:
         largest = max(largest, count)
         if count < 0 or count > limits["max_tokens"]:
             problems.append(f"{label}: {count} tokens")
-        if record.get("exact") is not True:
+        if hosted_receiver(record) and record.get("tokenizer") == tokens_module.ESTIMATE_NAME:
+            # No tokenizer for a hosted model: estimated, under the same limit (ADR 0045).
+            hosted.append(f"{label}: {count} tokens to {record['receiver'].get('model')}")
+        elif record.get("exact") is not True:
             problems.append(f"{label}: count is not exact ({record.get('tokenizer')})")
         provenance = (brief or {}).get("provenance", {})
         if provenance.get("tokenizer") != record.get("tokenizer"):
@@ -104,6 +115,7 @@ def test_bench_handoffs_validate_and_fit_token_budget() -> None:
             "max_tokens": largest,
             "tokenizers": tokenizers,
             "recounted": recounted,
+            "hosted_estimated": hosted,
             "problems": problems[:20],
             "missing_records": missing_counts,
         },

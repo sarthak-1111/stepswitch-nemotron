@@ -2,8 +2,9 @@
 
 * No company names in committed text. The denylist is stored as SHA-256 hashes of lowercase
   names (single words and word pairs), so this file names no company itself. URLs and whole
-  ``org/name`` identifiers (repository paths, model-hub IDs) are skipped: they are citations and
-  IDs, not prose (ADR 0007). Interoperability identifiers that merely contain a company name
+  ``org/name`` identifiers (repository paths, model-hub IDs, and worker IDs
+  ``endpoint/org/name``) are skipped: they are citations and IDs, not prose (ADR 0007,
+  ADR 0043). Interoperability identifiers that merely contain a company name
   are listed in ALLOWED_IDENTIFIERS.
 * Nothing personal or machine-specific is committed: endpoints, keys and paths from
   ``.stepswitch/local.toml``, the current home directory, a distinctive user name, the host name.
@@ -200,7 +201,8 @@ SENSITIVE_KEYS = {"url", "api_key", "key", "token", "secret", "password", "model
 # the repository's and the agent's, so the company-name scan reads a prediction's other fields.
 PREDICTIONS_RE = re.compile(r"^bench/results/[^/]+/predictions/[^/]+\.jsonl$")
 URL_RE = re.compile(r"https?://\S+")
-ORG_ID_RE = re.compile(r"\b[\w.-]+/[\w.-]+")
+# Whole paths: a worker id is `endpoint/org/model` (ADR 0043).
+ORG_ID_RE = re.compile(r"\b[\w.-]+(?:/[\w.-]+)+")
 WORD_RE = re.compile(r"[a-z0-9]+")
 HEX_SECRET_RE = re.compile(r"^[0-9a-fA-F]{32,}$")
 
@@ -382,6 +384,7 @@ FICTIONAL = frozenset(
         ("See https://acmecorp.example/models for details.", []),
         ("Pull `acmecorp/tiny-model-1b` from the model hub.", []),
         ("Pull `acmecorp/AcmeCorp-Tiny-1B` from the model hub.", []),
+        ("The worker `hosted/acmecorp/AcmeCorp-Tiny-1B` reviews.", []),
         ("The AcmeCorp-Tiny-1B model.", ["acmecorp"]),
         ("Check GPUs with nvidia-smi first.", []),
     ],

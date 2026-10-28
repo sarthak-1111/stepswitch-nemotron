@@ -319,7 +319,8 @@ claims:
     text: "Handoff briefs validate against the HANDOFF v0.1 schema and stay under 1,500 tokens."
     scope: >-
       Every handoff produced during the bench suites, counted with the receiving model's
-      tokenizer.
+      tokenizer. A brief to a hosted model whose tokenizer Stepswitch does not have is counted
+      by estimate, held to the same limit and listed in the evidence (ADR 0045).
     proof: >-
       Schema validation and tokenizer count on every handoff produced during the bench suites.
     kind: bench

@@ -44,6 +44,11 @@ allow is the bare names in prose.
    examples is named `tokenfactory`.
 5. Self-tests in the hygiene test use a fictional event sponsor and check both directions: the
    names pass inside the scope, fail outside it, and a third company name fails inside it.
+6. A worker ID is the endpoint's name before the model ID (`tokenfactory/<org>/<model>`), and
+   bench results record worker IDs. The scan's skip of `org/name` IDs now takes the whole path,
+   so a worker ID is skipped like the model ID inside it; before, the skip ended after the
+   second part and a model name that repeats its publisher's name failed in the third. A
+   self-test covers a three-part ID.
 
 ## Consequences
 
