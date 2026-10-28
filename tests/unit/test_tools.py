@@ -546,6 +546,37 @@ def test_test_tool_passes_the_selector(root: Path) -> None:
     assert done.data["ok"] is True
 
 
+def test_test_tool_drops_a_selector_that_repeats_the_pytest_command(root: Path) -> None:
+    # `python -m pytest -q -m pytest -q` reads the second `-m pytest` as a marker filter that
+    # deselects every test; Ultra alone sent `-m pytest -q` as its selector again and again.
+    (root / "pytest.py").write_text(
+        "import sys\nprint(sys.argv[1:])\nprint('3 passed in 0.01s')\n", encoding="utf-8"
+    )
+    (root / "tests").mkdir()
+    (root / "tests" / "test_calc.py").write_text("", encoding="utf-8")
+    box = T.Toolbox(root, test_command=[sys.executable, "-m", "pytest", "-q"])
+    cases = {
+        "-m pytest -q": ([], "no selector"),
+        "python -m pytest tests/test_calc.py -x": (
+            ["tests/test_calc.py", "-x"],
+            "`tests/test_calc.py -x`",
+        ),
+        "pytest -q -k add": (["-k", "add"], "`-k add`"),
+    }
+    for selector, (kept, ran) in cases.items():
+        done = box.execute("test", {"selector": selector})
+        assert done.data["argv"][4:] == kept, selector
+        assert done.text.startswith(
+            "[the selector repeated the test command, which the tool already runs: it takes"
+            f" test files, test ids or -k filters, so the tests ran with {ran}]\ntests passed"
+        ), done.text
+    plain = box.execute("test", {"selector": "tests/test_calc.py -m slow"})
+    assert plain.data["argv"][4:] == ["tests/test_calc.py", "-m", "slow"]
+    assert plain.text.startswith("tests passed")
+    other = T.Toolbox(root, test_command=[sys.executable, str(root / "pytest.py")])
+    assert other.execute("test", {"selector": "-m pytest"}).data["argv"][2:] == ["-m", "pytest"]
+
+
 def test_test_tool_finds_a_test_file_named_without_its_directory(root: Path) -> None:
     runner = root / "runner.py"
     runner.write_text("import sys\nprint(sys.argv[1:])\nprint('3 passed in 0.01s')\n")

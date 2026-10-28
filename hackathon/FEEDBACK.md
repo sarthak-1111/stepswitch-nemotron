@@ -179,8 +179,12 @@ tokens):
   Lightning copied rows of the read output into an edit's old and new text with their `ab|`
   hash prefixes. Super and Ultra sometimes sent the `edits` array as a JSON string, with a
   docstring's `"""` left unescaped inside it or one closing bracket too many. And Lightning
-  wrote container paths such as `/repo/...` and `cd /workspace && ...`. Stepswitch now takes
-  the unambiguous cases (each checked against the file), but a model that keeps tool arguments
+  wrote container paths such as `/repo/...` and `cd /workspace && ...`. Ultra, working alone,
+  often put the test command itself into the test tool's `selector` (`-m pytest -q`); appended
+  to the configured `python -m pytest -q`, pytest reads the second `-m pytest` as a marker
+  filter that deselects every test, so the call reported that no test ran and Ultra tried
+  again. Stepswitch now takes the unambiguous cases (each checked against the file, or the
+  repeated command dropped with a note), but a model that keeps tool arguments
   as structured JSON and leaves display prefixes out would save those turns in every agent
   harness. The counts come from our local run records, which are not in this repository, so we
   give none here.

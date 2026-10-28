@@ -311,6 +311,8 @@ _PYTEST_COUNTS = re.compile(
 _LEADING_CD = re.compile(
     r"""cd\s+(?P<dir>"[^"]*"|'[^']*'|[^\s;&|]+)\s*(?:&&|;)\s*(?P<rest>\S.*)$""", re.DOTALL
 )
+# A Python interpreter as a model names it at the start of a test selector.
+_PYTHON = re.compile(r"(?:.*/)?(?:python[\d.]*|py)(?:\.exe)?", re.IGNORECASE)
 _SHELL_OPERATORS = ("&&", "||", ">>", "|", "&", ";", ">", "<")
 
 
@@ -1475,10 +1477,12 @@ class Toolbox:
             extra = shlex.split(selector.replace("\\", "/")) if selector else []
         except ValueError as exc:
             raise ToolError(f"test: cannot split the selector ({exc})") from exc
+        extra, repeated = self._without_test_command(extra)
         extra, notes = self._test_paths(extra)
         implicit = not extra
         if implicit:
             extra, notes = self._impacted_selection()
+        notes = repeated + notes
         env = self._child_env()
         argv = [self._program(self.test_command[0], env), *self.test_command[1:], *extra]
         self._fresh_bytecode()
@@ -1610,6 +1614,30 @@ class Toolbox:
             f" selector (a test file, a test id or a -k filter). Without one, only the tests"
             f" that import your changes run, and here: {selection.reason}."
         )
+
+    def _without_test_command(self, extra: list[str]) -> tuple[list[str], list[str]]:
+        """A selector that starts with the pytest command again (`-m pytest -q`, `pytest`,
+        `python -m pytest`), without it and without the options the command already has, and a
+        note saying so. Pytest reads a second `-m pytest` as a marker filter that deselects every
+        test: Ultra alone sent it again and again on the mini suites and was told that no
+        test ran."""
+        command = self.test_command or []
+        if "pytest" not in command:
+            return extra, []
+        if extra[1:3] == ["-m", "pytest"] and _PYTHON.fullmatch(extra[0]):
+            skip = 3
+        elif extra[:2] == ["-m", "pytest"]:
+            skip = 2
+        elif extra[:1] == ["pytest"]:
+            skip = 1
+        else:
+            return extra, []
+        rest = [t for t in extra[skip:] if not (t.startswith("-") and t in command)]
+        ran = f"`{shlex.join(rest)}`" if rest else "no selector"
+        return rest, [
+            f"[the selector repeated the test command, which the tool already runs: it takes test"
+            f" files, test ids or -k filters, so the tests ran with {ran}]"
+        ]
 
     def _test_paths(self, extra: list[str]) -> tuple[list[str], list[str]]:
         """The selector's test files as paths from the root. A `.py` file that does not exist as
