@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "mode": "quick",
-  "source_digest": "2e58ffd74e4b0b55277e050110cd95204d1f58d8c38ad81786e5cee33824f9ef",
-  "created": "2026-10-27T07:50:26+00:00",
-  "duration_s": 1014.06,
+  "source_digest": "87a76a5a95a8aa7a25da1dffa421e716a301ce68a3f52f9e08adf7356d4bc159",
+  "created": "2026-10-28T05:37:38+00:00",
+  "duration_s": 246.23,
   "platform": {
     "os": "windows",
     "machine": "amd64",
@@ -15,18 +15,20 @@
     "image_version": null
   },
   "selection": {
-    "phase": 13,
+    "phase": null,
     "claims": [],
     "skip": []
   },
   "claims": {
     "C-001": {
-      "status": "passing",
+      "status": "pending",
       "tests": {
-        "tests/claims/test_c001_cpu_only_8gb.py::test_toy_task_runs_in_cpu_only_8gb_container": "passed"
+        "tests/claims/test_c001_cpu_only_8gb.py::test_toy_task_runs_in_cpu_only_8gb_container": "skipped"
       },
       "parts": [],
-      "notes": {}
+      "notes": {
+        "tests/claims/test_c001_cpu_only_8gb.py::test_toy_task_runs_in_cpu_only_8gb_container": "pending: qwen3-4b-instruct-2507 is not installed (`ssw models pull --tier cpu`)"
+      }
     },
     "C-002": {
       "status": "passing",
@@ -54,9 +56,9 @@
       "notes": {}
     },
     "C-005": {
-      "status": "passing",
+      "status": "pending",
       "tests": {
-        "tests/claims/test_c005_fallback.py::test_model_without_native_tools_completes_task_via_fallback": "passed",
+        "tests/claims/test_c005_fallback.py::test_model_without_native_tools_completes_task_via_fallback": "skipped",
         "tests/claims/test_c005_matrix.py::test_probe_suite_passes_on_ci_model_set": "passed",
         "tests/claims/test_c005_matrix.py::test_compatibility_matrix_generated_from_probe_results": "passed"
       },
@@ -64,7 +66,9 @@
         "fallback",
         "matrix"
       ],
-      "notes": {}
+      "notes": {
+        "tests/claims/test_c005_fallback.py::test_model_without_native_tools_completes_task_via_fallback": "pending: phi-3.5-mini-instruct is not installed (`ssw models pull phi-3.5-mini-instruct`)"
+      }
     },
     "C-006": {
       "status": "passing",
@@ -149,20 +153,24 @@
       "notes": {}
     },
     "C-016": {
-      "status": "passing",
+      "status": "pending",
       "tests": {
-        "tests/claims/test_c016_platforms.py::test_prove_quick_passed_on_linux_macos_windows": "passed"
+        "tests/claims/test_c016_platforms.py::test_prove_quick_passed_on_linux_macos_windows": "skipped"
       },
       "parts": [],
-      "notes": {}
+      "notes": {
+        "tests/claims/test_c016_platforms.py::test_prove_quick_passed_on_linux_macos_windows": "pending: the platform evidence was produced from other sources; run the CI workflow on this commit (ADR 0014)"
+      }
     },
     "C-017": {
-      "status": "passing",
+      "status": "pending",
       "tests": {
-        "tests/claims/test_c017_quickstart.py::test_install_to_first_task_under_five_minutes": "passed"
+        "tests/claims/test_c017_quickstart.py::test_install_to_first_task_under_five_minutes": "skipped"
       },
       "parts": [],
-      "notes": {}
+      "notes": {
+        "tests/claims/test_c017_quickstart.py::test_install_to_first_task_under_five_minutes": "pending: the cpu tier is not fully installed (`ssw models pull --tier cpu`)"
+      }
     },
     "C-018": {
       "status": "passing",
@@ -173,12 +181,14 @@
       "notes": {}
     },
     "C-019": {
-      "status": "passing",
+      "status": "pending",
       "tests": {
-        "tests/claims/test_c019_token_accounting.py::test_ledger_matches_server_usage_within_one_percent": "passed"
+        "tests/claims/test_c019_token_accounting.py::test_ledger_matches_server_usage_within_one_percent": "skipped"
       },
       "parts": [],
-      "notes": {}
+      "notes": {
+        "tests/claims/test_c019_token_accounting.py::test_ledger_matches_server_usage_within_one_percent": "pending: qwen3-4b-instruct-2507, phi-3.5-mini-instruct not installed (`ssw models pull ...`)"
+      }
     },
     "C-020": {
       "status": "passing",
@@ -227,6 +237,22 @@
       },
       "parts": [],
       "notes": {}
+    },
+    "C-029": {
+      "status": "passing",
+      "tests": {
+        "tests/claims/test_c029_nemotron_ladder.py::test_the_ladder_passes_as_many_tasks_as_ultra_for_less": "passed"
+      },
+      "parts": [],
+      "notes": {}
+    },
+    "C-030": {
+      "status": "passing",
+      "tests": {
+        "tests/claims/test_c030_review_and_small_tier.py::test_the_second_opinion_agrees_and_the_small_tier_keeps_up": "passed"
+      },
+      "parts": [],
+      "notes": {}
     }
   },
   "withdrawn": {
@@ -235,8 +261,8 @@
     "C-025": "docs/decisions/0041-claims-withdrawn-after-phase-12.md"
   },
   "summary": {
-    "pending": 0,
-    "passing": 25,
+    "pending": 5,
+    "passing": 22,
     "failing": 0,
     "withdrawn": 3
   }

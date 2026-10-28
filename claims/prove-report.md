@@ -1,17 +1,17 @@
 # Prove report
 
 - Mode: quick
-- Created: 2026-10-27T07:50:26+00:00
-- Source digest: `2e58ffd74e4b0b55277e050110cd95204d1f58d8c38ad81786e5cee33824f9ef`
+- Created: 2026-10-28T05:37:38+00:00
+- Source digest: `87a76a5a95a8aa7a25da1dffa421e716a301ce68a3f52f9e08adf7356d4bc159`
 - Platform: windows amd64, Python 3.12.15
 
 | Claim | Status | Tests |
 |---|---|---|
-| C-001 | passing | test_toy_task_runs_in_cpu_only_8gb_container: passed |
+| C-001 | pending | test_toy_task_runs_in_cpu_only_8gb_container: skipped |
 | C-002 | passing | test_single_task_switches_endpoints_with_logged_reasons: passed |
 | C-003 | passing | test_switch_iff_gain_exceeds_cost_plus_margin: passed |
 | C-004 | passing | test_conformance_against_mock_servers: passed, test_round_trip_preserves_messages_and_tool_calls: passed |
-| C-005 | passing | test_model_without_native_tools_completes_task_via_fallback: passed, test_probe_suite_passes_on_ci_model_set: passed, test_compatibility_matrix_generated_from_probe_results: passed |
+| C-005 | pending | test_model_without_native_tools_completes_task_via_fallback: skipped, test_probe_suite_passes_on_ci_model_set: passed, test_compatibility_matrix_generated_from_probe_results: passed |
 | C-006 | passing | test_offline_flow_makes_only_local_connections: passed, test_audit_log_matches_observed_connections: passed |
 | C-007 | passing | test_default_flow_opens_no_outbound_connections: passed |
 | C-008 | passing | test_mutations_above_tolerance_caught_below_not_flagged: passed |
@@ -22,16 +22,18 @@
 | C-013 | passing | test_ambiguous_tasks_flagged_unambiguous_not: passed |
 | C-014 | passing | test_replay_reproduces_diffs_and_gate_results: passed |
 | C-015 | passing | test_bandit_regret_below_random_and_fixed_policies: passed |
-| C-016 | passing | test_prove_quick_passed_on_linux_macos_windows: passed |
-| C-017 | passing | test_install_to_first_task_under_five_minutes: passed |
+| C-016 | pending | test_prove_quick_passed_on_linux_macos_windows: skipped |
+| C-017 | pending | test_install_to_first_task_under_five_minutes: skipped |
 | C-018 | passing | test_every_readme_number_has_evidence_and_command: passed |
-| C-019 | passing | test_ledger_matches_server_usage_within_one_percent: passed |
+| C-019 | pending | test_ledger_matches_server_usage_within_one_percent: skipped |
 | C-020 | passing | test_tiny_budgets_stop_with_status_and_bounded_overrun: passed |
 | C-022 | passing | test_local_router_processes_fewer_tokens_than_claude_code: passed |
 | C-023 | passing | test_claude_code_on_local_models_passes_as_many_task_runs: passed |
 | C-026 | passing | test_swebench_results_come_from_one_graded_run_of_each_contestant: passed |
 | C-027 | passing | test_stepswitch_resolves_at_least_as_many_instances_as_mini_swe_agent: passed |
 | C-028 | passing | test_stepswitch_uses_fewer_tokens_per_instance_than_mini_swe_agent: passed |
+| C-029 | passing | test_the_ladder_passes_as_many_tasks_as_ultra_for_less: passed |
+| C-030 | passing | test_the_second_opinion_agrees_and_the_small_tier_keeps_up: passed |
 | C-021 | withdrawn | not proven: docs/decisions/0041-claims-withdrawn-after-phase-12.md |
 | C-024 | withdrawn | not proven: docs/decisions/0041-claims-withdrawn-after-phase-12.md |
 | C-025 | withdrawn | not proven: docs/decisions/0041-claims-withdrawn-after-phase-12.md |

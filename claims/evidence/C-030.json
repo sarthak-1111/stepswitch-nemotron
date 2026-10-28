@@ -21,9 +21,9 @@
       "2026-10-28-tf-mini-science-lightning"
     ]
   },
-  "command": "the C-029 runs and the small tier alone (`ssw bench run --workers <small> --allow-remote --policy bench/policies/tokenfactory-ladder.toml`, each run.json records its command); uv run ssw prove --claim C-030",
+  "command": "uv run ssw prove --claim C-030",
   "mode": "quick",
-  "source_digest": "a844eed4b8968389e429378b49268b3b8d383d95b875e4865f4f32eacab47dd0",
+  "source_digest": "87a76a5a95a8aa7a25da1dffa421e716a301ce68a3f52f9e08adf7356d4bc159",
   "stepswitch_version": "0.1.0.dev0",
   "environment": {
     "os": "windows",
@@ -35,10 +35,10 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-28T04:12:20+00:00",
+  "updated": "2026-10-28T05:37:37+00:00",
   "sections": {
     "steps": {
-      "recorded": "2026-10-28T04:12:20+00:00",
+      "recorded": "2026-10-28T05:37:37+00:00",
       "runs": [
         "2026-10-28-tf-mini-general",
         "2026-10-28-tf-mini-science"
@@ -555,7 +555,8 @@
           "stopped": null
         }
       },
-      "problems": []
+      "problems": [],
+      "bench_command": "the C-029 runs and the small tier alone (`ssw bench run --workers <small> --allow-remote --policy bench/policies/tokenfactory-ladder.toml`, each run.json records its command)"
     }
   }
 }

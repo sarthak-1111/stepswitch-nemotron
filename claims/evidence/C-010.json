@@ -1,7 +1,7 @@
 {
   "claim": "C-010",
   "text": "Handoff briefs validate against the HANDOFF v0.1 schema and stay under 1,500 tokens.",
-  "scope": "Every handoff produced during the bench suites, counted with the receiving model's tokenizer.",
+  "scope": "Every handoff produced during the bench suites, counted with the receiving model's tokenizer. A brief to a hosted model whose tokenizer Stepswitch does not have is counted by estimate, held to the same limit and listed in the evidence (ADR 0045).",
   "thresholds": {
     "schema_valid": 1.0,
     "max_tokens": 1500,
@@ -9,7 +9,7 @@
   },
   "command": "uv run ssw prove --claim C-010",
   "mode": "quick",
-  "source_digest": "2e58ffd74e4b0b55277e050110cd95204d1f58d8c38ad81786e5cee33824f9ef",
+  "source_digest": "87a76a5a95a8aa7a25da1dffa421e716a301ce68a3f52f9e08adf7356d4bc159",
   "stepswitch_version": "0.1.0.dev0",
   "environment": {
     "os": "windows",
@@ -21,10 +21,10 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-27T07:39:36+00:00",
+  "updated": "2026-10-28T05:34:23+00:00",
   "sections": {
     "handoffs": {
-      "recorded": "2026-10-27T07:39:36+00:00",
+      "recorded": "2026-10-28T05:34:23+00:00",
       "runs": [
         "2026-10-19-mini-general-best-of-n",
         "2026-10-19-mini-general-local-comparison",
@@ -42,23 +42,41 @@
         "2026-10-20-mini-general-router",
         "2026-10-20-mini-science-confirmatory",
         "2026-10-20-mini-science-native",
-        "2026-10-20-mini-science-router"
+        "2026-10-20-mini-science-router",
+        "2026-10-28-mini-general-nemotron-pilot",
+        "2026-10-28-tf-escalation-demo",
+        "2026-10-28-tf-escalation-demo-2",
+        "2026-10-28-tf-escalation-demo-nano",
+        "2026-10-28-tf-general",
+        "2026-10-28-tf-mini-general",
+        "2026-10-28-tf-mini-general-lightning",
+        "2026-10-28-tf-mini-science",
+        "2026-10-28-tf-mini-science-lightning",
+        "2026-10-28-tf-pilot",
+        "2026-10-28-tf-science"
       ],
-      "handoffs": 29,
+      "handoffs": 32,
       "per_suite": {
-        "mini-general": 18,
+        "mini-general": 21,
         "mini-science": 11
       },
       "reasons": {
-        "compaction": 1,
-        "relay": 28
+        "compaction": 3,
+        "relay": 28,
+        "switch": 1
       },
       "schema_valid_fraction": 1.0,
       "max_tokens": 1213,
       "tokenizers": {
-        "mapped:gpt-oss": 29
+        "mapped:gpt-oss": 29,
+        "estimate:chars/4": 3
       },
-      "recounted": 29,
+      "recounted": 0,
+      "hosted_estimated": [
+        "2026-10-28-tf-escalation-demo-nano temperature-units seed 0 step 23: 586 tokens to nvidia/Nemotron-3_5-Lightning",
+        "2026-10-28-tf-pilot billing-month-end seed 0 step 16: 488 tokens to nvidia/nemotron-3-super-120b-a12b",
+        "2026-10-28-tf-pilot billing-month-end seed 0 step 16: 559 tokens to nvidia/Nemotron-3-Ultra-550b-a55b"
+      ],
       "problems": [],
       "missing_records": []
     }
