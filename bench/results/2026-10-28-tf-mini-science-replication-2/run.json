@@ -1,0 +1,175 @@
+{
+  "schema": 1,
+  "suite": "mini-science",
+  "suite_file": "mini-science.yaml",
+  "command": "ssw bench run --suite mini-science --workers router,tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b --seeds 1 --router-pool tokenfactory/nvidia/Nemotron-3_5-Lightning,tokenfactory/nvidia/nemotron-3-super-120b-a12b,tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b,tokenfactory/openai/gpt-oss-120b --budget-usd 0.5 --budget-usd-total 0.6 --allow-remote --interleave --policy bench/policies/tokenfactory-ladder.toml",
+  "started": "2026-10-28T11:23:56+00:00",
+  "finished": "2026-10-28T11:34:05+00:00",
+  "hardware": {
+    "os": "Windows",
+    "arch": "x86_64",
+    "cpu_cores": 32,
+    "ram_gb": 1098.43,
+    "gpus": 4,
+    "gpu_memory_gb": [
+      51.53,
+      48.31,
+      51.53,
+      51.53
+    ]
+  },
+  "version": "0.1.0.dev0",
+  "commit": "904192d526b5",
+  "seeds": [
+    0
+  ],
+  "contestants": [
+    "router",
+    "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b"
+  ],
+  "tasks": [
+    "centroid-intensity-weights",
+    "baseline-end-points",
+    "wavenumber-to-wavelength",
+    "trapezoid-end-weights",
+    "vectorize-gaussian-sum",
+    "moving-average-alignment"
+  ],
+  "review": true,
+  "prices": null,
+  "router_pool": [
+    "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+    "tokenfactory/nvidia/Nemotron-3_5-Lightning",
+    "tokenfactory/nvidia/nemotron-3-super-120b-a12b",
+    "tokenfactory/openai/gpt-oss-120b"
+  ],
+  "optimize": true,
+  "scoring": "passes when every acceptance command exits with 0 on a fresh copy with the run's diff applied and the suite's protected paths restored",
+  "allow_remote": true,
+  "budget_usd_total": 0.6,
+  "budget_usd": 0.5,
+  "policy": {
+    "rules": [
+      {
+        "name": "lightning-reads-and-summarizes",
+        "when": {
+          "step_type": [
+            "navigate",
+            "read",
+            "summarize",
+            "write-text"
+          ]
+        },
+        "to": {
+          "model": "nvidia/Nemotron-3_5-Lightning"
+        }
+      },
+      {
+        "name": "super-edits-and-triages",
+        "when": {
+          "step_type": [
+            "edit",
+            "run",
+            "triage"
+          ],
+          "escalations": 0
+        },
+        "to": {
+          "model": "nvidia/nemotron-3-super-120b-a12b"
+        }
+      },
+      {
+        "name": "ultra-plans-reviews-and-takes-escalations",
+        "when": {
+          "step_type": [
+            "plan",
+            "review",
+            "edit",
+            "run",
+            "triage"
+          ]
+        },
+        "to": {
+          "model": "nvidia/Nemotron-3-Ultra-550b-a55b"
+        }
+      }
+    ],
+    "review": {
+      "second_opinion": true
+    },
+    "budgets": {
+      "wall_seconds": 1800.0,
+      "usd": 0.5,
+      "roles": {
+        "summarize": {
+          "effort": "none"
+        },
+        "write-text": {
+          "effort": "none"
+        },
+        "review": {
+          "effort": "none",
+          "max_output_tokens": 2000
+        }
+      }
+    },
+    "file": {
+      "file": "bench/policies/tokenfactory-ladder.toml",
+      "sha256": "da8b696230050e78df4a2126cf42e754a9637a454add1e220f48a78768803081"
+    }
+  },
+  "worker_prices": {
+    "tokenfactory/nvidia/Nemotron-3_5-Lightning": {
+      "input_per_million": 0.06,
+      "cached_input_per_million": 0.03,
+      "output_per_million": 0.24
+    },
+    "tokenfactory/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+      "input_per_million": 0.06,
+      "cached_input_per_million": 0.012,
+      "output_per_million": 0.24
+    },
+    "tokenfactory/nvidia/nemotron-3-super-120b-a12b": {
+      "input_per_million": 0.3,
+      "cached_input_per_million": 0.06,
+      "output_per_million": 0.9
+    },
+    "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b": {
+      "input_per_million": 1.0,
+      "cached_input_per_million": 0.12,
+      "output_per_million": 3.0
+    },
+    "tokenfactory/openai/gpt-oss-120b": {
+      "input_per_million": 0.15,
+      "cached_input_per_million": 0.1,
+      "output_per_million": 0.6
+    }
+  },
+  "preflight": {
+    "ok": true,
+    "prompt": "Reply with the single word READY and nothing else.",
+    "workers": {
+      "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b": {
+        "ok": true,
+        "seconds": 1.4,
+        "reply": "READY"
+      },
+      "tokenfactory/nvidia/Nemotron-3_5-Lightning": {
+        "ok": true,
+        "seconds": 1.5,
+        "reply": "READY"
+      },
+      "tokenfactory/nvidia/nemotron-3-super-120b-a12b": {
+        "ok": true,
+        "seconds": 1.1,
+        "reply": "READY"
+      },
+      "tokenfactory/openai/gpt-oss-120b": {
+        "ok": true,
+        "seconds": 0.9,
+        "reply": "READY"
+      }
+    }
+  },
+  "spent_usd": 0.508195
+}
