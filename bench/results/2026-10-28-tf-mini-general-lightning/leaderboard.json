@@ -1,0 +1,69 @@
+{
+  "command": "ssw bench run --suite mini-general --workers tokenfactory/nvidia/Nemotron-3_5-Lightning --seeds 1 --budget-usd 0.5 --budget-usd-total 0.25 --allow-remote --policy bench/policies/tokenfactory-ladder.toml",
+  "commit": "46a3eb44ae5f",
+  "contestants": [
+    {
+      "cache_hit_rate": 0.4383697521927957,
+      "cached_input_tokens": 643472,
+      "ci": {
+        "confidence": 0.95,
+        "high": 1.0,
+        "low": 0.8,
+        "method": "cluster bootstrap over tasks (percentile)",
+        "resamples": 10000
+      },
+      "contestant": "tokenfactory/nvidia/Nemotron-3_5-Lightning",
+      "escalation_rate": 0.0,
+      "gpu_seconds": 0.0,
+      "input_tokens": 1467875,
+      "median_hosted_tokens": 56431.0,
+      "median_tokens": 56431.0,
+      "median_uncached_tokens": 41249.0,
+      "median_wall_seconds": 39.937,
+      "output_tokens": 83729,
+      "pass_rate": 0.9333333333333333,
+      "passed": 14,
+      "rank": 1,
+      "reference_cost": null,
+      "runs": 15,
+      "statuses": {
+        "done": 14,
+        "stopped": 1
+      },
+      "tasks": 15,
+      "tests_modified": 0
+    }
+  ],
+  "date": "2026-10-28T03:51:42+00:00",
+  "hardware": {
+    "arch": "x86_64",
+    "cpu_cores": 32,
+    "gpu_memory_gb": [
+      51.53,
+      48.31,
+      51.53,
+      51.53
+    ],
+    "gpus": 4,
+    "os": "Windows",
+    "ram_gb": 1098.43
+  },
+  "interval": {
+    "confidence": 0.95,
+    "resamples": 10000,
+    "seed": 0
+  },
+  "prices": null,
+  "results_file": "results.jsonl",
+  "router_pool": null,
+  "runs": 15,
+  "schema": 1,
+  "scoring": "passes when every acceptance command exits with 0 on a fresh copy with the run's diff applied and the suite's protected paths restored",
+  "seeds": [
+    0
+  ],
+  "sources": null,
+  "suite": "mini-general",
+  "tasks": 15,
+  "version": "0.1.0.dev0"
+}
