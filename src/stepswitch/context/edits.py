@@ -493,13 +493,33 @@ def parse_edit(raw: Any, index: int = 0) -> Op:
     return Op(kind, start, end, tuple(text_lines(text_raw, f"{label} text")), index, count=count)
 
 
+def _loads_edits(text: str) -> Any:
+    """The edits a model wrote as a JSON string. Models that do this sometimes close one bracket
+    too many (the outer object's): the edits before it are whole and are taken. A double quote
+    left raw inside `text` is not guessed at; the refusal shows where the string broke."""
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as exc:
+        error = exc
+    stripped = text.strip()
+    try:
+        value, end = json.JSONDecoder().raw_decode(stripped)
+    except json.JSONDecodeError:
+        value, end = None, 0
+    if isinstance(value, list | Mapping) and not stripped[end:].strip(" \t\r\n}]"):
+        return value
+    near = text[max(0, error.pos - 40) : error.pos + 10]
+    raise EditError(
+        f"edits must be a list of objects such as [{EXAMPLE}]: {error.msg} at character "
+        f"{error.pos}, near {near!r}. Send edits as a JSON array, not a string; inside a string, "
+        'every " in the new text needs a backslash.'
+    )
+
+
 def parse_edits(raw: Any) -> list[Op]:
     """A list of edits from what a model sent (a list, one object, or a JSON string of them)."""
     if isinstance(raw, str):
-        try:
-            raw = json.loads(raw)
-        except json.JSONDecodeError as exc:
-            raise EditError(f"edits must be a list of objects such as [{EXAMPLE}]: {exc}") from exc
+        raw = _loads_edits(raw)
     if isinstance(raw, Mapping):
         raw = [raw]
     if not isinstance(raw, list) or not raw:

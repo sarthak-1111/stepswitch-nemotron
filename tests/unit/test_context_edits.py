@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import codecs
+import json
 import os
 import stat
 import sys
@@ -235,6 +236,32 @@ def test_edits_must_be_a_list(tmp_path: Path) -> None:
         E.parse_edits([])
     with pytest.raises(E.EditError, match="list of objects"):
         E.parse_edits("[not json")
+
+
+def test_a_json_string_of_edits_with_one_bracket_too_many_is_taken() -> None:
+    # Recorded shape: the model closed the outer arguments object inside the edits string.
+    edit = {"op": "replace", "start": "8:jq", "end": "11:qk", "text": "x = 1"}
+    for extra in ("}", "]", " }\n"):
+        (op,) = E.parse_edits(json.dumps([edit]) + extra)
+        assert (op.kind, str(op.start), str(op.end), op.lines) == (
+            "replace",
+            "8:jq",
+            "11:qk",
+            ("x = 1",),
+        )
+    with pytest.raises(E.EditError, match="list of objects"):
+        E.parse_edits(json.dumps([edit]) + ', {"op": "delete"}')  # more than brackets: refused
+
+
+def test_a_raw_quote_in_a_json_string_of_edits_is_shown_not_guessed() -> None:
+    # Recorded shape: a docstring's quotes left raw end the JSON string early.
+    raw = '[{"op": "replace", "start": "1:xj", "end": "3:do", "text": """Due dates."""\\nx = 1"}]'
+    with pytest.raises(E.EditError) as refused:
+        E.parse_edits(raw)
+    message = str(refused.value)
+    assert "Expecting ',' delimiter at character 61" in message
+    assert '"text": """Due dates' in message
+    assert "Send edits as a JSON array, not a string" in message
 
 
 # -- newlines, encodings, whole files ------------------------------------------------------
