@@ -251,7 +251,17 @@
      "tasks": 21
     }
    },
-   "text": "On the mini suites, the Nemotron ladder on Token Factory passes as many task runs as Nemotron 3 Ultra alone, for under a quarter of its dollars per task run."
+   "text": "On the mini suites, the Nemotron ladder on Token Factory passes as many task runs as Nemotron 3 Ultra alone, for under a quarter of its dollars per task run.",
+   "thresholds": {
+    "confidence_level": 0.95,
+    "cost_share_max_percent": 25,
+    "max_excluded_share": 0.1,
+    "runs": [
+     "2026-10-28-tf-mini-general",
+     "2026-10-28-tf-mini-science"
+    ],
+    "single": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b"
+   }
   },
   "C-030": {
    "sections": {
@@ -777,7 +787,333 @@
      }
     }
    },
-   "text": "On the runs of C-029, a reviewer from another model family agreed with the Nemotron reviewer on at least 95% of the changes both reviewed, and Nemotron 3.5 Lightning ran the summarize steps with no more cut-off calls than Ultra, for under a tenth of its dollars per call."
+   "text": "On the runs of C-029, a reviewer from another model family agreed with the Nemotron reviewer on at least 95% of the changes both reviewed, and Nemotron 3.5 Lightning ran the summarize steps with no more cut-off calls than Ultra, for under a tenth of its dollars per call.",
+   "thresholds": {
+    "alone_runs": [
+     "2026-10-28-tf-mini-general-lightning",
+     "2026-10-28-tf-mini-science-lightning"
+    ],
+    "max_usd_per_call_percent": 10,
+    "min_agreement_percent": 95,
+    "min_changes": 15,
+    "runs": [
+     "2026-10-28-tf-mini-general",
+     "2026-10-28-tf-mini-science"
+    ],
+    "second": "tokenfactory/openai/gpt-oss-120b",
+    "single": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+    "small": "tokenfactory/nvidia/Nemotron-3_5-Lightning",
+    "small_step_types": [
+     "summarize"
+    ]
+   }
+  },
+  "C-032": {
+   "sections": {
+    "comparison": {
+     "bench_command": "uv run ssw bench run --suite <suite> --workers router,<ultra> --router-pool <pool> --allow-remote --policy bench/policies/tokenfactory-ladder.toml --interleave --budget-usd 0.5 --budget-usd-total <cap> (each run's run.json records its command)",
+     "bill": {
+      "console": {
+       "balance_after_usd": 2.62,
+       "balance_before_usd": 5.0,
+       "consumption_usd_incl_tax": 2.38,
+       "covers": "every call on the account on 2026-10-28: the bench runs, the probes of five models, direct API checks, and two live test runs outside the bench (a toy ssw run and the README quickstart in a fresh clone)",
+       "not_in_the_ledger": "the probes, the direct API checks, the two live test runs (0.0111 and 0.0105 by their own ledgers), and the first pilot's fourth task run, which ended without a result row",
+       "page": "Token Factory console, Billing, Transactions",
+       "read": "2026-10-28T04:12Z"
+      },
+      "runs": {
+       "2026-10-28-mini-general-nemotron-pilot": {
+        "cost_usd": 0.032128,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 3
+       },
+       "2026-10-28-tf-escalation-demo": {
+        "cost_usd": 0.028224,
+        "stopped": null,
+        "suite": "mini-science",
+        "task_runs": 1
+       },
+       "2026-10-28-tf-escalation-demo-2": {
+        "cost_usd": 0.027765,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 1
+       },
+       "2026-10-28-tf-escalation-demo-nano": {
+        "cost_usd": 0.205038,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 2
+       },
+       "2026-10-28-tf-general": {
+        "cost_usd": 0.003622,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 1
+       },
+       "2026-10-28-tf-long-path-diagnosis": {
+        "cost_usd": 0.206108,
+        "stopped": null,
+        "suite": "mini-science",
+        "task_runs": 1
+       },
+       "2026-10-28-tf-mini-general": {
+        "cost_usd": 0.942084,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 30
+       },
+       "2026-10-28-tf-mini-general-lightning": {
+        "cost_usd": 0.088868,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 15
+       },
+       "2026-10-28-tf-mini-general-replication": {
+        "cost_usd": 0.766431,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 30
+       },
+       "2026-10-28-tf-mini-general-replication-2": {
+        "cost_usd": 0.979381,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 30
+       },
+       "2026-10-28-tf-mini-general-toolfix": {
+        "cost_usd": 0.168409,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 15
+       },
+       "2026-10-28-tf-mini-science": {
+        "cost_usd": 0.428933,
+        "stopped": null,
+        "suite": "mini-science",
+        "task_runs": 12
+       },
+       "2026-10-28-tf-mini-science-lightning": {
+        "cost_usd": 0.059775,
+        "stopped": null,
+        "suite": "mini-science",
+        "task_runs": 6
+       },
+       "2026-10-28-tf-mini-science-replication": {
+        "cost_usd": 0.601733,
+        "stopped": null,
+        "suite": "mini-science",
+        "task_runs": 12
+       },
+       "2026-10-28-tf-mini-science-replication-2": {
+        "cost_usd": 0.508195,
+        "stopped": null,
+        "suite": "mini-science",
+        "task_runs": 12
+       },
+       "2026-10-28-tf-mini-science-toolfix": {
+        "cost_usd": 0.069338,
+        "stopped": null,
+        "suite": "mini-science",
+        "task_runs": 6
+       },
+       "2026-10-28-tf-pilot": {
+        "cost_usd": 0.362254,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 10
+       },
+       "2026-10-28-tf-science": {
+        "cost_usd": 0,
+        "stopped": null,
+        "suite": "mini-science",
+        "task_runs": 12
+       }
+      },
+      "source": "result rows (Stepswitch's ledger)",
+      "total_usd": 5.478286
+     },
+     "contestants": {
+      "ladder": "router",
+      "single": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b"
+     },
+     "cost_share": {
+      "interval": {
+       "confidence": 0.95,
+       "high": 27.7,
+       "low": 12.1,
+       "method": "cluster bootstrap over tasks (percentile)",
+       "tasks": 21
+      },
+      "percent": 18.0,
+      "saving_percent": 82.0
+     },
+     "excluded": [],
+     "ladder_dollars_by_model": {
+      "Nemotron_3_5_Lightning": {
+       "calls": 48,
+       "cost_usd": 0.005958,
+       "percent": 2.6,
+       "worker": "tokenfactory/nvidia/Nemotron-3_5-Lightning"
+      },
+      "Nemotron_3_Ultra_550b_a55b": {
+       "calls": 42,
+       "cost_usd": 0.040161,
+       "percent": 17.7,
+       "worker": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b"
+      },
+      "gpt_oss_120b": {
+       "calls": 21,
+       "cost_usd": 0.002664,
+       "percent": 1.2,
+       "worker": "tokenfactory/openai/gpt-oss-120b"
+      },
+      "nemotron_3_super_120b_a12b": {
+       "calls": 155,
+       "cost_usd": 0.178463,
+       "percent": 78.5,
+       "worker": "tokenfactory/nvidia/nemotron-3-super-120b-a12b"
+      }
+     },
+     "per_suite": {
+      "mini-general": {
+       "commit": "4ad5e183d931",
+       "results": {
+        "ladder": {
+         "cost_per_task_usd": 0.009688,
+         "cost_usd": 0.145314,
+         "escalations": 0,
+         "minutes_per_task": 0.75,
+         "pass_rate_percent": 100.0,
+         "passed": 15,
+         "runs": 15,
+         "steps_per_task": 13.1,
+         "tokens_per_task": 43219,
+         "uncached_tokens_per_task": 22059
+        },
+        "single": {
+         "cost_per_task_usd": 0.055604,
+         "cost_usd": 0.834067,
+         "escalations": 0,
+         "minutes_per_task": 0.68,
+         "pass_rate_percent": 100.0,
+         "passed": 15,
+         "runs": 15,
+         "steps_per_task": 13.3,
+         "tokens_per_task": 52941,
+         "uncached_tokens_per_task": 51490
+        }
+       },
+       "run": "2026-10-28-tf-mini-general-replication-2",
+       "stopped": null,
+       "task_runs": 15
+      },
+      "mini-science": {
+       "commit": "904192d526b5",
+       "results": {
+        "ladder": {
+         "cost_per_task_usd": 0.013655,
+         "cost_usd": 0.081932,
+         "escalations": 0,
+         "minutes_per_task": 0.79,
+         "pass_rate_percent": 100.0,
+         "passed": 6,
+         "runs": 6,
+         "steps_per_task": 11.5,
+         "tokens_per_task": 57547,
+         "uncached_tokens_per_task": 32083
+        },
+        "single": {
+         "cost_per_task_usd": 0.071044,
+         "cost_usd": 0.426263,
+         "escalations": 0,
+         "minutes_per_task": 0.77,
+         "pass_rate_percent": 100.0,
+         "passed": 6,
+         "runs": 6,
+         "steps_per_task": 13.8,
+         "tokens_per_task": 71726,
+         "uncached_tokens_per_task": 66649
+        }
+       },
+       "run": "2026-10-28-tf-mini-science-replication-2",
+       "stopped": null,
+       "task_runs": 6
+      }
+     },
+     "prices_per_million": {
+      "Nemotron_3_5_Lightning": {
+       "cached_input_per_million": 0.03,
+       "input_per_million": 0.06,
+       "output_per_million": 0.24,
+       "worker": "tokenfactory/nvidia/Nemotron-3_5-Lightning"
+      },
+      "Nemotron_3_Ultra_550b_a55b": {
+       "cached_input_per_million": 0.12,
+       "input_per_million": 1.0,
+       "output_per_million": 3.0,
+       "worker": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b"
+      },
+      "gpt_oss_120b": {
+       "cached_input_per_million": 0.1,
+       "input_per_million": 0.15,
+       "output_per_million": 0.6,
+       "worker": "tokenfactory/openai/gpt-oss-120b"
+      },
+      "nemotron_3_super_120b_a12b": {
+       "cached_input_per_million": 0.06,
+       "input_per_million": 0.3,
+       "output_per_million": 0.9,
+       "worker": "tokenfactory/nvidia/nemotron-3-super-120b-a12b"
+      }
+     },
+     "problems": [
+      "the ladder's dollars are 18.0% of Ultra's, interval up to 27.7%"
+     ],
+     "recorded": "2026-10-28T11:35:57+00:00",
+     "results": {
+      "ladder": {
+       "cost_per_task_usd": 0.010821,
+       "cost_usd": 0.227246,
+       "escalations": 0,
+       "minutes_per_task": 0.77,
+       "pass_rate_percent": 100.0,
+       "passed": 21,
+       "runs": 21,
+       "steps_per_task": 12.7,
+       "tokens_per_task": 47312,
+       "uncached_tokens_per_task": 24923
+      },
+      "single": {
+       "cost_per_task_usd": 0.060016,
+       "cost_usd": 1.26033,
+       "escalations": 0,
+       "minutes_per_task": 0.71,
+       "pass_rate_percent": 100.0,
+       "passed": 21,
+       "runs": 21,
+       "steps_per_task": 13.5,
+       "tokens_per_task": 58308,
+       "uncached_tokens_per_task": 55821
+      }
+     },
+     "task_runs": 21,
+     "tasks": 21
+    }
+   },
+   "text": "On a second pair of runs, made on a later commit, the Nemotron ladder on Token Factory again passes as many task runs as Nemotron 3 Ultra alone on the mini suites, for under a quarter of its dollars per task run.",
+   "thresholds": {
+    "confidence_level": 0.95,
+    "cost_share_max_percent": 25,
+    "max_excluded_share": 0.1,
+    "runs": [
+     "2026-10-28-tf-mini-general-replication-2",
+     "2026-10-28-tf-mini-science-replication-2"
+    ],
+    "single": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b"
+   }
   }
  },
  "runs": [

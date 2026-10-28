@@ -1,6 +1,7 @@
 // Stepswitch replay: a read-only view of recorded Token Factory bench runs (data.json, built by
 // hackathon/demo/build.py from bench/results). No model is called from this page. The headline
-// numbers come from the claim evidence in data.json (claims/evidence/C-029.json, C-030.json).
+// numbers come from the claim evidence in data.json (claims/evidence/C-029.json, C-030.json, and
+// C-032.json, the withdrawn replication).
 "use strict";
 
 const LADDER = "router";
@@ -316,6 +317,7 @@ function renderHeadline(data) {
     kpi("Uncached tokens per task run", int(r.ladder.uncached_tokens_per_task), `Ultra alone: ${int(r.single.uncached_tokens_per_task)}`),
     kpi("Minutes per task run", r.ladder.minutes_per_task.toFixed(2), `Ultra alone: ${r.single.minutes_per_task.toFixed(2)}; the ladder is slower`),
   );
+  renderReplication(data);
   costChart(comparison);
   shareChart(comparison);
   tokenChart(comparison);
@@ -326,6 +328,27 @@ function renderHeadline(data) {
       + `at list prices on Stepswitch’s ledger. The Token Factory console showed ${usd(c.consumption_usd_incl_tax, 2)} `
       + `including tax for the day when read (${when(c.read)}); it also covers ${c.not_in_the_ledger}.`;
   }
+}
+
+// C-032, the replication registered before its runs: shown with its registered bound, though
+// it missed it and was withdrawn.
+function renderReplication(data) {
+  const claim = data.evidence?.["C-032"];
+  const again = claim?.sections?.comparison;
+  if (!again) return;
+  const share = again.cost_share;
+  const r = again.results;
+  const bound = claim.thresholds?.cost_share_max_percent;
+  const note = $("#replication");
+  note.replaceChildren(
+    `A second pair of runs, registered before it started as claim C-032: the ladder passed `
+      + `${r.ladder.passed} of ${r.ladder.runs} task runs and Ultra alone ${r.single.passed} of ${r.single.runs}; `
+      + `the ladder spent ${share.percent.toFixed(1)}% of Ultra’s dollars (interval ${share.interval.low.toFixed(1)}% `
+      + `to ${share.interval.high.toFixed(1)}%). The interval passed the ${bound}% registered in advance, so that claim is `,
+    el("a", { href: "https://github.com/sarthak-1111/stepswitch-nemotron/blob/hackathon/docs/decisions/0048-c032-withdrawn.md" }, "withdrawn"),
+    ".",
+  );
+  note.hidden = false;
 }
 
 // ---- the recorded run in the hero ---------------------------------------------------------

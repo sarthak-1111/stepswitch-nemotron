@@ -56,6 +56,11 @@ Evidence: [C-029](claims/evidence/C-029.json).
   <!-- num:C-029:sections.comparison.cost_share.interval.low -->13.8<!-- /num --> % and
   <!-- num:C-029:sections.comparison.cost_share.interval.high -->23.6<!-- /num --> %.
   It also sent fewer uncached tokens: Super and Lightning hit the prompt cache, Ultra rarely did.
+- **Replication:** a second pair of runs, registered before it started as claim C-032, again
+  passed every task run on both sides at a similar share of Ultra's dollars, but its interval
+  reached past the registered bound: on one task Super's output was cut off at the cap again
+  and again. C-032 is withdrawn ([why](docs/decisions/0048-c032-withdrawn.md)), and the
+  interval above holds for C-029's runs only.
 - **Reviews:** `gpt-oss-120b` agreed with Ultra's verdict on
   <!-- num:C-030:sections.steps.reviews.agreeing -->20<!-- /num --> of the
   <!-- num:C-030:sections.steps.reviews.changes -->21<!-- /num --> changes both reviewed (claim
@@ -64,7 +69,7 @@ Evidence: [C-029](claims/evidence/C-029.json).
 - **Time:** the ladder took a little longer per task run than Ultra alone, and no task needed an
   escalation: Super's changes passed the gates within its two attempts each time.
 - **The bill:** every hosted bench run of this submission, pilots, a crashed run, the
-  small-model runs and the escalation demos included, cost US$
+  small-model runs, the escalation demos and both replication attempts included, cost US$
   <!-- num:C-029:sections.comparison.bill.total_usd -->2.18<!-- /num --> by Stepswitch's ledger
   at list prices. The Token Factory console showed US$
   <!-- num:C-029:sections.comparison.bill.console.consumption_usd_incl_tax -->2.38<!-- /num -->

@@ -69,6 +69,12 @@ on Token Factory, the probes of five models, and a handful of direct API checks.
   2026-10-28).
 - An agent cannot know in advance how long a model will think at a given effort. We now review
   with thinking off, which works, but it gives up the thinking.
+- Edits need the thinking, and there the cap costs a claim. In the replication of C-029
+  (`bench/results/2026-10-28-tf-mini-science-replication-2`, task `vectorize-gaussian-sum`),
+  four of Super's edit replies stopped at the output cap (`finish_reason: length`), the gates
+  failed once, and the task took 22 steps. That one task cost the ladder 77.6% of Ultra's
+  dollars, against 15.4% in the first pair of runs, and put the replication's interval above
+  its registered bound (ADR 0048).
 - Ask: an enforced thinking budget (a maximum number of reasoning tokens, after which the model
   must answer), or a documented budget per effort level and model.
 
@@ -111,11 +117,12 @@ What each model returned for the same one-line question at `low` effort (2026-10
 
 ### 6. The bill
 
-- Our ledger, at the list prices from `/v1/models?verbose=true`, came to US$ 2.1787 for the
-  bench runs; the console showed US$ 2.38 for the whole day, tax included, which also covers
-  probes, direct API checks and two test runs outside the bench. We could not check the
-  difference (US$ 0.20, including the test runs' 0.02) line by line, because the usage view
-  lagged (next point) and the transactions show one consumption line per month.
+- Our ledger, at the list prices from `/v1/models?verbose=true`, came to US$ 5.4783 for the
+  bench runs; the console showed US$ 5.64 of consumption, tax included, read at 11:39 UTC,
+  which also covers probes, direct API checks, the bench runs' canary calls and two test runs
+  outside the bench. (At 04:12 UTC the two readings were US$ 2.1787 and 2.38.) We could not
+  check the difference (US$ 0.16, including the test runs' 0.02) line by line, because the usage
+  view lagged (next point) and the transactions show one consumption line per month.
 - At 03:56 UTC the Usage page (Billing, Usage) said "Last updated: 02:17, UTC" and showed a few
   hundred tokens per model and a total under US$ 0.01, while the account balance had already
   dropped by US$ 2.10. During a timed event, a usage view that is hours behind the balance makes

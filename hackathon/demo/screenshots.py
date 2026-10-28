@@ -48,7 +48,9 @@ def main() -> None:
             # The installed Chrome, as the dashboard's browser test uses (pyproject.toml, e2e).
             browser = p.chromium.launch(channel="chrome")
             for scheme in ("light", "dark"):
-                page = browser.new_page(viewport={"width": 1440, "height": 900}, color_scheme=scheme)
+                page = browser.new_page(
+                    viewport={"width": 1440, "height": 900}, color_scheme=scheme
+                )
                 page.goto(url)
                 page.wait_for_selector("#kpis .kpi")
                 page.wait_for_selector("#run-steps li")

@@ -13,7 +13,6 @@ endpoint, from examples/tokenfactory/local.toml.example; the key stays in NEBIUS
 from __future__ import annotations
 
 import argparse
-import os
 import shutil
 import stat
 import subprocess
@@ -47,7 +46,7 @@ GIT = [
 
 def _writable(remove: object, path: str, _info: object) -> None:
     """Git marks its object files read-only, which Windows refuses to delete."""
-    os.chmod(path, stat.S_IWRITE)
+    Path(path).chmod(stat.S_IWRITE)
     remove(path)  # type: ignore[operator]
 
 

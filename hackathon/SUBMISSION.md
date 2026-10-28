@@ -32,6 +32,12 @@ task run per task, with the same gates. From the evidence of claim C-029
 - The ladder spent 81.6% fewer dollars per task run. Its share of Ultra's dollars was 18.4%,
   with a 95% cluster-bootstrap interval over tasks of 13.8% to 23.6%.
 - Per suite: general 0.0106 against 0.0522 dollars per task run, science 0.0089 against 0.0626.
+- **Replicated, with a caveat.** A second pair of runs on a later commit, registered and pushed
+  as claim C-032 before its first task run (ADR 0047), again passed 21 of 21 task runs on both
+  sides, and the ladder's dollars came to 18.0% of Ultra's (18.4% above). Its 95% interval
+  reached 27.7%, above the 25% registered in advance: on one task Super's edit replies stopped
+  at the output cap four times. So C-032 is withdrawn (ADR 0048) and "under a quarter" holds
+  on the runs above only; both pairs put the ladder at about 18% of Ultra's dollars.
 - Where the ladder's dollars went: Super 80.0% (151 calls), Ultra 16.0% (42 calls), Lightning
   2.8% (47 calls), the second reviewer 1.2% (21 calls).
 - Reviews (claim C-030): `gpt-oss-120b` agreed with Ultra's verdict on 20 of the 21 changes
@@ -106,6 +112,11 @@ publishes only numbers that anyone can re-run.
   git config.
 - **Sandboxes** answered with every permission false for our project (beta access not granted),
   so the sandboxed gate backend stayed a design ([sandboxes.md](sandboxes.md)).
+- **Git and 260-character paths on Windows.** The first replication attempt passed every task
+  run, but its step records showed the protected gate ending with an error on every science
+  task run of Ultra alone. Ultra's long contestant name put the task worktree's git objects past
+  260 characters, and the gates' git queries did not set `core.longpaths`. We fixed it, kept
+  those runs in the bill, and made the replication again (ADR 0047).
 
 ## Accomplishments that we're proud of
 
@@ -118,6 +129,8 @@ publishes only numbers that anyone can re-run.
   withdrawn in the open (`claims/claims.yaml`, `docs/decisions/`).
 - The whole bench bill for this submission is recorded run by run, failed and calibration runs
   included (below).
+- A replication registered and pushed before its runs, and reported though it missed its bound
+  (ADR 0047, ADR 0048).
 
 ## What we learned
 
@@ -138,6 +151,14 @@ publishes only numbers that anyone can re-run.
   2.8 times the ladder's 47,156 and 2.5 times Ultra alone's 53,067. On the science suite it
   cost more per task run than the ladder (0.0100 against 0.0089) and took 1.24 minutes against
   0.65. Of the three, the ladder used the fewest tokens per task run.
+- **Tool messages decide how many turns go to waste.** After the tool fixes (container paths,
+  `cd <dir> &&`, edits sent as JSON strings, read's line prefixes in an edit's old text), the
+  ladder alone on the same 21 tasks had 9 of 215 tool calls refused, against 19 of 211 in
+  C-029's runs; Lightning's went from 11 to none. It passed 20 of 21: in the failure, the models
+  wrote read's line prefixes into a file's new text, which the tools now strip as well.
+- **One task can move an interval.** With 21 tasks and one run each, one task on which Super's
+  output was cut off four times cost the ladder 77.6% of Ultra's dollars on that task (15.4% in
+  C-029's runs), and the second pair's interval reached 27.7% (23.6% for the first).
 
 ## What's next
 
@@ -146,8 +167,8 @@ publishes only numbers that anyone can re-run.
 - A ladder that learns from these step records which step types each model handles, per
   repository, and the Nano tier for the shortest steps.
 - The ladder on SWE-bench Verified Mini, which so far ran on a local model only.
-- The mini suites again with the tool fixes above, to measure how many of Lightning's refused
-  tool calls (and the turns spent on them) they remove.
+- More tasks or seeds per suite before the next claim is registered, so that one task cannot
+  move its interval past the bound.
 - A live button on the demo, behind a rate-limited function that holds the key
   ([DEPLOY.md](DEPLOY.md)).
 
@@ -178,21 +199,30 @@ evidence recomputes this table from the committed result rows):
 | `2026-10-28-tf-escalation-demo` | cheapest-first demo; no escalation | 1 | 0.0282 |
 | `2026-10-28-tf-escalation-demo-2` | cheapest-first demo; no escalation | 1 | 0.0278 |
 | `2026-10-28-tf-escalation-demo-nano` | Nano-first demo; both tasks escalated to Ultra | 2 | 0.2050 |
-| **All bench runs** | | | **2.1787** |
+| `2026-10-28-tf-mini-general-toolfix` | the ladder alone after the tool fixes, general suite | 15 | 0.1684 |
+| `2026-10-28-tf-mini-science-toolfix` | the ladder alone after the tool fixes, science suite | 6 | 0.0693 |
+| `2026-10-28-tf-mini-general-replication` | first replication attempt; not used, a long-path bug hit Ultra's side (ADR 0047) | 30 | 0.7664 |
+| `2026-10-28-tf-mini-science-replication` | first replication attempt; not used (ADR 0047) | 12 | 0.6017 |
+| `2026-10-28-tf-long-path-diagnosis` | one task run of Ultra alone, kept to read the gate's error | 1 | 0.2061 |
+| `2026-10-28-tf-mini-general-replication-2` | C-032, general suite (withdrawn, ADR 0048) | 30 | 0.9794 |
+| `2026-10-28-tf-mini-science-replication-2` | C-032, science suite (withdrawn, ADR 0048) | 12 | 0.5082 |
+| **All bench runs** | | | **5.4783** |
 
-The Token Factory console (Billing, Transactions, read 2026-10-28 04:12 UTC) showed US$ 2.38 of
-consumption, tax included, for every call on the account: the bench runs above, the probes of
-five models, a few direct API checks, two live test runs outside the bench (a toy `ssw run`,
-US$ 0.0111, and the README quickstart in a fresh clone, US$ 0.0105), and the first pilot's
-fourth task run, which ended without a result row. The account started with US$ 5.00 and had
-US$ 2.62 left. `hackathon/bill.json` records the reading.
+The Token Factory console (Billing, Transactions, read 2026-10-28 11:39 UTC) showed US$ 5.64 of
+consumption for October, tax included, for every call on the account, all of it on 2026-10-28:
+the bench runs above, the probes of five models, a few direct API checks, the canary call each
+bench run makes to every worker before it starts, two live test runs outside the bench (a toy
+`ssw run`, US$ 0.0111, and the README quickstart in a fresh clone, US$ 0.0105), and the first
+pilot's fourth task run, which ended without a result row. The account started at US$ 0.00,
+received a card payment of US$ 5.00 and US$ 25.00 of program credits, and had US$ 24.36 left.
+`hackathon/bill.json` records the reading.
 
 ## What changed during the submission period
 
 The submission period opened on 2026-08-26. Stepswitch's first commit, `e833c99`, is dated
 2026-10-16, so the whole project was built during the period
 ([COMPLIANCE.md](COMPLIANCE.md) has the log). The Token Factory and Nemotron work for this
-submission is the commit range `de1cf95..hackathon-2026-10`:
+submission is the commits after `de1cf95` on the `hackathon` branch:
 
 - hosted provider presets with per-model prices and reasoning efforts, dollar budgets per task
   and per bench run (ADR 0044);
@@ -206,8 +236,11 @@ submission is the commit range `de1cf95..hackathon-2026-10`:
   escalation, and flags rules that match no configured worker, without calling a model;
 - tool fixes drawn from the refused tool calls in the recorded runs: container-style absolute
   paths, `cd <dir> &&` in `run`, edits sent as a JSON string with a stray bracket, and old text
-  copied from read output with its row prefixes. These are tested; the recorded runs predate
-  them, so no number on this page reflects them.
+  copied from read output with its row prefixes, measured in the tool-fix runs above; then
+  read's prefixes stripped from new text too, and a test selector that repeats the pytest
+  command;
+- the long-path fix for the gates' git queries on Windows, and claim C-032, a replication of
+  C-029 registered before its runs and withdrawn when it missed its bound (ADR 0047, 0048).
 
 ## Built with
 

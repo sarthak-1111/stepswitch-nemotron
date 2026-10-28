@@ -111,7 +111,9 @@ def load_run(name: str, kind: str) -> dict[str, Any] | None:
         kept = {key: row.get(key) for key in ROW_KEYS}
         kept["cost_usd"] = model_cost(row)
         kept["models"] = {
-            worker: {k: v for k, v in counts.items() if k in ("calls", "input", "output", "cost_usd")}
+            worker: {
+                k: v for k, v in counts.items() if k in ("calls", "input", "output", "cost_usd")
+            }
             for worker, counts in (row.get("models") or {}).items()
         }
         rows.append(kept)
@@ -142,11 +144,16 @@ def load_run(name: str, kind: str) -> dict[str, Any] | None:
 def build() -> dict[str, Any]:
     runs = [run for run in (load_run(name, kind) for name, kind in RUNS) if run is not None]
     evidence = {}
-    for claim in ("C-029", "C-030"):
+    # C-032 is the withdrawn replication of C-029; the page shows it with its registered bound.
+    for claim in ("C-029", "C-030", "C-032"):
         path = ROOT / "claims" / "evidence" / f"{claim}.json"
         if path.is_file():
             data = json.loads(path.read_text(encoding="utf-8"))
-            evidence[claim] = {"text": data.get("text"), "sections": data.get("sections")}
+            evidence[claim] = {
+                "text": data.get("text"),
+                "thresholds": data.get("thresholds"),
+                "sections": data.get("sections"),
+            }
     return {"schema": 1, "runs": runs, "evidence": evidence}
 
 

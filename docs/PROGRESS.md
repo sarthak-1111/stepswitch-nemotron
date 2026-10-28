@@ -55,8 +55,24 @@ or the docs group (the docs workflow builds the site in CI). Tag `hackathon-2026
   VIDEO, tapes, screenshots, DEPLOY, sandboxes, COMPLIANCE, bill.json. The README quickstart
   was run as written in a fresh clone of the public repository: step 1 reproduced the C-029 and
   C-030 evidence (timestamps aside) with no key; steps 2 and 3 passed the task for US$ 0.0105.
-- The bill: US$ 2.1787 for every hosted bench run by the ledger; US$ 2.38 on the console for the
-  whole day, tax included, probes and test runs outside the bench included.
+- The tool fixes measured: the ladder alone on both mini suites (`2026-10-28-tf-mini-*-toolfix`)
+  had 9 of 215 tool calls refused against 19 of 211 in C-029's runs (Lightning 0 of 66 against
+  11 of 84) and passed 20 of 21. The failure wrote read's `line:hash|` prefixes into a file's
+  new text; the edit tool now strips them there too, with a note (c2e32c7).
+- The test tool drops a selector that repeats the pytest command (`-m pytest -q`, which pytest
+  read as a marker filter that deselected every test); Ultra alone often sent it.
+- Git long paths on Windows: the gates' git queries and the prompt's file listing pass
+  `core.longpaths`. Without it, Ultra's long contestant name put a bench worktree's git objects
+  past 260 characters and the protected gate ended with an error on every science task run of
+  the first replication attempt (ADR 0047).
+- C-032, a replication of C-029 registered and pushed before its runs (ADR 0047): 21 of 21 task
+  runs passed on both sides, the ladder at 18.0% of Ultra's dollars, but the 95% interval
+  reached 27.7%, above the registered 25%; withdrawn (ADR 0048). One task, on which Super's
+  edit replies stopped at the output cap four times, widened it.
+- The bill: US$ 5.4783 for every hosted bench run by the ledger (both replication attempts and
+  the long-path diagnosis included); US$ 5.64 on the console at 11:39 UTC, tax included, probes,
+  canary calls and test runs outside the bench included. The account had US$ 24.36 left of a
+  US$ 5.00 card payment and US$ 25.00 of program credits.
 
 ### Research that changed the plan
 
