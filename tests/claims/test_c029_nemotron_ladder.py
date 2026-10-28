@@ -124,12 +124,14 @@ def by_model(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def prices(found: list[Run], names: list[str]) -> dict[str, Any]:
-    """List prices per million tokens that the runs recorded, by model."""
+    """List prices per million tokens that the runs recorded, for the models they used."""
     out: dict[str, Any] = {}
     for run in found:
         if run.name in names:
+            used = set(run.meta.get("router_pool") or []) | set(run.meta.get("contestants") or [])
             for worker, price in (run.meta.get("worker_prices") or {}).items():
-                out.setdefault(key(worker), {"worker": worker, **price})
+                if worker in used:
+                    out.setdefault(key(worker), {"worker": worker, **price})
     return out
 
 
