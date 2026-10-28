@@ -1,7 +1,7 @@
 # Stepswitch
 
-**Each step of a coding task on the right Nemotron model, checked by your tests and a reviewer
-from another model family, with every claim re-runnable.**
+**The right Nemotron for every step of a coding task: small models where a slip costs little,
+Ultra where a wrong call costs the task, and your tests deciding what counts as done.**
 
 - Track: **Coding and Agentic Engineering**
 - Repository: https://github.com/sarthak-1111/stepswitch-nemotron (MIT)
@@ -9,20 +9,35 @@ from another model family, with every claim re-runnable.**
 - Video: link added at upload
 - Feedback on Token Factory, Sandboxes and Nemotron: [FEEDBACK.md](FEEDBACK.md)
 
-Stepswitch sends each step of a coding task to the right Nemotron model on Token Factory,
-verifies every change with your tests and a reviewer from another model family, and makes every
-claim re-runnable with `ssw prove`.
+## The story in 30 seconds
+
+Give a coding agent 21 small tasks (bug fixes, small features, refactors, a little numerical
+code) and run every step on Nemotron 3 Ultra, the largest Nemotron model. All 21 pass, for
+**US$ 1.16**. Yet most of those calls do not need the largest model: find a file, read it, write
+a small edit, run the tests.
+
+Stepswitch gives each step to the Nemotron model that fits it on Token Factory. Lightning finds
+and reads the files, Super writes the code and runs your tests, Ultra plans and reviews, and
+`gpt-oss-120b` gives a second opinion. Ultra makes 42 of the 261 calls, and all 21 tasks still
+pass, for **US$ 0.21**: 81.6% fewer dollars. When a smaller model's change fails your tests twice, Ultra takes the task over; the
+demo replays a run where that happened. And each number here can be re-checked with one
+command, without an API key, because each is backed by a claim with a test.
+
+**Who it is for:** developers and teams who run coding agents and pay by the token, and want the
+large model's judgement where it matters without paying the large model's price for every step.
 
 ## The numbers
 
 On the two mini bench suites (21 tasks: small bug fixes, features, refactors and numerical tasks
 in Python), the Nemotron ladder and Nemotron 3 Ultra alone ran interleaved on Token Factory, one
-task run per task, with the same gates. From the evidence of claim C-029
+task run per task, with the same checks (format, lint, the project's tests, numerical golden
+checks for the science tasks). From the evidence of claim C-029
 ([claims/evidence/C-029.json](../claims/evidence/C-029.json)):
 
 | | Nemotron ladder | `Nemotron-3-Ultra-550b-a55b` alone |
 |---|---:|---:|
 | Task runs passed | 21 of 21 | 21 of 21 |
+| US dollars for all 21 task runs | 0.21 | 1.16 |
 | US dollars per task run | 0.0101 | 0.0551 |
 | Tokens per task run, cached included | 47,156 | 53,067 |
 | Uncached tokens per task run | 22,878 | 50,787 |
@@ -30,28 +45,37 @@ task run per task, with the same gates. From the evidence of claim C-029
 | Escalations | 0 | 0 |
 
 - The ladder spent 81.6% fewer dollars per task run. Its share of Ultra's dollars was 18.4%,
-  with a 95% cluster-bootstrap interval over tasks of 13.8% to 23.6%.
+  with a 95% interval over tasks (cluster bootstrap) of 13.8% to 23.6%.
 - Per suite: general 0.0106 against 0.0522 dollars per task run, science 0.0089 against 0.0626.
-- **Replicated, with a caveat.** A second pair of runs on a later commit, registered and pushed
-  as claim C-032 before its first task run (ADR 0047), again passed 21 of 21 task runs on both
-  sides, and the ladder's dollars came to 18.0% of Ultra's (18.4% above). Its 95% interval
-  reached 27.7%, above the 25% registered in advance: on one task Super's edit replies stopped
-  at the output cap four times. So C-032 is withdrawn (ADR 0048) and "under a quarter" holds
-  on the runs above only; both pairs put the ladder at about 18% of Ultra's dollars.
 - Where the ladder's dollars went: Super 80.0% (151 calls), Ultra 16.0% (42 calls), Lightning
   2.8% (47 calls), the second reviewer 1.2% (21 calls).
 - Reviews (claim C-030): `gpt-oss-120b` agreed with Ultra's verdict on 20 of the 21 changes
   both reviewed. Every reviewed change had already passed its tests (reviews run after the
-  gates), so this is agreement on passing changes.
+  checks), so this is agreement on passing changes.
 - The ladder took a little longer per task run than Ultra alone (0.75 against 0.68 minutes).
+
+## Why you can trust these numbers
+
+- **Each one has a test.** Every number in the README is rendered from the evidence of a claim
+  in `claims/claims.yaml`; a number typed by hand fails CI. `uv run ssw prove --claim C-029
+  --claim C-030` re-checks these from the recorded runs, with no key and nothing billed, and
+  CI re-runs the claim tests on Linux, macOS and Windows on every push.
+- **Each run is published,** failed and calibration runs included, with a record of every
+  step, and so is the whole bill (below).
+- **We tried to break our own result.** A second pair of runs on a later commit, registered and
+  pushed as claim C-032 before its first task run (ADR 0047), again passed 21 of 21 task runs on
+  both sides, and the ladder's dollars came to 18.0% of Ultra's (18.4% above). Its 95% interval
+  reached 27.7%, above the 25% we had set in advance: on one task Super's edit replies stopped
+  at the output cap four times. So C-032 is withdrawn (ADR 0048), and "under a quarter" holds
+  on the runs above only. Both pairs put the ladder at about 18% of Ultra's dollars.
 
 ## Inspiration
 
-A coding agent makes dozens of model calls per task, and most of them are small: find a file,
-read it, condense a test log. Agents still send every call to one model, usually the largest, and
-report a pass rate without the bill. We wanted an agent that picks the model per step, proves
-the change with the project's own tests, has the change checked by a second model family, and
-publishes only numbers that anyone can re-run.
+A coding agent makes dozens of model calls per task, and most of them are routine: find a file,
+read it, condense a test log, make a small edit. Agents still send every call to one model,
+usually the largest, and report a pass rate without the bill. We wanted an agent that picks the
+model per step, proves the change with the project's own tests, has the change checked by a
+second model family, and publishes only numbers that anyone can re-run.
 
 ## What it does
 
@@ -63,10 +87,11 @@ publishes only numbers that anyone can re-run.
   - `nvidia/Nemotron-3-Ultra-550b-a55b` plans, reviews, and takes the work over when the gates
     fail twice on Super;
   - `openai/gpt-oss-120b` gives a second opinion on each of Ultra's reviews.
-- **Gates.** After a change, the project's format, lint, type and test gates run (impacted tests
-  first, then the full suite; science projects add numerical golden checks and protected
-  constants). A change that fails goes back with the failure report; after two failures on one
-  model, the task escalates up the ladder.
+- **Your tests decide what counts as done.** After a change, the project's own checks run, which
+  we call gates: format, lint, types and tests (impacted tests first, then the full suite;
+  science projects add numerical golden checks and protected constants). A change that fails
+  goes back with the failure report; after two failures on one model, the task escalates up the
+  ladder.
 - **Dollars as a first-class budget.** Prices per model come from Token Factory's model list
   (`GET /v1/models?verbose=true`, which includes pricing). The ledger records each call's model,
   tokens, cached tokens and dollars; `--budget-usd` stops a task at a dollar cap and

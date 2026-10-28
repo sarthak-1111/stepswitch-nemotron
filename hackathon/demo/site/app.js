@@ -306,11 +306,22 @@ function renderHeadline(data) {
   evidence = comparison;
   const share = comparison.cost_share;
   const r = comparison.results;
+  const most = Math.max(r.single.cost_usd, r.ladder.cost_usd);
+  $("#hero-bars").replaceChildren(...[
+    ["single", "Nemotron 3 Ultra for every step", "is-single"],
+    ["ladder", "Stepswitch, the Nemotron ladder", "is-ladder"],
+  ].map(([side, who, css]) => el("div", { class: `hero-bar ${css}` },
+    el("p", { class: "hero-bar-who" }, who),
+    el("div", { class: "hero-bar-track", "aria-hidden": "true" },
+      el("span", { class: "hero-bar-fill", style: `width: ${(100 * r[side].cost_usd / most).toFixed(1)}%` })),
+    el("p", { class: "hero-bar-value" },
+      el("strong", {}, usd(r[side].cost_usd, 2)),
+      ` · ${r[side].passed} of ${r[side].runs} tasks passed`))));
   $("#hero-saving").textContent = `${share.saving_percent.toFixed(1)}%`;
-  $("#hero-caption").textContent = `per task run than Nemotron 3 Ultra alone, on the same ${comparison.tasks} tasks, `
-    + `with ${r.ladder.passed} of ${r.ladder.runs} passed on both sides. The ladder spent ${share.percent.toFixed(1)}% of Ultra’s dollars `
+  $("#hero-caption").textContent = `per task run than Nemotron 3 Ultra alone, on the same ${comparison.tasks} tasks. `
+    + `The ladder spent ${share.percent.toFixed(1)}% of Ultra’s dollars `
     + `(${Math.round(share.interval.confidence * 100)}% interval ${share.interval.low.toFixed(1)}% to ${share.interval.high.toFixed(1)}%, `
-    + `bootstrap over tasks).`;
+    + `bootstrap over tasks). Totals for all ${r.ladder.runs} task runs, at list prices.`;
   $("#kpis").replaceChildren(
     kpi("Tasks passed", `${r.ladder.passed} / ${r.ladder.runs}`, `Ultra alone: ${r.single.passed} / ${r.single.runs}`),
     kpi("Dollars per task run", usd(r.ladder.cost_per_task_usd), `Ultra alone: ${usd(r.single.cost_per_task_usd)}`),
@@ -344,7 +355,7 @@ function renderReplication(data) {
     `A second pair of runs, registered before it started as claim C-032: the ladder passed `
       + `${r.ladder.passed} of ${r.ladder.runs} task runs and Ultra alone ${r.single.passed} of ${r.single.runs}; `
       + `the ladder spent ${share.percent.toFixed(1)}% of Ultra’s dollars (interval ${share.interval.low.toFixed(1)}% `
-      + `to ${share.interval.high.toFixed(1)}%). The interval passed the ${bound}% registered in advance, so that claim is `,
+      + `to ${share.interval.high.toFixed(1)}%). That interval went above the ${bound}% bound registered in advance, so that claim is `,
     el("a", { href: "https://github.com/sarthak-1111/stepswitch-nemotron/blob/hackathon/docs/decisions/0048-c032-withdrawn.md" }, "withdrawn"),
     ".",
   );

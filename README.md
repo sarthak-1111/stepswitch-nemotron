@@ -5,16 +5,28 @@
 <!-- hackathon:start -->
 ## Built for the Nebius x NVIDIA Global AI Hackathon
 
-Stepswitch sends each step of a coding task to the right Nemotron model on Token Factory,
-verifies every change with your tests and a reviewer from another model family, and makes every
-claim re-runnable with `ssw prove`.
+**Give a coding agent <!-- num:C-029:sections.comparison.tasks -->21<!-- /num --> small tasks**
+(bug fixes, small features, refactors, a little numerical code) **and run each step on Nemotron
+Ultra, the largest Nemotron model: all
+<!-- num:C-029:sections.comparison.results.single.passed -->21<!-- /num --> pass, for US$
+<!-- num:C-029:sections.comparison.results.single.cost_usd -->1.16<!-- /num -->.** Yet most of
+those calls do not need the largest model: find a file, read it, write a small edit, run the
+tests.
 
-- **Demo:** [replays of the recorded Token Factory runs](https://sarthak-1111.github.io/stepswitch-nemotron/),
-  step by step: the model of each step, its tokens and dollars, the gates and the reviews.
+**Stepswitch gives each step to the Nemotron model that fits it** on Token Factory. Lightning
+finds and reads the files, Super writes the code and runs your tests, Ultra plans and reviews,
+and a model from another family gives a second opinion. **All
+<!-- num:C-029:sections.comparison.results.ladder.passed -->21<!-- /num --> still pass, for US$
+<!-- num:C-029:sections.comparison.results.ladder.cost_usd -->0.21<!-- /num -->.** When a smaller
+model's change fails your tests twice, Ultra takes the task over. And you can re-check each of
+these numbers with one command, without an API key.
+
+- **Watch:** the video (link added at submission).
+- **See it:** [replays of the recorded runs](https://sarthak-1111.github.io/stepswitch-nemotron/),
+  step by step: which model took each step, what it cost, the tests and the reviews.
   Read-only, no login.
-- **Video:** link added at submission.
-- **Submission:** [hackathon/SUBMISSION.md](hackathon/SUBMISSION.md). **Feedback on Token
-  Factory, Sandboxes and Nemotron, with measurements:** [hackathon/FEEDBACK.md](hackathon/FEEDBACK.md).
+- **Read:** [the submission](hackathon/SUBMISSION.md), and [our feedback on Token Factory,
+  Sandboxes and Nemotron, with measurements](hackathon/FEEDBACK.md).
 
 ### The Nemotron ladder
 
@@ -56,11 +68,6 @@ Evidence: [C-029](claims/evidence/C-029.json).
   <!-- num:C-029:sections.comparison.cost_share.interval.low -->13.8<!-- /num --> % and
   <!-- num:C-029:sections.comparison.cost_share.interval.high -->23.6<!-- /num --> %.
   It also sent fewer uncached tokens: Super and Lightning hit the prompt cache, Ultra rarely did.
-- **Replication:** a second pair of runs, registered before it started as claim C-032, again
-  passed every task run on both sides at a similar share of Ultra's dollars, but its interval
-  reached past the registered bound: on one task Super's output was cut off at the cap again
-  and again. C-032 is withdrawn ([why](docs/decisions/0048-c032-withdrawn.md)), and the
-  interval above holds for C-029's runs only.
 - **Reviews:** `gpt-oss-120b` agreed with Ultra's verdict on
   <!-- num:C-030:sections.steps.reviews.agreeing -->20<!-- /num --> of the
   <!-- num:C-030:sections.steps.reviews.changes -->21<!-- /num --> changes both reviewed (claim
@@ -68,6 +75,20 @@ Evidence: [C-029](claims/evidence/C-029.json).
   concern, the second reviewer approved it, and Super revised it.
 - **Time:** the ladder took a little longer per task run than Ultra alone, and no task needed an
   escalation: Super's changes passed the gates within its two attempts each time.
+
+### Why you can trust these numbers
+
+- **Each one has a test.** The numbers in this section are rendered from the evidence of claims
+  C-029 and C-030, and `uv run ssw prove --claim C-029 --claim C-030` re-checks them from the
+  recorded runs, with no key and nothing billed. A README number typed by hand fails CI.
+- **Each run is published,** with a record of its steps: pilots, a crashed run and calibration
+  runs included, in [bench/results](bench/results/).
+- **We tried to break our own result.** A second pair of runs, registered before it started as
+  claim C-032, again passed each task run on both sides at a similar share of Ultra's dollars,
+  but its interval reached past the bound we had set in advance: on one task Super's output was
+  cut off at the cap again and again. So C-032 is withdrawn
+  ([why](docs/decisions/0048-c032-withdrawn.md)), and the interval above holds for C-029's runs
+  only.
 - **The bill:** every hosted bench run of this submission, pilots, a crashed run, the
   small-model runs, the escalation demos and both replication attempts included, cost US$
   <!-- num:C-029:sections.comparison.bill.total_usd -->5.48<!-- /num --> by Stepswitch's ledger
