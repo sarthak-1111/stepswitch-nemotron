@@ -93,6 +93,37 @@ def test_science_project_has_valid_science_checks(tmp_path: Path) -> None:
     assert config.model_extra["tracks"]["science"]["gates"][-2:] == ["golden", "full_tests"]
 
 
+def test_tokenfactory_routes_each_step_to_its_nemotron_model(tmp_path: Path) -> None:
+    from stepswitch.router.features import TaskFeatures
+    from stepswitch.router.router import RouterState, route
+    from stepswitch.router.rules import rules_from_config
+    from stepswitch.verify.review import second_opinion_enabled
+
+    _root, config, catalog = load(tmp_path, "tokenfactory")
+    (endpoint,) = config.endpoints
+    assert endpoint.preset == "tokenfactory" and not endpoint.is_local()
+    assert endpoint.auth == "bearer" and endpoint.api_key is None and endpoint.api_key_env
+    specs = catalog.specs()
+    assert all(spec.prices is not None for spec in specs)
+    assert config.budgets.usd == 0.5 and second_opinion_enabled(config)
+    rules = rules_from_config(config)
+
+    def model(step_type: str, escalations: int = 0) -> str | None:
+        state = RouterState(step=1, level=1, allow_remote=True, escalations=escalations)
+        chosen = route(TaskFeatures(), step_type, state, specs, rules).chosen
+        return chosen.split("/", 1)[1] if chosen else None
+
+    lightning = "nvidia/Nemotron-3_5-Lightning"
+    super_, ultra = "nvidia/nemotron-3-super-120b-a12b", "nvidia/Nemotron-3-Ultra-550b-a55b"
+    for step_type in ("navigate", "read", "summarize", "write-text"):
+        assert model(step_type) == lightning, step_type
+    for step_type in ("edit", "run", "triage"):
+        assert model(step_type) == super_, step_type
+        assert model(step_type, escalations=1) == ultra, step_type
+    for step_type in ("plan", "review"):
+        assert model(step_type) == ultra, step_type
+
+
 def test_slow_lane_workers_are_pin_only(tmp_path: Path) -> None:
     _root, config, catalog = load(tmp_path, "slow-lane")
     specs = {spec.id: spec for spec in catalog.specs()}

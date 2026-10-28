@@ -16,6 +16,7 @@ stay valid.
 | [remote-endpoint](remote-endpoint/) | A hosted chat-completions endpoint next to local models, with redaction and a deny list |
 | [science-project](science-project/) | A science-track project: golden cases with tolerances, and protected constants |
 | [slow-lane](slow-lane/) | A very large model on AirLLM or KTransformers, for asynchronous reviews (`ssw jobs`) |
+| [tokenfactory](tokenfactory/) | Every step on Token Factory: the Nemotron ladder, a second opinion from another family, a dollar budget |
 
 To use one:
 

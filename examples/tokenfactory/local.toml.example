@@ -1,0 +1,10 @@
+# Copy to .stepswitch/local.toml. Machine-specific: never commit it.
+#
+# The preset fills in the URL, the chat-completions format, bearer authentication and the
+# models of the Nemotron ladder (registry/providers/tokenfactory.toml). The key stays in the
+# environment: export NEBIUS_API_KEY before `ssw run`.
+schema = 1
+
+[[endpoints]]
+name = "tokenfactory"
+preset = "tokenfactory"

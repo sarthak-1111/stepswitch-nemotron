@@ -4255,3 +4255,52 @@ Sources: the package installed from PyPI (`minisweagent/config/benchmarks/sweben
   (swebench issue 652). The bench runs it in a Linux container.
 - The local model server (0.34.4) answers one request at a time, so task runs go one after
   another; grading a run overlaps with the next run's agent.
+
+## Verified after Phase 13: Token Factory
+
+### Token Factory chat-completions API (checked 2026-10-28)
+
+- Base URL `https://api.tokenfactory.nebius.com/v1/`, chat-completions format, bearer
+  authentication with the key from the console's API keys page. The service's SDKs and CLI
+  read the key from `NEBIUS_API_KEY` (and the project ID from `NEBIUS_PROJECT_ID`). Sources:
+  https://docs.tokenfactory.nebius.com/quickstart.md ,
+  https://docs.tokenfactory.nebius.com/sandboxes/start/set-up-access.md
+- `GET /v1/models` listed 30 models; the Nemotron ones were
+  `nvidia/Nemotron-3_5-Lightning`, `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B`,
+  `nvidia/nemotron-3-super-120b-a12b`, `nvidia/Nemotron-3.5-Super-VL` and
+  `nvidia/Nemotron-3-Ultra-550b-a55b`. `GET /v1/models?verbose=true` adds `context_length`,
+  `quantization`, `supported_features`, `per_request_limits` and `pricing`, in US dollars per
+  token: `prompt`, `input_cache_read`, `completion`. The console's price list (Billing,
+  Prices) showed the same figures per million tokens, with the cached prices valid from
+  2026-10-20. Per million tokens (input / cached input / output):
+
+  | Model | Input | Cached | Output | Context | Requests per minute |
+  |---|---:|---:|---:|---:|---:|
+  | `nvidia/Nemotron-3_5-Lightning` | 0.06 | 0.03 | 0.24 | 1,048,576 | 1000 |
+  | `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B` | 0.06 | 0.012 | 0.24 | 262,144 | 100 |
+  | `nvidia/nemotron-3-super-120b-a12b` | 0.30 | 0.06 | 0.90 | 262,144 | 1000 |
+  | `nvidia/Nemotron-3.5-Super-VL` | 0.30 | 0.06 | 0.90 | 1,048,576 | 1000 |
+  | `nvidia/Nemotron-3-Ultra-550b-a55b` | 1.00 | 0.12 | 3.00 | 1,048,576 | 1000 |
+  | `openai/gpt-oss-120b` | 0.15 | 0.10 | 0.60 | 131,072 | 600 |
+
+- Prompt caching is implicit and best-effort; `usage.prompt_tokens_details.cached_tokens`
+  reports it and `prompt_tokens` includes the cached tokens. Cached input is billed at its own
+  price on serverless endpoints. Source: https://docs.tokenfactory.nebius.com/cached-tokens.md
+- Rate limits: 429 with `Retry-After`; headers `x-ratelimit-limit-requests`,
+  `x-ratelimit-limit-tokens`, `x-ratelimit-remaining-*`, `x-ratelimit-reset-*`, plus dynamic
+  scaling headers. Limits are re-evaluated over 15-minute windows. Source:
+  https://docs.tokenfactory.nebius.com/ai-models-inference/rate-limits.md
+- Live answers (one small tool-call request per model, 2026-10-28):
+  - Every model answered with a native `tool_calls` entry and `finish_reason: tool_calls`.
+  - Usage differs per model. Lightning sent `prompt_tokens_details: null` and top-level
+    `prompt_cache_hit_tokens` / `prompt_cache_miss_tokens`; Super sent both, plus
+    `prompt_tokens_details.created_cache_tokens`; gpt-oss-120b sent `cached_tokens` but no
+    `completion_tokens_details`; Nano sent neither detail object, so its cached and reasoning
+    tokens are not reported. The codec now reads `prompt_cache_hit_tokens` when the detail
+    object is missing (ADR 0044).
+  - Reasoning text came as `reasoning_content` (Ultra), `reasoning` (gpt-oss-120b, Nano), or
+    both with the same text (Super). The codec already reads both names.
+  - Responses also carry `prompt_text`, `prompt_token_ids`, `metrics`, `moderation` and
+    `kv_transfer_params` keys, all null in these answers.
+  - Per-model limits from the headers: Lightning and Ultra 1000 requests and 2,000,000 tokens
+    per minute, Super 1000 and 1,000,000, gpt-oss-120b 600 and 500,000, Nano 100 and 800,000.
