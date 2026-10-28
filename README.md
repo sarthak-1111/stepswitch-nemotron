@@ -93,7 +93,7 @@ Evidence: [C-029](claims/evidence/C-029.json).
   small-model runs, the escalation demos and both replication attempts included, cost US$
   <!-- num:C-029:sections.comparison.bill.total_usd -->5.48<!-- /num --> by Stepswitch's ledger
   at list prices. The Token Factory console showed US$
-  <!-- num:C-029:sections.comparison.bill.console.consumption_usd_incl_tax -->5.64<!-- /num -->
+  <!-- num:C-029:sections.comparison.bill.console.consumption_usd_incl_tax -->5.89<!-- /num -->
   for every call on the account that day, tax included, with the probes and two test runs
   outside the bench. [hackathon/SUBMISSION.md](hackathon/SUBMISSION.md) lists each run.
 

@@ -118,11 +118,15 @@ What each model returned for the same one-line question at `low` effort (2026-10
 ### 6. The bill
 
 - Our ledger, at the list prices from `/v1/models?verbose=true`, came to US$ 5.4783 for the
-  bench runs; the console showed US$ 5.64 of consumption, tax included, read at 11:39 UTC,
+  bench runs; the console showed US$ 5.89 of consumption, tax included, read at 21:00 UTC,
   which also covers probes, direct API checks, the bench runs' canary calls and two test runs
   outside the bench. (At 04:12 UTC the two readings were US$ 2.1787 and 2.38.) We could not
-  check the difference (US$ 0.16, including the test runs' 0.02) line by line, because the usage
+  check the difference (US$ 0.41, including the test runs' 0.02) line by line, because the usage
   view lagged (next point) and the transactions show one consumption line per month.
+- A reading at 11:39 UTC showed US$ 5.64, five minutes after our last bench run ended; by
+  21:00 UTC it was US$ 5.89 with no call in between. Consumption that posts hours after the
+  calls makes "stop when the console reaches the budget" unsafe: a budget check has to use the
+  client's own ledger, as ours does. A "posted up to" time on the transactions page would help.
 - At 03:56 UTC the Usage page (Billing, Usage) said "Last updated: 02:17, UTC" and showed a few
   hundred tokens per model and a total under US$ 0.01, while the account balance had already
   dropped by US$ 2.10. During a timed event, a usage view that is hours behind the balance makes

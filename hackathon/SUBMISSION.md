@@ -193,8 +193,9 @@ second model family, and publishes only numbers that anyone can re-run.
 - A ladder that learns from these step records which step types each model handles, per
   repository, and the Nano tier for the shortest steps.
 - The ladder on SWE-bench Verified Mini, which so far ran on a local model only.
-- More tasks or seeds per suite before the next claim is registered, so that one task cannot
-  move its interval past the bound.
+- More tasks per suite before the next claim is registered, so that one task cannot move its
+  interval past the bound. More seeds would not do it: pooled, our two pairs of runs put the
+  interval at 13.8% to 24.1%, because the spread is between tasks.
 - A live button on the demo, behind a rate-limited function that holds the key
   ([DEPLOY.md](DEPLOY.md)).
 
@@ -234,14 +235,17 @@ evidence recomputes this table from the committed result rows):
 | `2026-10-28-tf-mini-science-replication-2` | C-032, science suite (withdrawn, ADR 0048) | 12 | 0.5082 |
 | **All bench runs** | | | **5.4783** |
 
-The Token Factory console (Billing, Transactions, read 2026-10-28 11:39 UTC) showed US$ 5.64 of
-consumption for October, tax included, for every call on the account, all of it on 2026-10-28:
+The Token Factory console (Billing, Transactions and Usage, read 2026-10-28 21:00 UTC) showed
+US$ 5.89 of consumption for October, tax included, for every call on the account, all of it on
+2026-10-28:
 the bench runs above, the probes of five models, a few direct API checks, the canary call each
 bench run makes to every worker before it starts, two live test runs outside the bench (a toy
 `ssw run`, US$ 0.0111, and the README quickstart in a fresh clone, US$ 0.0105), and the first
-pilot's fourth task run, which ended without a result row. The account started at US$ 0.00,
-received a card payment of US$ 5.00 and US$ 25.00 of program credits, and had US$ 24.36 left.
-`hackathon/bill.json` records the reading.
+pilot's fourth task run, which ended without a result row. An earlier reading, at 11:39 UTC,
+showed US$ 5.64: the last bench run had ended five minutes before and not all of its
+consumption had posted yet. No call was made after 11:34 UTC. The account started at
+US$ 0.00, received a card payment of US$ 5.00 and two grants of US$ 25.00 of program credits,
+and had US$ 49.11 left. `hackathon/bill.json` records the reading.
 
 ## What changed during the submission period
 

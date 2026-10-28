@@ -6,14 +6,15 @@
      "bench_command": "uv run ssw bench run --suite <suite> --workers router,<ultra> --router-pool <pool> --allow-remote --policy bench/policies/tokenfactory-ladder.toml --interleave --budget-usd 0.5 --budget-usd-total <cap> (each run's run.json records its command)",
      "bill": {
       "console": {
-       "added": "a card payment of 5.00 and 25.00 of program credits",
-       "added_usd": 30.0,
-       "balance_after_usd": 24.36,
-       "consumption_usd_incl_tax": 5.64,
+       "added": "a card payment of 5.00 and two grants of 25.00 of program credits",
+       "added_usd": 55.0,
+       "balance_after_usd": 49.11,
+       "consumption_usd_incl_tax": 5.89,
        "covers": "every call on the account in October 2026, all of it on 2026-10-28: the bench runs, the probes of five models, direct API checks, the bench runs' canary calls, and two live test runs outside the bench (a toy ssw run and the README quickstart in a fresh clone)",
+       "earlier_reading": "5.64 at 11:39 UTC, five minutes after the last bench run ended, before all of its consumption had posted; no call was made after 11:34 UTC",
        "not_in_the_ledger": "the probes, the direct API checks, the canary call each bench run makes to every worker before it starts, the two live test runs (0.0111 and 0.0105 by their own ledgers), and the first pilot's fourth task run, which ended without a result row",
-       "page": "Token Factory console, Billing, Transactions",
-       "read": "2026-10-28T11:39Z",
+       "page": "Token Factory console, Billing, Transactions and Usage (usage last updated 19:27 UTC)",
+       "read": "2026-10-28T21:00Z",
        "starting_balance_usd": 0.0
       },
       "runs": {
@@ -264,7 +265,7 @@
       }
      },
      "problems": [],
-     "recorded": "2026-10-28T12:14:12+00:00",
+     "recorded": "2026-10-28T21:01:36+00:00",
      "results": {
       "ladder": {
        "cost_per_task_usd": 0.010141,

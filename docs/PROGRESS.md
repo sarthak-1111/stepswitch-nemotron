@@ -72,9 +72,14 @@ everything since.
   reached 27.7%, above the registered 25%; withdrawn (ADR 0048). One task, on which Super's
   edit replies stopped at the output cap four times, widened it.
 - The bill: US$ 5.4783 for every hosted bench run by the ledger (both replication attempts and
-  the long-path diagnosis included); US$ 5.64 on the console at 11:39 UTC, tax included, probes,
-  canary calls and test runs outside the bench included. The account had US$ 24.36 left of a
-  US$ 5.00 card payment and US$ 25.00 of program credits.
+  the long-path diagnosis included); US$ 5.89 on the console at 21:00 UTC, tax included, probes,
+  canary calls and test runs outside the bench included (11:39 UTC had shown US$ 5.64, before
+  the last run's consumption had posted). The account had US$ 49.11 left of a US$ 5.00 card
+  payment and two grants of US$ 25.00 of program credits.
+- No third replication: pooling the two pairs we have puts the interval at 13.8% to 24.1%, and
+  simulated three-seed reruns of the same 21 tasks kept the upper bound under 25% in about 60%
+  of cases. The spread is between tasks, so more seeds barely narrow it; the next claim needs
+  more tasks, not more seeds (planning estimate, not a claim).
 - Story first: the README's hackathon section, `hackathon/SUBMISSION.md`, the demo hero and the
   video's opening now lead with the same comparison, 21 tasks passed for US$ 1.16 on Ultra
   alone and for US$ 0.21 on the ladder (C-029's totals); the demo hero draws both totals as
