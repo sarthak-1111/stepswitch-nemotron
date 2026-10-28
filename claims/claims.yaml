@@ -150,6 +150,45 @@ results_tables:
         cells:
           - C-026:sections.swebench.results.stepswitch.per_instance.minutes
           - C-026:sections.swebench.results.mini_swe_agent.per_instance.minutes
+  # The Nemotron ladder against Ultra alone on Token Factory (ADR 0044), from the evidence of
+  # C-029. It sits in the README's hackathon section.
+  nemotron:
+    columns:
+      - "Nemotron ladder"
+      - "`Nemotron-3-Ultra-550b-a55b` alone"
+    rows:
+      - label: Task runs compared
+        cells:
+          - C-029:sections.comparison.results.ladder.runs
+          - C-029:sections.comparison.results.single.runs
+      - label: Task runs passed
+        unit: "%"
+        digits: 1
+        cells:
+          - C-029:sections.comparison.results.ladder.pass_rate_percent
+          - C-029:sections.comparison.results.single.pass_rate_percent
+      - label: US dollars per task run
+        digits: 4
+        cells:
+          - C-029:sections.comparison.results.ladder.cost_per_task_usd
+          - C-029:sections.comparison.results.single.cost_per_task_usd
+      - label: Tokens per task run, cached included
+        cells:
+          - C-029:sections.comparison.results.ladder.tokens_per_task
+          - C-029:sections.comparison.results.single.tokens_per_task
+      - label: Uncached tokens per task run
+        cells:
+          - C-029:sections.comparison.results.ladder.uncached_tokens_per_task
+          - C-029:sections.comparison.results.single.uncached_tokens_per_task
+      - label: Minutes per task run
+        digits: 2
+        cells:
+          - C-029:sections.comparison.results.ladder.minutes_per_task
+          - C-029:sections.comparison.results.single.minutes_per_task
+      - label: Escalations
+        cells:
+          - C-029:sections.comparison.results.ladder.escalations
+          - C-029:sections.comparison.results.single.escalations
 
 claims:
   - id: C-001
@@ -774,3 +813,74 @@ claims:
     readme_numbers:
       - {key: sections.swebench.tokens.tokens.percent, label: fewer tokens than mini-SWE-agent, unit: "%", digits: 1}
     status: passing
+
+  - id: C-029
+    text: "On the mini suites, the Nemotron ladder on Token Factory passes as many task runs as Nemotron 3 Ultra alone, for under a quarter of its dollars per task run."
+    scope: >-
+      Both contestants on Token Factory, one task run per task and suite (seed 0), interleaved,
+      on the same tasks, under a dollar cap (ADR 0044). The ladder is the `router` contestant
+      with the policy `bench/policies/tokenfactory-ladder.toml`: Nemotron 3.5 Lightning reads,
+      navigates and summarizes; Nemotron 3 Super edits and runs the tests; Ultra plans, reviews
+      and takes over after an escalation; a reviewer from another family gives a second
+      opinion. Ultra alone runs every step and reviews its own changes. Dollars are the
+      ledger's, at the list prices in `registry/providers/tokenfactory.toml`, for every model
+      call of the task run, the reviews included. Both contestants ran without local models,
+      so step classification and summaries of tool output used the same heuristics on both
+      sides. The evidence reports tokens, uncached tokens and minutes per task run for both,
+      and the bill of every hosted bench run.
+    proof: >-
+      Bench evidence on the mini suites: the ladder passes at least as many task runs as Ultra
+      alone, and its dollars as a share of Ultra's, with the whole 95% cluster-bootstrap
+      interval over tasks, lie below the threshold.
+    kind: bench
+    phase: 13
+    tests:
+      - tests/claims/test_c029_nemotron_ladder.py::test_the_ladder_passes_as_many_tasks_as_ultra_for_less
+    thresholds:
+      runs: [2026-10-28-tf-mini-general, 2026-10-28-tf-mini-science]
+      single: tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b
+      confidence_level: 0.95
+      cost_share_max_percent: 25
+      max_excluded_share: 0.1
+    evidence: [claims/evidence/C-029.json]
+    readme_numbers:
+      - {key: sections.comparison.cost_share.saving_percent, label: fewer dollars per task run than Ultra alone, unit: "%", digits: 1}
+    status: pending
+
+  - id: C-030
+    text: "On the runs of C-029, a reviewer from another model family agreed with the Nemotron reviewer on at least 95% of the changes both reviewed, and Nemotron 3.5 Lightning ran the summarize steps with no more cut-off calls than Ultra, for under a tenth of its dollars per call."
+    scope: >-
+      The ladder's task runs of C-029. Ultra reviews each change after the gates pass and
+      `gpt-oss-120b` gives a second opinion on the same change. Every reviewed change had
+      passed the project's tests, so the agreement is on changes that pass their tests; no
+      failing change was put to both reviewers. Where they disagreed, Ultra blocked a change
+      that passed its tests and the second reviewer approved it. The small tier's steps are
+      compared with Ultra alone's steps of the same type on the same tasks: the share of tool
+      calls that returned an error, the share of calls cut off at the output limit, and dollars
+      per call. The claim names summarize steps only. On navigate steps Lightning's tool calls
+      returned errors more often than Ultra's (it guessed absolute paths and corrected them
+      after the tool's message), and Ultra ran too few read steps to compare; the evidence
+      reports both, and Lightning alone on the same suites, none of which is claimed.
+    proof: >-
+      Bench evidence from the step records of the C-029 runs: both verdicts of every change
+      that had both reviews, and per step type the small tier's tool errors, cut-off calls and
+      dollars per call next to Ultra alone's.
+    kind: bench
+    phase: 13
+    tests:
+      - tests/claims/test_c030_review_and_small_tier.py::test_the_second_opinion_agrees_and_the_small_tier_keeps_up
+    thresholds:
+      runs: [2026-10-28-tf-mini-general, 2026-10-28-tf-mini-science]
+      single: tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b
+      small: tokenfactory/nvidia/Nemotron-3_5-Lightning
+      second: tokenfactory/openai/gpt-oss-120b
+      small_step_types: [summarize]
+      max_usd_per_call_percent: 10
+      min_changes: 15
+      min_agreement_percent: 95
+      alone_runs: [2026-10-28-tf-mini-general-lightning, 2026-10-28-tf-mini-science-lightning]
+    evidence: [claims/evidence/C-030.json]
+    readme_numbers:
+      - {key: sections.steps.reviews.agreeing, label: changes both reviewers judged alike}
+      - {key: sections.steps.reviews.changes, label: changes reviewed by both}
+    status: pending
