@@ -29,3 +29,6 @@ dashboard/dist/
 # Generated prove reports (the committed copies live under claims/)
 /prove-report.json
 /prove-report.md
+
+# Browser check snapshots (playwright-cli)
+.playwright-cli/

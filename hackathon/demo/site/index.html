@@ -5,30 +5,121 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Stepswitch Nemotron Replay</title>
 <meta name="description" content="Read-only replays of Stepswitch runs on Token Factory: each step of a coding task on the right Nemotron model, verified by tests and a reviewer from another model family.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f5f4ed" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23c96442%27/%3E%3Cpath d=%27M9 21h5v-5h5v-5h4%27 fill=%27none%27 stroke=%27%23faf9f5%27 stroke-width=%273%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
+<script>
+  // The theme the viewer picked last time, before the first paint (no flash).
+  try { const t = localStorage.getItem("ssw-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <p class="eyebrow">Nebius x NVIDIA Global AI Hackathon · Coding and Agentic Engineering</p>
-    <h1>Stepswitch on Token Factory</h1>
-    <p class="lead">Stepswitch sends each step of a coding task to the right Nemotron model on
-      Token Factory, verifies every change with your tests and a reviewer from another model
-      family, and makes every claim re-runnable with <code>ssw prove</code>.</p>
-    <p class="note">A read-only replay of recorded runs. This page calls no model and holds no
-      key: every number below is the one the bench recorded.
-      <a href="https://github.com/sarthak-1111/stepswitch-nemotron">Source and claims</a></p>
+<a class="skip-link" href="#main">Skip to the results</a>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="wordmark" href="#top" translate="no" aria-label="Stepswitch, back to the top">Stepswitch</a>
+    <nav aria-label="Sections">
+      <ul class="nav-links">
+        <li><a href="#results">Results</a></li>
+        <li><a href="#ladder">Ladder</a></li>
+        <li><a href="#replay">Replay</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#provenance">Sources</a></li>
+      </ul>
+    </nav>
+    <div class="nav-actions">
+      <button id="theme" class="icon-btn" type="button" aria-label="Switch to the dark theme" title="Theme">
+        <svg class="moon" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        <svg class="sun" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <a class="btn btn-sand" href="https://github.com/sarthak-1111/stepswitch-nemotron">Source</a>
+    </div>
   </div>
 </header>
 
-<main class="wrap">
+<header id="top" class="hero">
+  <div class="wrap hero-grid">
+  <div class="hero-text">
+    <p class="eyebrow">Nebius x NVIDIA Global AI Hackathon · Coding and Agentic Engineering</p>
+    <h1>The right Nemotron for every step of a coding task.</h1>
+    <p class="lead">Stepswitch sends each step to the model that fits it on Token Factory: Ultra
+      plans and reviews, Super edits and runs the tests, Lightning reads and summarizes. Every
+      change is checked by your tests and by a reviewer from another model family, and every
+      number on this page can be re-checked with <code translate="no">ssw prove</code>.</p>
+    <div class="hero-figure" aria-live="polite">
+      <p class="figure-value"><span id="hero-saving">–</span><span class="figure-unit">fewer dollars</span></p>
+      <p id="hero-caption" class="figure-caption">per task run than Nemotron 3 Ultra alone, on the same tasks.</p>
+    </div>
+    <div class="hero-actions">
+      <a class="btn btn-accent" href="#replay" id="hero-escalation">Watch a failed gate escalate</a>
+      <a class="btn btn-sand" href="#results">See the results</a>
+    </div>
+    <p class="note">A read-only replay of recorded runs. This page calls no model and holds no
+      key: every number is the one the bench recorded and the claims tests check.</p>
+  </div>
+  <aside class="run-card" aria-labelledby="run-card-h">
+    <p class="overline">A recorded run</p>
+    <h2 id="run-card-h" class="run-title">Two failed gates move the work up to Ultra.</h2>
+    <ol id="run-steps" class="run-steps"></ol>
+    <p id="run-foot" class="meta"></p>
+  </aside>
+  </div>
+</header>
+
+<main id="main" class="wrap">
   <section id="results" aria-labelledby="results-h">
-    <h2 id="results-h">Nemotron ladder vs Nemotron 3 Ultra alone</h2>
+    <p class="overline">Claim C-029</p>
+    <h2 id="results-h">The ladder against Nemotron 3 Ultra alone</h2>
     <p class="sub">Both contestants run every step on Token Factory, on the same tasks, with the
       same tests deciding whether a task passed. The ladder routes each step by its type; Ultra
       alone does every step itself.</p>
-    <div id="result-cards" class="cards"></div>
-    <div id="bill" class="bill"></div>
+    <div id="kpis" class="kpis"></div>
+
+    <div class="chart-grid">
+      <figure class="chart-card" id="cost-chart">
+        <figcaption>
+          <h3>Dollars per task run</h3>
+          <p class="meta">Mean over the task runs of each suite, list prices.</p>
+        </figcaption>
+        <div class="legend" aria-hidden="true">
+          <span class="key"><i class="swatch s-ladder"></i>Nemotron ladder</span>
+          <span class="key"><i class="swatch s-single"></i>Ultra alone</span>
+        </div>
+        <div class="plot" role="img" aria-describedby="cost-chart-desc"></div>
+        <p id="cost-chart-desc" class="visually-hidden"></p>
+      </figure>
+      <figure class="chart-card" id="share-chart">
+        <figcaption>
+          <h3>Where the ladder’s dollars went</h3>
+          <p class="meta">Share of the ladder’s dollars, by model, both suites.</p>
+        </figcaption>
+        <div class="plot" role="img" aria-describedby="share-chart-desc"></div>
+        <ul class="legend legend-list"></ul>
+        <p id="share-chart-desc" class="visually-hidden"></p>
+      </figure>
+      <figure class="chart-card" id="token-chart">
+        <figcaption>
+          <h3>Tokens per task run</h3>
+          <p class="meta">Uncached tokens are billed at the full input price; cached input costs a fraction.</p>
+        </figcaption>
+        <div class="legend" aria-hidden="true">
+          <span class="key"><i class="swatch s-uncached"></i>Uncached</span>
+          <span class="key"><i class="swatch s-cached"></i>Cached input</span>
+        </div>
+        <div class="plot" role="img" aria-describedby="token-chart-desc"></div>
+        <p id="token-chart-desc" class="visually-hidden"></p>
+      </figure>
+    </div>
+
+    <details class="table-view">
+      <summary>The same results as tables, per suite</summary>
+      <div id="result-cards" class="cards"></div>
+    </details>
+    <p id="bill" class="bill"></p>
+
     <h3 class="minor">Nemotron 3.5 Lightning alone, and the pilot</h3>
     <p class="sub">The smallest model doing every step itself, in separate runs on the same tasks
       after the main runs, and the five-task pilot that calibrated the dollar caps. Not part of
@@ -37,31 +128,41 @@
   </section>
 
   <section id="ladder" aria-labelledby="ladder-h">
+    <p class="overline">The policy</p>
     <h2 id="ladder-h">The ladder</h2>
+    <p class="sub">Three rules in <code translate="no">stepswitch.toml</code> decide which model takes each step.
+      When a change fails the gates twice, the task moves up to Ultra.</p>
     <div class="table-wrap"><table id="ladder-table">
-      <thead><tr><th>Model</th><th>Steps</th><th>Price per million tokens (in / cached / out)</th></tr></thead>
+      <caption class="visually-hidden">Models of the ladder, the steps each takes, and their list prices</caption>
+      <thead><tr><th scope="col">Model</th><th scope="col">Steps</th><th scope="col" class="num">Price per million tokens (in / cached / out)</th></tr></thead>
       <tbody></tbody>
     </table></div>
   </section>
 
   <section id="replay" aria-labelledby="replay-h">
+    <p class="overline">Recorded runs</p>
     <h2 id="replay-h">Replay a task</h2>
+    <p class="sub">Every model call, gate and review of a recorded task, in order. The escalation
+      demo starts the edits on Nemotron 3 Nano, so a failed gate is likely.</p>
     <div class="controls">
       <label>Run <select id="run-select"></select></label>
       <label>Task <select id="task-select"></select></label>
-      <button id="play" type="button">Play</button>
-      <button id="show-all" type="button" class="secondary">Show all steps</button>
-      <button id="show-escalation" type="button" class="secondary">Watch an escalation</button>
+      <div class="control-buttons">
+        <button id="show-escalation" type="button" class="btn btn-accent">Watch an escalation</button>
+        <button id="play" type="button" class="btn btn-sand">Play</button>
+        <button id="show-all" type="button" class="btn btn-ghost">Show all steps</button>
+      </div>
     </div>
     <p id="task-tags" class="sub"></p>
-    <div id="lanes" class="lanes"></div>
+    <div id="lanes" class="lanes" aria-live="polite"></div>
   </section>
 
   <section id="reviews" aria-labelledby="reviews-h">
+    <p class="overline">Claim C-030</p>
     <h2 id="reviews-h">Two reviewers, two model families</h2>
     <p class="sub">In the ladder, Nemotron 3 Ultra reviews each change and gpt-oss-120b gives a
       second opinion on the same diff. The change is approved only when neither objects.</p>
-    <div id="review-stats" class="cards"></div>
+    <div id="review-stats" class="kpis"></div>
   </section>
 
   <section id="step-types" aria-labelledby="step-types-h">
@@ -69,24 +170,30 @@
     <p class="sub">Model calls of each step type in the complete runs: which model the ladder
       used, and what a call cost on average compared with Ultra doing the same kind of step.</p>
     <div class="table-wrap"><table id="step-table">
-      <thead><tr><th>Step type</th><th>Ladder model</th><th>Calls (ladder / Ultra)</th>
-        <th>Tokens per call (ladder / Ultra)</th><th>Dollars per call (ladder / Ultra)</th>
-        <th>Tool errors (ladder / Ultra)</th></tr></thead>
+      <caption class="visually-hidden">Calls, tokens, dollars and tool errors per step type, ladder against Ultra alone</caption>
+      <thead><tr><th scope="col">Step type</th><th scope="col">Ladder model</th><th scope="col" class="num">Calls (ladder / Ultra)</th>
+        <th scope="col" class="num">Tokens per call (ladder / Ultra)</th><th scope="col" class="num">Dollars per call (ladder / Ultra)</th>
+        <th scope="col" class="num">Tool errors (ladder / Ultra)</th></tr></thead>
       <tbody></tbody>
     </table></div>
   </section>
 
   <section id="provenance" aria-labelledby="prov-h">
     <h2 id="prov-h">Where the numbers come from</h2>
-    <div id="prov"></div>
+    <p class="sub">Each run, the commit it ran on, its policy, and the command that re-runs it.</p>
+    <div id="prov" class="prov"></div>
   </section>
 </main>
 
-<footer class="wrap foot">
-  <p>Dollars are the list prices of Token Factory applied to the tokens each call reported, as
-    Stepswitch's ledger records them. Re-run the comparison with the command shown for each run,
-    and check the claims with <code>uv run ssw prove --claim C-029</code>.</p>
+<footer class="foot">
+  <div class="wrap">
+    <p>Dollars are the list prices of Token Factory applied to the tokens each call reported, as
+      Stepswitch’s ledger records them. Re-run the comparison with the command shown for each
+      run, and check the claims with <code translate="no">uv run ssw prove --claim C-029 --claim C-030</code>.</p>
+    <p><a href="https://github.com/sarthak-1111/stepswitch-nemotron">github.com/sarthak-1111/stepswitch-nemotron</a> · MIT licence</p>
+  </div>
 </footer>
+<div id="tooltip" class="tooltip" role="status" hidden></div>
 <script src="app.js"></script>
 </body>
 </html>
