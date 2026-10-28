@@ -887,6 +887,7 @@ claims:
 
   - id: C-032
     text: "On a second pair of runs, made on a later commit, the Nemotron ladder on Token Factory again passes as many task runs as Nemotron 3 Ultra alone on the mini suites, for under a quarter of its dollars per task run."
+    withdrawn_by: docs/decisions/0048-c032-withdrawn.md
     scope: >-
       A replication of C-029, registered before its runs (ADR 0047): the same contestants,
       pool, ladder policy, per-task and per-run dollar caps, one task run per task and suite
@@ -912,4 +913,4 @@ claims:
     evidence: [claims/evidence/C-032.json]
     readme_numbers:
       - {key: sections.comparison.cost_share.saving_percent, label: fewer dollars per task run than Ultra alone on the second pair of runs, unit: "%", digits: 1}
-    status: pending
+    status: withdrawn
