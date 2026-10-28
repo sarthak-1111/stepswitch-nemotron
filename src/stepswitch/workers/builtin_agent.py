@@ -805,10 +805,12 @@ class AgentLoop:
             gpu_seconds=round(gpu, 3),
             response_blob=self.trajectory.blob(response.model_dump_json()),
         )
+        # The task's running totals; dollars once a priced (hosted) model has been called.
+        spent = f", ${self.budget.usd:.4f}" if self.budget.usd > 0 else ""
         self.echo(
             f"[{self.step}] {step_type:9} {spec.id}"
             + (f" -> {', '.join(calls)}" if calls else "")
-            + f"  ({self.budget.tokens:,} tokens)"  # the task's running total
+            + f"  ({self.budget.tokens:,} tokens{spent})"
         )
 
     def _account_aux(

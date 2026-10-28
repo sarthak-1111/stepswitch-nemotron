@@ -18,6 +18,7 @@ from stepswitch.compat.ir import Request, ToolSpec, Usage
 from stepswitch.core.budget import BudgetTracker
 from stepswitch.core.task import Budgets, TaskSpec
 from stepswitch.ledger import Ledger
+from stepswitch.pricing import Prices
 from stepswitch.router.escalation import Ladder
 from stepswitch.router.features import TaskFeatures
 from stepswitch.router.rules import parse_rules
@@ -184,6 +185,21 @@ def test_each_step_line_shows_the_worker_and_the_running_token_total(tmp_path: P
     assert shown[0] == "[1] plan      a/m  (120 tokens)"
     assert shown[1] == "[2] navigate  a/m -> grep  (240 tokens)"
     assert shown[-1].endswith(f"({loop.budget.tokens:,} tokens)")
+
+
+def test_a_priced_worker_adds_the_running_dollars_to_each_step_line(tmp_path: Path) -> None:
+    # 100 input and 20 output tokens per call at 1 and 3 dollars per million: $0.00016 a call.
+    prices = Prices(input=1.0, output=3.0)
+    loop = make_loop(
+        tmp_path, [worker("a/m", "t2", fixer_script(), prices=prices)], StubGates([True])
+    )
+    lines: list[str] = []
+    loop.echo = lines.append
+    loop.run()
+    shown = [line for line in lines if line.startswith("[")]
+    assert shown[0] == "[1] plan      a/m  (120 tokens, $0.0002)"
+    assert shown[1] == "[2] navigate  a/m -> grep  (240 tokens, $0.0003)"
+    assert shown[-1].endswith(f"({loop.budget.tokens:,} tokens, ${loop.budget.usd:.4f})")
 
 
 def test_rules_switch_endpoints_between_steps_with_reason_and_cost(tmp_path: Path) -> None:

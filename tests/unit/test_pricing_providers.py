@@ -223,3 +223,22 @@ def test_a_task_result_carries_its_dollars(tmp_path: Path, priced: bool) -> None
     calls = sum(int(counts["calls"]) for counts in result.usage_by_worker.values())
     # Each call: 0.1 M input tokens at $1 plus 0.01 M output tokens at $3.
     assert calls >= 1 and result.cost_usd == pytest.approx(0.13 * calls)
+
+
+@pytest.mark.parametrize(("cost", "shown"), [(0.012345, ", cost: $0.0123"), (None, "")])
+def test_the_run_summary_shows_the_dollars_of_a_priced_task(
+    capsys: pytest.CaptureFixture[str], cost: float | None, shown: str
+) -> None:
+    from stepswitch.cli import _show_result
+    from stepswitch.core.task import TaskResult
+
+    result = TaskResult(
+        task_id="t",
+        status="done",
+        steps=3,
+        budget={"tokens": 900, "wall_seconds": 2.0},
+        cost_usd=cost,
+    )
+    _show_result(result, json_out=False)
+    line = next(x for x in capsys.readouterr().out.splitlines() if x.startswith("Steps:"))
+    assert line == f"Steps: 3, switches: 0, escalations: 0, tokens: 900, time: 2.0 s{shown}"

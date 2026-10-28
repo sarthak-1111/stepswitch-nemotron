@@ -1274,9 +1274,11 @@ def _show_result(result: Any, *, json_out: bool) -> None:
     if result.summary:
         typer.echo(f"Summary: {result.summary}")
     budget = result.budget
+    cost = f", cost: ${result.cost_usd:.4f}" if result.cost_usd is not None else ""
     typer.echo(
         f"Steps: {result.steps}, switches: {result.switches}, escalations: {result.escalations},"
         f" tokens: {int(budget.get('tokens', 0))}, time: {budget.get('wall_seconds', 0):.1f} s"
+        f"{cost}"
     )
     if result.best_of > 1:
         passed = sum(1 for c in result.candidates if c.get("status") == "done")
