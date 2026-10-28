@@ -9,7 +9,7 @@
   },
   "command": "uv run ssw prove --claim C-010",
   "mode": "quick",
-  "source_digest": "87a76a5a95a8aa7a25da1dffa421e716a301ce68a3f52f9e08adf7356d4bc159",
+  "source_digest": "63aa4fc42dadfe9c6fa942d209d64a8d823192d503f2c7818a08c61d6fad1221",
   "stepswitch_version": "0.1.0.dev0",
   "environment": {
     "os": "windows",
@@ -21,10 +21,10 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-28T06:19:24+00:00",
+  "updated": "2026-10-28T11:44:38+00:00",
   "sections": {
     "handoffs": {
-      "recorded": "2026-10-28T06:19:24+00:00",
+      "recorded": "2026-10-28T11:44:38+00:00",
       "runs": [
         "2026-10-19-mini-general-best-of-n",
         "2026-10-19-mini-general-local-comparison",
@@ -48,10 +48,17 @@
         "2026-10-28-tf-escalation-demo-2",
         "2026-10-28-tf-escalation-demo-nano",
         "2026-10-28-tf-general",
+        "2026-10-28-tf-long-path-diagnosis",
         "2026-10-28-tf-mini-general",
         "2026-10-28-tf-mini-general-lightning",
+        "2026-10-28-tf-mini-general-replication",
+        "2026-10-28-tf-mini-general-replication-2",
+        "2026-10-28-tf-mini-general-toolfix",
         "2026-10-28-tf-mini-science",
         "2026-10-28-tf-mini-science-lightning",
+        "2026-10-28-tf-mini-science-replication",
+        "2026-10-28-tf-mini-science-replication-2",
+        "2026-10-28-tf-mini-science-toolfix",
         "2026-10-28-tf-pilot",
         "2026-10-28-tf-science"
       ],

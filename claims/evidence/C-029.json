@@ -14,7 +14,7 @@
   },
   "command": "uv run ssw prove --claim C-029",
   "mode": "quick",
-  "source_digest": "87a76a5a95a8aa7a25da1dffa421e716a301ce68a3f52f9e08adf7356d4bc159",
+  "source_digest": "63aa4fc42dadfe9c6fa942d209d64a8d823192d503f2c7818a08c61d6fad1221",
   "stepswitch_version": "0.1.0.dev0",
   "environment": {
     "os": "windows",
@@ -26,10 +26,10 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-28T06:22:30+00:00",
+  "updated": "2026-10-28T11:47:41+00:00",
   "sections": {
     "comparison": {
-      "recorded": "2026-10-28T06:22:30+00:00",
+      "recorded": "2026-10-28T11:47:41+00:00",
       "contestants": {
         "ladder": "router",
         "single": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b"
@@ -224,6 +224,12 @@
             "cost_usd": 0.003622,
             "stopped": null
           },
+          "2026-10-28-tf-long-path-diagnosis": {
+            "suite": "mini-science",
+            "task_runs": 1,
+            "cost_usd": 0.206108,
+            "stopped": null
+          },
           "2026-10-28-tf-mini-general": {
             "suite": "mini-general",
             "task_runs": 30,
@@ -236,6 +242,24 @@
             "cost_usd": 0.088868,
             "stopped": null
           },
+          "2026-10-28-tf-mini-general-replication": {
+            "suite": "mini-general",
+            "task_runs": 30,
+            "cost_usd": 0.766431,
+            "stopped": null
+          },
+          "2026-10-28-tf-mini-general-replication-2": {
+            "suite": "mini-general",
+            "task_runs": 30,
+            "cost_usd": 0.979381,
+            "stopped": null
+          },
+          "2026-10-28-tf-mini-general-toolfix": {
+            "suite": "mini-general",
+            "task_runs": 15,
+            "cost_usd": 0.168409,
+            "stopped": null
+          },
           "2026-10-28-tf-mini-science": {
             "suite": "mini-science",
             "task_runs": 12,
@@ -246,6 +270,24 @@
             "suite": "mini-science",
             "task_runs": 6,
             "cost_usd": 0.059775,
+            "stopped": null
+          },
+          "2026-10-28-tf-mini-science-replication": {
+            "suite": "mini-science",
+            "task_runs": 12,
+            "cost_usd": 0.601733,
+            "stopped": null
+          },
+          "2026-10-28-tf-mini-science-replication-2": {
+            "suite": "mini-science",
+            "task_runs": 12,
+            "cost_usd": 0.508195,
+            "stopped": null
+          },
+          "2026-10-28-tf-mini-science-toolfix": {
+            "suite": "mini-science",
+            "task_runs": 6,
+            "cost_usd": 0.069338,
             "stopped": null
           },
           "2026-10-28-tf-pilot": {
@@ -261,16 +303,18 @@
             "stopped": null
           }
         },
-        "total_usd": 2.178691,
+        "total_usd": 5.478286,
         "source": "result rows (Stepswitch's ledger)",
         "console": {
-          "read": "2026-10-28T04:12Z",
+          "read": "2026-10-28T11:39Z",
           "page": "Token Factory console, Billing, Transactions",
-          "consumption_usd_incl_tax": 2.38,
-          "balance_before_usd": 5.0,
-          "balance_after_usd": 2.62,
-          "covers": "every call on the account on 2026-10-28: the bench runs, the probes of five models, direct API checks, and two live test runs outside the bench (a toy ssw run and the README quickstart in a fresh clone)",
-          "not_in_the_ledger": "the probes, the direct API checks, the two live test runs (0.0111 and 0.0105 by their own ledgers), and the first pilot's fourth task run, which ended without a result row"
+          "consumption_usd_incl_tax": 5.64,
+          "starting_balance_usd": 0.0,
+          "added_usd": 30.0,
+          "added": "a card payment of 5.00 and 25.00 of program credits",
+          "balance_after_usd": 24.36,
+          "covers": "every call on the account in October 2026, all of it on 2026-10-28: the bench runs, the probes of five models, direct API checks, the bench runs' canary calls, and two live test runs outside the bench (a toy ssw run and the README quickstart in a fresh clone)",
+          "not_in_the_ledger": "the probes, the direct API checks, the canary call each bench run makes to every worker before it starts, the two live test runs (0.0111 and 0.0105 by their own ledgers), and the first pilot's fourth task run, which ended without a result row"
         }
       },
       "problems": [],

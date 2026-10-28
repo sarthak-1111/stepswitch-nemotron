@@ -6,13 +6,15 @@
      "bench_command": "uv run ssw bench run --suite <suite> --workers router,<ultra> --router-pool <pool> --allow-remote --policy bench/policies/tokenfactory-ladder.toml --interleave --budget-usd 0.5 --budget-usd-total <cap> (each run's run.json records its command)",
      "bill": {
       "console": {
-       "balance_after_usd": 2.62,
-       "balance_before_usd": 5.0,
-       "consumption_usd_incl_tax": 2.38,
-       "covers": "every call on the account on 2026-10-28: the bench runs, the probes of five models, direct API checks, and two live test runs outside the bench (a toy ssw run and the README quickstart in a fresh clone)",
-       "not_in_the_ledger": "the probes, the direct API checks, the two live test runs (0.0111 and 0.0105 by their own ledgers), and the first pilot's fourth task run, which ended without a result row",
+       "added": "a card payment of 5.00 and 25.00 of program credits",
+       "added_usd": 30.0,
+       "balance_after_usd": 24.36,
+       "consumption_usd_incl_tax": 5.64,
+       "covers": "every call on the account in October 2026, all of it on 2026-10-28: the bench runs, the probes of five models, direct API checks, the bench runs' canary calls, and two live test runs outside the bench (a toy ssw run and the README quickstart in a fresh clone)",
+       "not_in_the_ledger": "the probes, the direct API checks, the canary call each bench run makes to every worker before it starts, the two live test runs (0.0111 and 0.0105 by their own ledgers), and the first pilot's fourth task run, which ended without a result row",
        "page": "Token Factory console, Billing, Transactions",
-       "read": "2026-10-28T04:12Z"
+       "read": "2026-10-28T11:39Z",
+       "starting_balance_usd": 0.0
       },
       "runs": {
        "2026-10-28-mini-general-nemotron-pilot": {
@@ -45,6 +47,12 @@
         "suite": "mini-general",
         "task_runs": 1
        },
+       "2026-10-28-tf-long-path-diagnosis": {
+        "cost_usd": 0.206108,
+        "stopped": null,
+        "suite": "mini-science",
+        "task_runs": 1
+       },
        "2026-10-28-tf-mini-general": {
         "cost_usd": 0.942084,
         "stopped": null,
@@ -57,6 +65,24 @@
         "suite": "mini-general",
         "task_runs": 15
        },
+       "2026-10-28-tf-mini-general-replication": {
+        "cost_usd": 0.766431,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 30
+       },
+       "2026-10-28-tf-mini-general-replication-2": {
+        "cost_usd": 0.979381,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 30
+       },
+       "2026-10-28-tf-mini-general-toolfix": {
+        "cost_usd": 0.168409,
+        "stopped": null,
+        "suite": "mini-general",
+        "task_runs": 15
+       },
        "2026-10-28-tf-mini-science": {
         "cost_usd": 0.428933,
         "stopped": null,
@@ -65,6 +91,24 @@
        },
        "2026-10-28-tf-mini-science-lightning": {
         "cost_usd": 0.059775,
+        "stopped": null,
+        "suite": "mini-science",
+        "task_runs": 6
+       },
+       "2026-10-28-tf-mini-science-replication": {
+        "cost_usd": 0.601733,
+        "stopped": null,
+        "suite": "mini-science",
+        "task_runs": 12
+       },
+       "2026-10-28-tf-mini-science-replication-2": {
+        "cost_usd": 0.508195,
+        "stopped": null,
+        "suite": "mini-science",
+        "task_runs": 12
+       },
+       "2026-10-28-tf-mini-science-toolfix": {
+        "cost_usd": 0.069338,
         "stopped": null,
         "suite": "mini-science",
         "task_runs": 6
@@ -83,7 +127,7 @@
        }
       },
       "source": "result rows (Stepswitch's ledger)",
-      "total_usd": 2.178691
+      "total_usd": 5.478286
      },
      "contestants": {
       "ladder": "router",
@@ -220,7 +264,7 @@
       }
      },
      "problems": [],
-     "recorded": "2026-10-28T06:22:30+00:00",
+     "recorded": "2026-10-28T11:47:41+00:00",
      "results": {
       "ladder": {
        "cost_per_task_usd": 0.010141,
@@ -268,7 +312,7 @@
     "steps": {
      "bench_command": "the C-029 runs and the small tier alone (`ssw bench run --workers <small> --allow-remote --policy bench/policies/tokenfactory-ladder.toml`, each run.json records its command)",
      "problems": [],
-     "recorded": "2026-10-28T06:22:30+00:00",
+     "recorded": "2026-10-28T11:47:41+00:00",
      "reviews": {
       "agreeing": 20,
       "agreement_percent": 95.2,

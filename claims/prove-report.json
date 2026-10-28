@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "mode": "quick",
-  "source_digest": "87a76a5a95a8aa7a25da1dffa421e716a301ce68a3f52f9e08adf7356d4bc159",
-  "created": "2026-10-28T06:22:31+00:00",
-  "duration_s": 232.36,
+  "source_digest": "63aa4fc42dadfe9c6fa942d209d64a8d823192d503f2c7818a08c61d6fad1221",
+  "created": "2026-10-28T11:47:41+00:00",
+  "duration_s": 227.26,
   "platform": {
     "os": "windows",
     "machine": "amd64",
@@ -17,7 +17,9 @@
   "selection": {
     "phase": null,
     "claims": [],
-    "skip": []
+    "skip": [
+      "C-016"
+    ]
   },
   "claims": {
     "C-001": {
@@ -152,14 +154,6 @@
       "parts": [],
       "notes": {}
     },
-    "C-016": {
-      "status": "passing",
-      "tests": {
-        "tests/claims/test_c016_platforms.py::test_prove_quick_passed_on_linux_macos_windows": "passed"
-      },
-      "parts": [],
-      "notes": {}
-    },
     "C-017": {
       "status": "pending",
       "tests": {
@@ -256,12 +250,13 @@
   "withdrawn": {
     "C-021": "docs/decisions/0041-claims-withdrawn-after-phase-12.md",
     "C-024": "docs/decisions/0041-claims-withdrawn-after-phase-12.md",
-    "C-025": "docs/decisions/0041-claims-withdrawn-after-phase-12.md"
+    "C-025": "docs/decisions/0041-claims-withdrawn-after-phase-12.md",
+    "C-032": "docs/decisions/0048-c032-withdrawn.md"
   },
   "summary": {
     "pending": 4,
-    "passing": 23,
+    "passing": 22,
     "failing": 0,
-    "withdrawn": 3
+    "withdrawn": 4
   }
 }
