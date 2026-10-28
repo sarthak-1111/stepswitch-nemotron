@@ -150,6 +150,10 @@ def decode_usage(raw: Any, timings: Any = None) -> Usage | None:
     `timings` is the llama.cpp server's top-level `timings` object (prompt_n, prompt_ms,
     predicted_n, predicted_ms, cache_n), kept in `Usage.raw["timings"]` so throughput can be
     taken from server-side figures.
+
+    Some servers leave `prompt_tokens_details` out and report the prompt cache in top-level
+    `prompt_cache_hit_tokens` and `prompt_cache_miss_tokens` instead; the hit count is then the
+    cached input (RESEARCH.md, "Token Factory").
     """
     if not isinstance(raw, dict):
         return None
@@ -157,10 +161,13 @@ def decode_usage(raw: Any, timings: Any = None) -> Usage | None:
     completion = as_dict(raw.get("completion_tokens_details"))
     if isinstance(timings, dict) and "timings" not in raw:
         raw = {**raw, "timings": timings}
+    cached = as_int(prompt.get("cached_tokens"))
+    if cached is None:
+        cached = as_int(raw.get("prompt_cache_hit_tokens"))
     return Usage(
         input_tokens=as_int(raw.get("prompt_tokens")),
         output_tokens=as_int(raw.get("completion_tokens")),
-        cached_input_tokens=as_int(prompt.get("cached_tokens")),
+        cached_input_tokens=cached,
         cache_write_tokens=as_int(prompt.get("cache_write_tokens")),
         reasoning_tokens=as_int(completion.get("reasoning_tokens")),
         raw=raw,

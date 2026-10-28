@@ -652,6 +652,26 @@ def test_server_timings_are_kept_with_the_usage() -> None:
     assert streamed.raw["timings"] == timings
 
 
+def test_top_level_prompt_cache_counts_give_the_cached_input() -> None:
+    """A server that leaves `prompt_tokens_details` out may report its prompt cache in
+    top-level `prompt_cache_hit_tokens`; the detail field wins when both are there."""
+    hits = {"prompt_cache_hit_tokens": 336, "prompt_cache_miss_tokens": 24}
+    top_only = {**USAGE_SMALL, "prompt_tokens_details": None, **hits}
+    body = completion_body({"content": ANSWER}, "stop", top_only)
+    usage = client_for(FMT, serve_json(body)).complete(text_request()).response.usage
+    assert usage is not None and usage.cached_input_tokens == 336
+
+    both = {**USAGE_SMALL, "prompt_tokens_details": {"cached_tokens": 300}, **hits}
+    body = completion_body({"content": ANSWER}, "stop", both)
+    usage = client_for(FMT, serve_json(body)).complete(text_request()).response.usage
+    assert usage is not None and usage.cached_input_tokens == 300
+
+    neither = {k: v for k, v in USAGE_SMALL.items() if k != "prompt_tokens_details"}
+    plain = completion_body({"content": ANSWER}, "stop", neither)
+    usage = client_for(FMT, serve_json(plain)).complete(text_request()).response.usage
+    assert usage is not None and usage.cached_input_tokens is None
+
+
 def test_effort_is_sent_and_clamped_to_the_endpoint_levels() -> None:
     body, report = encode(text_request().model_copy(update={"effort": "xhigh"}))
     assert body["reasoning_effort"] == "xhigh" and report.lossless
