@@ -1,82 +1,94 @@
-/* Stepswitch dashboard. System fonts only; colors are variables with a light and a dark theme. */
+/* Stepswitch dashboard. System fonts plus a self-hosted serif for headings; colors are variables
+   with a light and a dark theme. */
 
+@font-face {
+  font-family: "Newsreader";
+  src: url("/fonts/newsreader-latin-opsz-normal.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Warm editorial theme from the Open Design library: parchment surfaces, warm neutrals, one
+   terracotta accent (darkened so links and buttons clear WCAG AA), muted status pastels. */
 :root {
   color-scheme: light dark;
-  --font: system-ui, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  --font: system-ui, "Segoe UI", "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
   --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
-  --bg: #f5f6f8;
-  --surface: #ffffff;
-  --surface-2: #eff1f4;
-  --border: #d0d5dc;
-  --border-strong: #a9b2bd;
-  --text: #1a1f24;
-  --muted: #545d68;
-  --accent: #1659a8;
-  --accent-hover: #0f4686;
-  --accent-contrast: #ffffff;
-  --focus: #0b57d0;
-  --shadow: 0 1px 2px rgb(16 24 40 / 6%);
+  --bg: #f5f4ed;
+  --surface: #faf9f5;
+  --surface-2: #f0eee6;
+  --border: #e8e6dc;
+  --border-strong: #d1cfc5;
+  --text: #141413;
+  --muted: #5e5d59;
+  --accent: #9d4e33;
+  --accent-hover: #874229;
+  --accent-contrast: #faf9f5;
+  --focus: #3898ec;
+  --shadow: none;
 
-  --neutral-bg: #eceff3;
-  --neutral-fg: #39424c;
-  --neutral-border: #cbd2da;
-  --info-bg: #e1ecfb;
-  --info-fg: #0d4a8f;
-  --info-border: #b3cbef;
-  --ok-bg: #def3e4;
-  --ok-fg: #12592b;
-  --ok-border: #a6d9b5;
-  --warn-bg: #fcf0cc;
-  --warn-fg: #664400;
-  --warn-border: #e8cf86;
-  --bad-bg: #fde3e1;
-  --bad-fg: #99190f;
-  --bad-border: #efb3ad;
-  --purple-bg: #eee6fb;
-  --purple-fg: #532d8e;
-  --purple-border: #d1bff0;
-  --orange-bg: #ffe7d3;
-  --orange-fg: #873a00;
-  --orange-border: #f2c098;
+  --neutral-bg: #f0eee6;
+  --neutral-fg: #3d3d3a;
+  --neutral-border: #d1cfc5;
+  --info-bg: #e1f3fe;
+  --info-fg: #1f6c9f;
+  --info-border: #b5dcf3;
+  --ok-bg: #edf3ec;
+  --ok-fg: #346538;
+  --ok-border: #c4d9c1;
+  --warn-bg: #fbf3db;
+  --warn-fg: #7a5200;
+  --warn-border: #ecd9a0;
+  --bad-bg: #fdebec;
+  --bad-fg: #9f2f2d;
+  --bad-border: #f2c4c4;
+  --purple-bg: #f1ecf9;
+  --purple-fg: #5b3f8f;
+  --purple-border: #d9cdee;
+  --orange-bg: #fbeee6;
+  --orange-fg: #8a3d1f;
+  --orange-border: #efcfbf;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0f1216;
-    --surface: #171b21;
-    --surface-2: #1f252d;
-    --border: #313944;
-    --border-strong: #4a5462;
-    --text: #e7eaee;
-    --muted: #a5afbb;
-    --accent: #80b3f6;
-    --accent-hover: #a5c9fa;
-    --accent-contrast: #0b1a2e;
-    --focus: #8ab8ff;
+    --bg: #141413;
+    --surface: #1f1e1c;
+    --surface-2: #30302e;
+    --border: #30302e;
+    --border-strong: #4d4c48;
+    --text: #faf9f5;
+    --muted: #b0aea5;
+    --accent: #dc8264;
+    --accent-hover: #e69a80;
+    --accent-contrast: #141413;
+    --focus: #6bb2f2;
     --shadow: none;
 
-    --neutral-bg: #262d36;
-    --neutral-fg: #d0d7df;
-    --neutral-border: #3b444f;
-    --info-bg: #132a4b;
-    --info-fg: #abcdf8;
-    --info-border: #25487b;
-    --ok-bg: #11311e;
-    --ok-fg: #a0e1b6;
-    --ok-border: #225a3a;
-    --warn-bg: #392c0a;
-    --warn-fg: #f2d27c;
-    --warn-border: #644e15;
-    --bad-bg: #3c1613;
-    --bad-fg: #f7aca5;
-    --bad-border: #6c2822;
-    --purple-bg: #2a1f45;
-    --purple-fg: #cfbbf6;
-    --purple-border: #463470;
-    --orange-bg: #3c210b;
-    --orange-fg: #f8c08f;
-    --orange-border: #6b3d17;
+    --neutral-bg: #2a2a28;
+    --neutral-fg: #e8e6dc;
+    --neutral-border: #4d4c48;
+    --info-bg: #15293a;
+    --info-fg: #a9d3f2;
+    --info-border: #2b4a63;
+    --ok-bg: #1a2c1d;
+    --ok-fg: #a8d5ad;
+    --ok-border: #2f4a33;
+    --warn-bg: #33290f;
+    --warn-fg: #ecd18a;
+    --warn-border: #5a4718;
+    --bad-bg: #3a1a19;
+    --bad-fg: #f2aeaa;
+    --bad-border: #6a2c2a;
+    --purple-bg: #2a2238;
+    --purple-fg: #d3c3f0;
+    --purple-border: #4a3c66;
+    --orange-bg: #3a2418;
+    --orange-fg: #f0bea4;
+    --orange-border: #66402b;
   }
 }
 
@@ -105,6 +117,13 @@ h2,
 h3 {
   line-height: 1.25;
   margin: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--serif);
+  font-weight: 500;
+  text-wrap: balance;
 }
 
 h1 {
@@ -220,8 +239,10 @@ h1:focus {
   align-items: center;
   gap: 8px;
   color: var(--text);
-  font-weight: 700;
-  font-size: 1.0625rem;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.3125rem;
+  letter-spacing: -0.01em;
   text-decoration: none;
 }
 
@@ -274,10 +295,9 @@ h1:focus {
 }
 
 .nav a[aria-current="page"] {
-  background: var(--info-bg);
-  color: var(--info-fg);
+  background: var(--neutral-bg);
+  color: var(--text);
   font-weight: 600;
-  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 main {
@@ -432,9 +452,10 @@ main {
 .note {
   margin: 12px 0 0;
   padding: 10px 12px;
-  border-left: 3px solid var(--info-border);
-  background: var(--surface);
-  border-radius: 0 6px 6px 0;
+  border: 1px solid var(--info-border);
+  background: var(--info-bg);
+  color: var(--info-fg);
+  border-radius: 8px;
   max-width: 60rem;
 }
 
@@ -539,6 +560,7 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  font-family: var(--font);
   padding: 0 8px;
   border: 1px solid var(--neutral-border);
   border-radius: 999px;
@@ -938,10 +960,6 @@ input[type="checkbox"] {
   background: var(--purple-bg);
 }
 
-.decisions tbody.is-switch > tr:first-child > td:first-child {
-  box-shadow: inset 4px 0 0 var(--purple-fg);
-}
-
 tr.is-chosen > td {
   background: var(--ok-bg);
 }
@@ -1333,7 +1351,8 @@ thead .sticky-col {
 .reply {
   margin: 4px 0;
   padding: 6px 10px;
-  border-left: 3px solid var(--border-strong);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   background: var(--surface);
   color: var(--muted);
   white-space: pre-wrap;
