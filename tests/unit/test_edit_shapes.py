@@ -332,6 +332,42 @@ def test_old_text_inside_a_line_is_replaced_as_a_string_replace_would(tmp_path: 
     assert path.read_text(encoding="utf-8") == "a = f(1)\nb = f(2)\n"
 
 
+def test_old_text_copied_with_read_prefixes_is_taken_when_the_hashes_agree(tmp_path: Path) -> None:
+    # Recorded shapes: rows copied from read output into old and new text, prefixes and all,
+    # on every line or only the first.
+    source = "def tag_key(tag):\n    return tag.lower()\n\n\ndef other():\n    return 1\n"
+    path = tmp_path / "tags.py"
+    path.write_text(source, encoding="utf-8")
+    first, second = E.line_hashes(source.split("\n"))[:2]
+    E.edit_file(
+        path,
+        edits=[
+            {
+                "old": f"1:{first}|def tag_key(tag):\n{second}|    return tag.lower()",
+                "new": f"1:{first}|def tag_key(tag):\n{second}|    return tag.casefold()",
+            }
+        ],
+    )
+    assert path.read_text(encoding="utf-8") == source.replace("lower", "casefold")
+    path.write_text(source, encoding="utf-8")
+    E.edit_file(
+        path,
+        edits=[
+            {
+                "old": f"{first}|def tag_key(tag):\n    return tag.lower()",
+                "new": f"{first}|def tag_key(tag: str) -> str:\n    return tag.lower()",
+            }
+        ],
+    )
+    assert path.read_text(encoding="utf-8").startswith("def tag_key(tag: str) -> str:\n")
+    # A prefix that is not the hash of the line it would sit on is not taken.
+    path.write_text(source, encoding="utf-8")
+    wrong = "zz" if first != "zz" else "yy"
+    with pytest.raises(E.EditError, match="not in the file"):
+        E.edit_file(path, edits=[{"old": f"{wrong}|def tag_key(tag):", "new": "x"}])
+    assert path.read_text(encoding="utf-8") == source
+
+
 def test_new_without_old_never_replaces_a_whole_file(box: T.Toolbox, root: Path) -> None:
     refused = edit(box, {"path": "pager.py", "new": FIXED_LINE})
     assert refused.is_error and "`new` needs `old`" in refused.text

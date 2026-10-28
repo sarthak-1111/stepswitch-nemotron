@@ -738,6 +738,27 @@ def _inline_op(doc: TextDoc, hashes: list[str], op: Op, hint: int | None) -> Op 
     return Op("replace", *anchors, lines, op.index, old=op.old)
 
 
+_READ_PREFIX = re.compile(rf"^(?:[Ll]?\d+\s*[:#]\s*)?([A-Za-z]{{{HASH_LEN}}})\|")
+
+
+def _without_read_prefixes(doc: TextDoc, hashes: list[str], op: Op, hint: int | None) -> Op | None:
+    """An excerpt whose old text was copied from read output with the rows' prefixes
+    (`12:ab|` or `ab|`, on every line or the first), with the prefixes removed from its old and
+    new text. Taken only when the old text without them matches one place, and each prefix is
+    the hash of the line it sits on there."""
+    old = list(op.old or ())
+    marks = {i: m.group(1).lower() for i, line in enumerate(old) if (m := _READ_PREFIX.match(line))}
+    if not marks:
+        return None
+    bare = [_READ_PREFIX.sub("", line, count=1) for line in old]
+    found, _ = find_lines(doc.lines, bare)
+    found = _closest(found, len(bare), hint)
+    if len(found) != 1 or any(hashes[found[0] - 1 + i] != h for i, h in marks.items()):
+        return None
+    new = tuple(_READ_PREFIX.sub("", line, count=1) for line in op.lines)
+    return Op("excerpt", op.start, op.end, new, op.index, old=tuple(bare))
+
+
 def _excerpt_op(doc: TextDoc, hashes: list[str], op: Op) -> Op:
     """An excerpt edit as the replace of the lines its old text matches (ADR 0038): whole
     lines exactly, else whole lines whatever their indentation (the new lines then get the
@@ -750,6 +771,9 @@ def _excerpt_op(doc: TextDoc, hashes: list[str], op: Op) -> Op:
     found, level = find_lines(doc.lines, old)
     loose = level > 0
     if not found:
+        copied = _without_read_prefixes(doc, hashes, op, hint)
+        if copied is not None:
+            return _excerpt_op(doc, hashes, copied)
         inline = _inline_op(doc, hashes, op, hint)
         if inline is not None:
             return inline
