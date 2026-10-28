@@ -146,6 +146,8 @@ publishes only numbers that anyone can re-run.
 - A ladder that learns from these step records which step types each model handles, per
   repository, and the Nano tier for the shortest steps.
 - The ladder on SWE-bench Verified Mini, which so far ran on a local model only.
+- The mini suites again with the tool fixes above, to measure how many of Lightning's refused
+  tool calls (and the turns spent on them) they remove.
 - A live button on the demo, behind a rate-limited function that holds the key
   ([DEPLOY.md](DEPLOY.md)).
 
@@ -199,7 +201,13 @@ submission is the commit range `de1cf95..hackathon-2026-10`:
   ladder policy;
 - bench support for hosted runs (interleaving, dollar caps, step records) and fixes from the
   pilots;
-- claims C-029 and C-030 with their evidence, the demo page, and this package.
+- claims C-029 and C-030 with their evidence, the demo page, and this package;
+- `ssw policy check`, which shows the worker each step type goes to, before and after an
+  escalation, and flags rules that match no configured worker, without calling a model;
+- tool fixes drawn from the refused tool calls in the recorded runs: container-style absolute
+  paths, `cd <dir> &&` in `run`, edits sent as a JSON string with a stray bracket, and old text
+  copied from read output with its row prefixes. These are tested; the recorded runs predate
+  them, so no number on this page reflects them.
 
 ## Built with
 

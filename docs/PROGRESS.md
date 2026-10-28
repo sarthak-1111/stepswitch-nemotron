@@ -4,6 +4,72 @@ Newest phase first. Each phase records what was done, what research changed, ope
 actions that only the maintainer can take. Phase checks: `uv run python scripts/phase_check.py N`
 (one phase) or `--upto N` (phases 0 to N).
 
+## After Phase 13: Token Factory, the Nemotron ladder and the hackathon submission
+
+Status: 2026-10-28. STATUS_LINE
+
+### Done
+
+- Hosted providers (ADR 0044): the Token Factory preset with model IDs, list prices and the
+  reasoning efforts each model accepts; dollars in the ledger, per task (`--budget-usd`) and per
+  bench run (`--budget-usd-total`); escalation-aware policy rules and a second-opinion review
+  from another model family; probes of the four Nemotron models and `gpt-oss-120b`.
+- The Nemotron ladder (`bench/policies/tokenfactory-ladder.toml`, the same rules as
+  `examples/tokenfactory/stepswitch.toml`): Lightning navigates, reads and summarizes; Super
+  edits, runs and triages; Ultra plans, reviews and takes the work after an escalation.
+- C-029 passes: on both mini suites (21 tasks, one task run each, interleaved), the ladder and
+  Ultra alone both passed 21 of 21; the ladder's dollars were 18.4% of Ultra's (95% interval
+  13.8% to 23.6%), US$ 0.0101 against 0.0551 per task run.
+- C-030 passes: the cross-family second reviewer agreed with Ultra on 20 of 21 changes, and
+  Lightning ran the summarize steps with no more cut-off calls than Ultra at 6.8% of its
+  dollars per call. Navigate and read results are in the evidence, not claimed (ADR 0046).
+- Lightning alone on the same tasks (reported, not claimed): 19 of 21, US$ 0.0071 per task run,
+  130,369 tokens per task run against the ladder's 47,156.
+- Escalation demo: with edits starting on Nano, both tasks escalated to Ultra after two gate
+  failures; `temperature-units` finished with Ultra's change passing the gates.
+- `ssw run` shows the task's running dollars on each step line and its cost in the summary.
+- `ssw policy check` shows which worker takes each step type, before and after an escalation,
+  and flags rules no configured worker matches, unpriced remote workers and a missing dollar
+  budget, without calling a model. `ssw run` also names an unmatched pinning rule once on the
+  console (the Nano-first take had run its edits on Ultra because the preset listed no Nano).
+- Tool fixes drawn from the recorded runs' refused calls: container-style absolute paths
+  (`/repo/x.py`, `/workspace/x.py`) are read when they name a file of the repository, with a
+  note; `run` takes a leading `cd <dir> &&` and names any other shell operator it cannot run;
+  a JSON string of edits with one closing bracket too many is taken, and a broken one is
+  refused with the place it broke; old text copied from read output with its `ab|` row
+  prefixes (18 of the 22 readable "old text is not in the file" refusals) is taken when each
+  prefix is the hash of the line it sits on.
+- CI: the prove workflow's test step had failed on all three platforms since 0a29a3a, because
+  the C-029 and C-030 evidence put the bench recipe where C-018 expects the prove command; the
+  recipe is now data in the evidence.
+- The demo page and the dashboard share a warm editorial theme with a self-hosted serif; the
+  demo has charts of dollars per suite, dollars by model and cached tokens, each with a table.
+- The public demo, https://sarthak-1111.github.io/stepswitch-nemotron/, replays the recorded
+  runs; the demo workflow publishes it only when `data.json` matches the committed runs.
+- The README's hackathon section (ADR 0043 scope), and `hackathon/`: SUBMISSION, FEEDBACK,
+  VIDEO, tapes, screenshots, DEPLOY, sandboxes, COMPLIANCE, bill.json. The README quickstart
+  was run as written in a fresh clone of the public repository: step 1 reproduced the C-029 and
+  C-030 evidence (timestamps aside) with no key; steps 2 and 3 passed the task for US$ 0.0105.
+- The bill: US$ 2.1787 for every hosted bench run by the ledger; US$ 2.38 on the console for the
+  whole day, tax included, probes and test runs outside the bench included.
+
+### Research that changed the plan
+
+- Ultra's thinking is not bounded by `reasoning_effort` in reviews; reviews and summaries run
+  with thinking off. gpt-oss-120b rejects effort `none`, so the registry records accepted
+  efforts and the router clamps (RESEARCH.md, "Reasoning effort, truncated thinking and prompt
+  caching").
+- Sandboxes: every permission false for this project (beta access not granted); C-031 stays on
+  the roadmap (`hackathon/sandboxes.md`).
+
+### Waiting on the maintainer
+
+- Record the video from `hackathon/VIDEO.md` (voiceover, the tapes or a screen recorder),
+  upload it as public, and put its link in the README's hackathon section and the form.
+- Fill the submission form (track: Coding and Agentic Engineering; leave the city empty) and
+  press Submit before 2026-10-30 10:00 PT.
+- Optional: request Sandboxes beta access on the console for C-031.
+
 ## After Phase 13: public repository and CI
 
 Status: 2026-10-27. The repository is public, and its three workflows pass on commit caa502b:

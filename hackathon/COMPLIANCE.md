@@ -17,25 +17,25 @@ Legend: ✅ done and checked · 🟡 in progress · 👤 the entrant does it by 
 
 | # | Requirement (source) | How Stepswitch meets it | Status |
 |---|---|---|---|
-| 1 | "must run on either Nebius Token Factory or Nebius AI Cloud and use at least one NVIDIA open source model" ([overview](https://nebiusglobalaihackathon.devpost.com/)) | Every model call of the Nemotron ladder goes to the Token Factory chat-completions API at `https://api.tokenfactory.nebius.com/v1/`. Models: `nvidia/Nemotron-3_5-Lightning`, `nvidia/nemotron-3-super-120b-a12b`, `nvidia/Nemotron-3-Ultra-550b-a55b` (IDs from `GET /v1/models`, 2026-10-28). | 🟡 |
-| 2 | "Runs on Nebius Token Factory … means the project makes a runtime call to the Token Factory inference API" ([rules §4](https://nebiusglobalaihackathon.devpost.com/rules)) | `ssw run` calls the API at run time; the ledger records each call with its model, tokens and dollars. | 🟡 |
-| 3 | The same NVIDIA model through another provider does not count ([FAQ](https://nebiusglobalaihackathon.devpost.com/details/faqs)) | The endpoint is `tokenfactory` only; no other hosted provider is configured for the ladder. | 🟡 |
+| 1 | "must run on either Nebius Token Factory or Nebius AI Cloud and use at least one NVIDIA open source model" ([overview](https://nebiusglobalaihackathon.devpost.com/)) | Every model call of the Nemotron ladder goes to the Token Factory chat-completions API at `https://api.tokenfactory.nebius.com/v1/`. Models: `nvidia/Nemotron-3_5-Lightning`, `nvidia/nemotron-3-super-120b-a12b`, `nvidia/Nemotron-3-Ultra-550b-a55b` (IDs from `GET /v1/models`, 2026-10-28). | ✅ |
+| 2 | "Runs on Nebius Token Factory … means the project makes a runtime call to the Token Factory inference API" ([rules §4](https://nebiusglobalaihackathon.devpost.com/rules)) | `ssw run` calls the API at run time; the ledger records each call with its model, tokens and dollars. | ✅ |
+| 3 | The same NVIDIA model through another provider does not count ([FAQ](https://nebiusglobalaihackathon.devpost.com/details/faqs)) | The endpoint is `tokenfactory` only; no other hosted provider is configured for the ladder. | ✅ |
 | 4 | Track fit: "agents that write, run, and test code in Token Factory" ([rules §4](https://nebiusglobalaihackathon.devpost.com/rules)) | Stepswitch is a coding agent: it plans, edits, runs tests and reviews, each step on a Nemotron model on Token Factory. | ✅ |
 
 ## What to submit (rules §4, "Submission Requirements")
 
 | # | Requirement | Where | Status |
 |---|---|---|---|
-| 5 | A working demo URL, hosted application or test build, free and without restriction **until judging ends (2026-12-15)** | [hackathon/DEPLOY.md](DEPLOY.md) | 🟡 |
-| 6 | A text description of features and functionality | [hackathon/SUBMISSION.md](SUBMISSION.md) | 🟡 |
-| 7 | A public repository on GitHub, GitLab or Bitbucket with all source, assets and instructions | `sarthak-1111/stepswitch-nemotron` | 👤 create, then 🟡 push |
-| 8 | An open-source licence file, "detectable and visible at the top of the repository page (in the About section)" | [LICENSE](../LICENSE) (MIT) at the root | ✅ file; 👤 check the About box |
-| 9 | A README with setup instructions and clear guidance for running the project | [README.md](../README.md), section "Built for the Nebius x NVIDIA Global AI Hackathon" | 🟡 |
-| 10 | The README highlights how NVIDIA Nemotron is used, where Token Factory accelerated the workflow, and any other Nebius tools used | same section: model table, results, bill | 🟡 |
-| 11 | A demo video **under 3 minutes**, public on YouTube, showing the project working and how Token Factory and Nemotron are used; no third-party trademarks or copyrighted music without permission | [hackathon/VIDEO.md](VIDEO.md) (script, shot list, tapes) | 🟡 script; 👤 record and upload |
+| 5 | A working demo URL, hosted application or test build, free and without restriction **until judging ends (2026-12-15)** | https://sarthak-1111.github.io/stepswitch-nemotron/ ([DEPLOY.md](DEPLOY.md)), loads without a login | ✅ |
+| 6 | A text description of features and functionality | [hackathon/SUBMISSION.md](SUBMISSION.md) | ✅ |
+| 7 | A public repository on GitHub, GitLab or Bitbucket with all source, assets and instructions | `sarthak-1111/stepswitch-nemotron` | ✅ public, pushed |
+| 8 | An open-source licence file, "detectable and visible at the top of the repository page (in the About section)" | [LICENSE](../LICENSE) (MIT) at the root | ✅ file; ✅ "MIT license" shows in the About box |
+| 9 | A README with setup instructions and clear guidance for running the project | [README.md](../README.md), section "Built for the Nebius x NVIDIA Global AI Hackathon" | ✅ |
+| 10 | The README highlights how NVIDIA Nemotron is used, where Token Factory accelerated the workflow, and any other Nebius tools used | same section: model table, results, bill | ✅ |
+| 11 | A demo video **under 3 minutes**, public on YouTube, showing the project working and how Token Factory and Nemotron are used; no third-party trademarks or copyrighted music without permission | [hackathon/VIDEO.md](VIDEO.md) (script, shot list, tapes) | ✅ script and tapes; 👤 record and upload |
 | 12 | The track is named | Coding and Agentic Engineering | 👤 in the form |
-| 13 | Feedback on Nebius Token Factory, AI Cloud and NVIDIA tools or models used | [hackathon/FEEDBACK.md](FEEDBACK.md) | 🟡 |
-| 14 | If the project existed before the submission period, what was significantly updated during it | [hackathon/SUBMISSION.md](SUBMISSION.md), "What changed during the submission period" | 🟡 |
+| 13 | Feedback on Nebius Token Factory, AI Cloud and NVIDIA tools or models used | [hackathon/FEEDBACK.md](FEEDBACK.md) | ✅ |
+| 14 | If the project existed before the submission period, what was significantly updated during it | [hackathon/SUBMISSION.md](SUBMISSION.md), "What changed during the submission period" | ✅ |
 | 15 | City: only for entrants who attended an in-person Builders & Brews event | We did not attend; **leave the city field empty** | 👤 |
 | 16 | All materials in English | all files | ✅ |
 

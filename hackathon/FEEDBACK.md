@@ -175,6 +175,15 @@ tokens):
   Alone on the same 21 tasks, Lightning passed 19 at US$ 0.0071 per task run (70% of the
   ladder's) but used 130,369 tokens per task run, 2.8 times the ladder's; both failures ran out
   of steps.
+- **Tool arguments.** Three shapes recurred in the edit and run calls our tools refused.
+  Lightning copied rows of the read output into an edit's old and new text with their `ab|`
+  hash prefixes. Super and Ultra sometimes sent the `edits` array as a JSON string, with a
+  docstring's `"""` left unescaped inside it or one closing bracket too many. And Lightning
+  wrote container paths such as `/repo/...` and `cd /workspace && ...`. Stepswitch now takes
+  the unambiguous cases (each checked against the file), but a model that keeps tool arguments
+  as structured JSON and leaves display prefixes out would save those turns in every agent
+  harness. The counts come from our local run records, which are not in this repository, so we
+  give none here.
 - **Super** did the ladder's work: 151 of its 261 calls and 80.0% of its dollars, with every
   change passing the gates within two attempts (no escalations in 21 task runs).
 - **Ultra** as the reviewer blocked one change in 21 that passed its tests, over a design
