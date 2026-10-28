@@ -121,8 +121,20 @@ COMPANY_NAME_HASHES = frozenset(
         "f3d9076356cd183c154b205a16c80999c576ee1efb469d0504680e586ec63067",
         "f93038d828ff49aaf58fc4455b58980d53d48c3e7642836fa8d19cfb7b6e2eaa",
         "3eee4f30151db45a6507b8fde7c56d0f345e141fa35d5aa0998dfebc6f2d66fb",
+        "59719e65a648bd4677d233821f3e56b1035cc74f11420a21820b4064c2b7ffd9",
     }
 )
+
+# The hackathon submission may name the event's two sponsors, and only them, in two places:
+# files under hackathon/ and the README's hackathon section (ADR 0043). Hashes, as above.
+EVENT_NAME_HASHES = frozenset(
+    {
+        "59719e65a648bd4677d233821f3e56b1035cc74f11420a21820b4064c2b7ffd9",
+        "8d4321d936320802386311d254c4af52951abb880b47fb077edf3d89c150b289",
+    }
+)
+EVENT_SCOPE_DIR = "hackathon/"
+EVENT_SECTION_RE = re.compile(r"<!-- hackathon:start -->.*?<!-- hackathon:end -->", re.S)
 
 # Interoperability identifiers that contain a company name: tool, package, protocol header,
 # environment variable, engine parser, configuration value and license names that other
@@ -160,6 +172,9 @@ ALLOWED_IDENTIFIERS = (
     "anthropic_profile",
     "anthropic_federation_rule_id",
     "anthropic_organization_id",
+    # read verbatim by the Token Factory SDK and CLI (ADR 0043)
+    "nebius_api_key",
+    "nebius_project_id",
     # engine parser names and flags
     "openai_gptoss",
     "cohere_command3",
@@ -210,7 +225,11 @@ def repo_text_files(root: Path = ROOT) -> list[Path]:
     return [p for p in repo_files(root) if p.suffix.lower() in TEXT_SUFFIXES]
 
 
-def company_name_hits(text: str, hashes: frozenset[str] = COMPANY_NAME_HASHES) -> list[str]:
+def company_name_hits(
+    text: str,
+    hashes: frozenset[str] = COMPANY_NAME_HASHES,
+    allowed: frozenset[str] = frozenset(),
+) -> list[str]:
     # URLs go first, whole: an allowed identifier inside one must not split it.
     text = URL_RE.sub(" ", text.lower())
     for identifier in ALLOWED_IDENTIFIERS:
@@ -222,7 +241,10 @@ def company_name_hits(text: str, hashes: frozenset[str] = COMPANY_NAME_HASHES) -
         candidates = [word]
         if index + 1 < len(words):
             candidates.append(f"{word} {words[index + 1]}")
-        hits.extend(c for c in candidates if hashlib.sha256(c.encode()).hexdigest() in hashes)
+        for candidate in candidates:
+            digest = hashlib.sha256(candidate.encode()).hexdigest()
+            if digest in hashes and digest not in allowed:
+                hits.append(candidate)
     return hits
 
 
@@ -289,12 +311,33 @@ def company_scan_text(rel: str, text: str) -> str:
     return "\n".join(lines)
 
 
+def event_name_scope(rel: str, text: str) -> tuple[str, str]:
+    """Split a file's text into what the plain scan reads and what the event scope reads: all of
+    a file under hackathon/, the README's hackathon section, nothing elsewhere (ADR 0043)."""
+    if rel.startswith(EVENT_SCOPE_DIR):
+        return "", text
+    if rel == "README.md":
+        inside = "\n".join(match.group(0) for match in EVENT_SECTION_RE.finditer(text))
+        return EVENT_SECTION_RE.sub(" ", text), inside
+    return text, ""
+
+
+def scoped_company_name_hits(
+    rel: str,
+    text: str,
+    hashes: frozenset[str] = COMPANY_NAME_HASHES,
+    event_names: frozenset[str] = EVENT_NAME_HASHES,
+) -> list[str]:
+    plain, event = event_name_scope(rel, company_scan_text(rel, text))
+    return company_name_hits(plain, hashes) + company_name_hits(event, hashes, event_names)
+
+
 def test_no_company_names_in_repository_text() -> None:
     problems: dict[str, list[str]] = {}
     for path in repo_text_files():
         rel = path.relative_to(ROOT).as_posix()
         text = path.read_text(encoding="utf-8", errors="replace")
-        hits = company_name_hits(company_scan_text(rel, text))
+        hits = scoped_company_name_hits(rel, text)
         if hits:
             problems[rel] = sorted(set(hits))
     assert not problems, f"company names found (working rule 4): {problems}"
@@ -361,6 +404,42 @@ def test_only_a_predictions_patch_is_left_out_of_the_company_name_scan() -> None
     assert company_name_hits(company_scan_text(rel, "AcmeCorp notes"), FICTIONAL) == ["acmecorp"]
     elsewhere = "bench/results/2026-01-01-swebench-mini-confirmatory/results.jsonl"
     assert company_name_hits(company_scan_text(elsewhere, text), FICTIONAL) == ["acmecorp"]
+
+
+SPONSOR = hashlib.sha256(b"acmecorp").hexdigest()
+OTHER = hashlib.sha256(b"globexcorp").hexdigest()
+
+
+@pytest.mark.parametrize(
+    ("rel", "text", "expected"),
+    [
+        ("hackathon/SUBMISSION.md", "Built on AcmeCorp models.", []),
+        ("hackathon/SUBMISSION.md", "Built on AcmeCorp and GlobexCorp models.", ["globexcorp"]),
+        ("docs/ARCHITECTURE.md", "Built on AcmeCorp models.", ["acmecorp"]),
+        ("hackathonish/notes.md", "Built on AcmeCorp models.", ["acmecorp"]),
+        (
+            "README.md",
+            "Intro.\n<!-- hackathon:start -->\nFor the AcmeCorp event.\n<!-- hackathon:end -->\n",
+            [],
+        ),
+        (
+            "README.md",
+            "AcmeCorp intro.\n<!-- hackathon:start -->\nThe event.\n<!-- hackathon:end -->\n",
+            ["acmecorp"],
+        ),
+        (
+            "README.md",
+            "<!-- hackathon:start -->\nGlobexCorp too.\n<!-- hackathon:end -->\n",
+            ["globexcorp"],
+        ),
+        ("docs/README.md", "<!-- hackathon:start -->AcmeCorp<!-- hackathon:end -->", ["acmecorp"]),
+    ],
+)
+def test_event_names_pass_only_in_the_submission_scope(
+    rel: str, text: str, expected: list[str]
+) -> None:
+    hashes = FICTIONAL | {OTHER}
+    assert scoped_company_name_hits(rel, text, hashes, frozenset({SPONSOR})) == expected
 
 
 def test_sensitive_values_from_local_config() -> None:
