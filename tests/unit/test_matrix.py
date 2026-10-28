@@ -183,6 +183,6 @@ def test_a_hosted_result_names_its_provider_and_no_hardware(tmp_path: Path) -> N
     loaded = matrix.load_results(root)[0]
     assert loaded.hosted
     text = matrix.render(root)
-    row = next(line for line in text.splitlines() if line.startswith("| nvidia/"))
+    row = next(line for line in text.splitlines() if line.startswith("| nvidia/Nemotron"))
     assert "| nemotron | hosted: Token Factory |" in row
     assert "| `nemotron-3-ultra-550b-a55b--tokenfactory.json` | hosted endpoint |" in text
