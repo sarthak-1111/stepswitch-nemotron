@@ -1,0 +1,9 @@
+{
+  "read": "2026-10-28T04:12Z",
+  "page": "Token Factory console, Billing, Transactions",
+  "consumption_usd_incl_tax": 2.38,
+  "balance_before_usd": 5.0,
+  "balance_after_usd": 2.62,
+  "covers": "every call on the account on 2026-10-28: the bench runs, the probes of five models, direct API checks, and two live test runs outside the bench (a toy ssw run and the README quickstart in a fresh clone)",
+  "not_in_the_ledger": "the probes, the direct API checks, the two live test runs (0.0111 and 0.0105 by their own ledgers), and the first pilot's fourth task run, which ended without a result row"
+}

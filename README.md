@@ -66,8 +66,10 @@ Evidence: [C-029](claims/evidence/C-029.json).
 - **The bill:** every hosted bench run of this submission, pilots, a crashed run, the
   small-model runs and the escalation demos included, cost US$
   <!-- num:C-029:sections.comparison.bill.total_usd -->2.18<!-- /num --> by Stepswitch's ledger
-  at list prices. [hackathon/SUBMISSION.md](hackathon/SUBMISSION.md) lists each run and
-  the console's reading.
+  at list prices. The Token Factory console showed US$
+  <!-- num:C-029:sections.comparison.bill.console.consumption_usd_incl_tax -->2.38<!-- /num -->
+  for every call on the account that day, tax included, with the probes and two test runs
+  outside the bench. [hackathon/SUBMISSION.md](hackathon/SUBMISSION.md) lists each run.
 
 ### Try it
 
