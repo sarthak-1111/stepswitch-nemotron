@@ -4317,6 +4317,16 @@ Sources: the package installed from PyPI (`minisweagent/config/benchmarks/sweben
   no verdict at `low` (two of two tries, and once more without the JSON Schema) and at `medium`
   (two of two); at `none` it answered `{"approve": true, "issues": []}` in 12 tokens (two of
   two). gpt-oss-120b at `low` answered in 65 tokens.
+- The same effort is a different amount of thinking per model. One request each asking "What is
+  17 times 23?" at `low` with a 400-token cap: Lightning 287 reasoning tokens, Ultra 32, Super
+  16 (Nano and gpt-oss-120b do not report reasoning tokens). The same requests showed each
+  model's `usage` shape: Lightning has `prompt_tokens_details: null` and top-level
+  `prompt_cache_hit_tokens` / `prompt_cache_miss_tokens`; Super and Ultra have both
+  `prompt_tokens_details.cached_tokens` and the top-level counters (Super also
+  `created_cache_tokens`); gpt-oss-120b has `cached_tokens` and no `completion_tokens_details`;
+  Nano has neither detail object. Reasoning text: Lightning and Super send `reasoning` and
+  `reasoning_content` with the same text, Ultra `reasoning_content`, Nano and gpt-oss-120b
+  `reasoning`.
 - A reply cut off by `max_tokens` while the model is still thinking comes back with the
   unfinished thinking in `content` and `reasoning_tokens` equal to `completion_tokens`
   (Lightning at `low` with a 300-token cap; Ultra in reviews). When the thinking ends within

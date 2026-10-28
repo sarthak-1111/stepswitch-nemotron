@@ -1,6 +1,6 @@
 # Token Factory Sandboxes: checked, not yet usable, on the roadmap
 
-StepSwitch's gates run a project's impacted tests and its full test suite after every change.
+Stepswitch's gates run a project's impacted tests and its full test suite after every change.
 Running them in a Token Factory Sandbox (a microVM per run) would let the gates run untrusted,
 model-written code away from the developer's machine, and run several candidates' test suites
 in parallel. This is what we checked during the hackathon, and the design we would build.
@@ -41,11 +41,11 @@ For each gate run:
    and saved with `disposable=False` and a tag named after the lock file's hash, so later runs
    start from that state.
 4. Run the gate's command (`pytest -q <impacted tests>`, then the full suite) with `shell=` and
-   read `exit_code`, `stdout` and `stderr`, which map onto StepSwitch's existing gate results.
+   read `exit_code`, `stdout` and `stderr`, which map onto Stepswitch's existing gate results.
 5. On a start failure or a missing permission, run the same command locally and mark the gate
    result `ran: local (sandbox unavailable)` in the trajectory.
 
-All of it would go through StepSwitch's egress layer (`stepswitch.net`), so the audit log lists
+All of it would go through Stepswitch's egress layer (`stepswitch.net`), so the audit log lists
 every upload and call.
 
 ## Roadmap
