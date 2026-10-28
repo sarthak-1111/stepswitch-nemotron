@@ -308,6 +308,37 @@ def bound(text: str, limit: int) -> str:
 _PYTEST_COUNTS = re.compile(
     r"(\d+) (passed|failed|errors?|skipped|xfailed|xpassed|deselected|warnings?|rerun)"
 )
+_LEADING_CD = re.compile(
+    r"""cd\s+(?P<dir>"[^"]*"|'[^']*'|[^\s;&|]+)\s*(?:&&|;)\s*(?P<rest>\S.*)$""", re.DOTALL
+)
+_SHELL_OPERATORS = ("&&", "||", ">>", "|", "&", ";", ">", "<")
+
+
+def shell_operator(command: str, *, escapes: bool) -> str | None:
+    """The first shell operator outside quotes in a command line, or None. `run` has no shell,
+    so an operator would reach the program as an argument. `escapes`: a backslash escapes the
+    next character, as in POSIX; otherwise it escapes only a double quote, as Windows reads
+    command lines."""
+    quote = ""
+    i = 0
+    while i < len(command):
+        char = command[i]
+        following = command[i + 1 : i + 2]
+        if char == "\\" and quote != "'" and (escapes or following == '"'):
+            i += 2
+            continue
+        if quote:
+            quote = "" if char == quote else quote
+        elif char in "'\"":
+            quote = char
+        else:
+            for operator in _SHELL_OPERATORS:
+                if command.startswith(operator, i):
+                    return operator
+        i += 1
+    return None
+
+
 _PYTEST_FINAL = re.compile(r"^(?:=+ )?(?:\d+ \w+(?:, )?)+(?: in [\d.]+s)")
 # A node id's parameters may hold spaces: `FAILED tests/t.py::test_x[a b] - assert 0`.
 _PYTEST_FAILED = re.compile(r"^(FAILED|ERROR) ([^\s\[]+(?:\[[^\]]*\])?)(?: - (.*))?$")
@@ -1321,15 +1352,16 @@ class Toolbox:
     def _child_env(self) -> dict[str, str]:
         return proc.minimal_env(self.env, offline=self.offline)
 
-    def _program(self, token: str, env: Mapping[str, str]) -> str:
-        """An absolute program path: relative paths from root, bare names from PATH only."""
+    def _program(self, token: str, env: Mapping[str, str], base: Path | None = None) -> str:
+        """An absolute program path: relative paths from `base` (the root by default) and
+        never outside the root, bare names from PATH only."""
         token = token.strip().strip('"')
         if Path(token).is_absolute():
             if Path(token).is_file():
                 return token
             raise ToolError(f"program not found: {token}")
         if "/" in token or "\\" in token:
-            candidate = (self.root / token).resolve()
+            candidate = ((base or self.root) / token).resolve()
             if not candidate.is_relative_to(self.root):
                 raise ToolError(f"{token} is outside the repository")
             found = proc.which(candidate.name, str(candidate.parent))
@@ -1359,6 +1391,13 @@ class Toolbox:
         command = command.strip()
         if not command:
             raise ToolError("run: `command` is empty")
+        command, cwd, where = self._leading_cd(command)
+        operator = shell_operator(command, escapes=sys.platform != "win32")
+        if operator is not None:
+            raise ToolError(
+                f"run: there is no shell, so `{operator}` is not available. Run one program per"
+                " call; `cd <dir> && <command>` is the one form taken, and runs it in <dir>."
+            )
         self._fresh_bytecode()
         requested = float(args.get("timeout") or self.run_timeout)
         timeout = min(max(requested, 1.0), self.run_timeout)
@@ -1367,7 +1406,7 @@ class Toolbox:
             match = re.match(r'\s*("([^"]+)"|(\S+))(.*)$', command, re.DOTALL)
             if match is None:
                 raise ToolError("run: could not read the command")
-            program = self._program(match.group(2) or match.group(3), env)
+            program = self._program(match.group(2) or match.group(3), env, cwd)
             rest = match.group(4)
             if program.lower().endswith((".bat", ".cmd")) and re.search(r"[&|<>]", rest):
                 # Windows runs batch files through the command interpreter, which would treat
@@ -1381,23 +1420,49 @@ class Toolbox:
                 argv = shlex.split(command)
             except ValueError as exc:
                 raise ToolError(f"run: cannot split the command ({exc})") from exc
-            argv[0] = self._program(argv[0], env)
+            argv[0] = self._program(argv[0], env, cwd)
             invocation = argv
-        result = proc.run_capture(invocation, cwd=self.root, env=env, timeout=timeout)
+        result = proc.run_capture(invocation, cwd=cwd, env=env, timeout=timeout)
         if result.error is not None:
             raise ToolError(f"run: could not start the command: {result.error}")
         status = f"exit {result.exit_code}"
         if result.timed_out:
             status = f"timed out after {timeout:g} s (process tree stopped)"
         output = result.output.rstrip() or "(no output)"
-        text = f"$ {command}\n{status} in {result.duration_s:.1f} s\n{output}"
-        data = {
+        shown = command if where == "." else f"cd {where} && {command}"
+        text = f"$ {shown}\n{status} in {result.duration_s:.1f} s\n{output}"
+        data: dict[str, Any] = {
             "command": command,
             "exit_code": result.exit_code,
             "timed_out": result.timed_out,
             "duration_s": round(result.duration_s, 3),
         }
+        if where != ".":
+            data["cwd"] = where
         return ToolOutput(text, data=data)
+
+    def _leading_cd(self, command: str) -> tuple[str, Path, str]:
+        """(command, directory, its path relative to the root) for a command that may start
+        with `cd <dir> &&` or `cd <dir>;`, the shell habit of models trained in a sandbox. The
+        directory is a path like any other: inside the root, with absolute paths mapped as
+        `resolve` maps them."""
+        cwd, where = self.root, "."
+        while True:
+            match = _LEADING_CD.match(command)
+            if match is None:
+                break
+            target = match.group("dir").strip("\"'")
+            relative = not target.startswith(("/", "~")) and not re.match(r"[A-Za-z]:", target)
+            path, rel = self.resolve(f"{where}/{target}" if relative else target)
+            if not path.is_dir():
+                raise ToolError(f"run: {rel} is not a directory")
+            cwd, where, command = path, rel, match.group("rest").strip()
+        if re.match(r"cd(\s|$)", command):
+            raise ToolError(
+                "run: `cd` alone does nothing, since each call starts in the repository root."
+                " Give `cd <dir> && <command>` in one call."
+            )
+        return command, cwd, where
 
     def _tool_test(self, args: dict[str, Any]) -> ToolOutput:
         if not self.test_command:

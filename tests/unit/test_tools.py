@@ -428,6 +428,52 @@ def test_run_refusals(root: Path) -> None:
     unknown = box.execute("run", {"command": "no-such-program-xyz --help"})
     assert unknown.is_error and "was not found on PATH" in unknown.text
     assert box.execute("test", {}).text.startswith("no test command is configured")
+    piped = box.execute("run", {"command": "python -m pytest -q | tail -5"})
+    assert piped.is_error and "there is no shell, so `|` is not available" in piped.text
+    alone = box.execute("run", {"command": "cd pkg"})
+    assert alone.is_error and "`cd` alone does nothing" in alone.text
+    assert "outside the repository" in box.execute("run", "cd .. && python -V").text
+    assert "is not in the repository" in box.execute("run", "cd /tmp && python -V").text
+    assert "pkg/calc.py is not a directory" in box.execute("run", "cd pkg/calc.py && x").text
+
+
+@pytest.mark.parametrize(
+    ("command", "escapes", "operator"),
+    [
+        ("pytest -q", True, None),
+        ("pytest -q && echo done", True, "&&"),
+        ("pytest -q 2>&1", True, ">"),
+        ("cat a.txt > b.txt", False, ">"),
+        ("python app.py &", True, "&"),
+        ("grep -n 'a|b' x.py", True, None),
+        ('python -c "import os; print(os.sep)"', True, None),
+        ('python -c "print(\\"a;b\\")"', False, None),  # Windows: \" inside quotes
+        ("find . -name x -exec rm {} \\;", True, None),  # POSIX: an escaped ;
+        ("echo a\\;b", False, ";"),  # Windows: a backslash escapes only a quote
+    ],
+)
+def test_shell_operators_are_found_outside_quotes_only(
+    command: str, escapes: bool, operator: str | None
+) -> None:
+    assert T.shell_operator(command, escapes=escapes) == operator
+
+
+def test_run_takes_a_leading_cd_into_a_directory_of_the_root(root: Path) -> None:
+    box = T.Toolbox(root)
+    code = "import os; print(os.getcwd())"
+    quoted = subprocess.list2cmdline([code]) if sys.platform == "win32" else repr(code)
+    python = subprocess.list2cmdline([sys.executable])
+    done = box.execute("run", {"command": f"cd pkg && {python} -c {quoted}"})
+    assert not done.is_error and done.data["cwd"] == "pkg", done.text
+    assert done.text.startswith(f"$ cd pkg && {python} -c ")
+    assert Path(done.text.rstrip().split("\n")[-1]).resolve() == (root / "pkg").resolve()
+    # Sandbox-style: the container's mount point is the root.
+    mounted = box.execute("run", {"command": f"cd /workspace && {python} -c {quoted}"})
+    assert not mounted.is_error and "cwd" not in mounted.data
+    assert mounted.text.startswith("[/workspace was taken as .: paths are relative to the")
+    assert Path(mounted.text.rstrip().split("\n")[-1]).resolve() == root.resolve()
+    chained = box.execute("run", {"command": f"cd pkg; cd .. && {python} -c {quoted}"})
+    assert not chained.is_error and "cwd" not in chained.data
 
 
 def test_test_tool_summarizes_a_real_pytest_run(root: Path) -> None:
