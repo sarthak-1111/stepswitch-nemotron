@@ -220,10 +220,11 @@ def test_the_ladder_passes_as_many_tasks_as_ultra_for_less() -> None:
             "per_suite": per_suite,
             "bill": bill(found),
             "problems": problems,
+            # How the runs were made; `command` is the prove command that checks them (C-018).
+            "bench_command": "uv run ssw bench run --suite <suite> --workers router,<ultra>"
+            " --router-pool <pool> --allow-remote --policy bench/policies/tokenfactory-ladder.toml"
+            " --interleave --budget-usd 0.5 --budget-usd-total <cap> (each run's run.json"
+            " records its command)",
         },
-        command="uv run ssw bench run --suite <suite> --workers router,<ultra> --router-pool"
-        " <pool> --allow-remote --policy bench/policies/tokenfactory-ladder.toml --interleave"
-        " --budget-usd 0.5 --budget-usd-total <cap> (each run's run.json records its command);"
-        " uv run ssw prove --claim C-029",
     )
     assert not problems, problems

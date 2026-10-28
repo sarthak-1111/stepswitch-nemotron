@@ -211,9 +211,10 @@ def test_the_second_opinion_agrees_and_the_small_tier_keeps_up() -> None:
             "small_tier": {"worker": small, "single": single, "step_types": step_types},
             "small_tier_alone": alone(found, list(limits.get("alone_runs") or []), small),
             "problems": problems,
+            # How the runs were made; `command` is the prove command that checks them (C-018).
+            "bench_command": "the C-029 runs and the small tier alone (`ssw bench run --workers"
+            " <small> --allow-remote --policy bench/policies/tokenfactory-ladder.toml`, each"
+            " run.json records its command)",
         },
-        command="the C-029 runs and the small tier alone (`ssw bench run --workers <small>"
-        " --allow-remote --policy bench/policies/tokenfactory-ladder.toml`, each run.json"
-        " records its command); uv run ssw prove --claim C-030",
     )
     assert not problems, problems
