@@ -133,6 +133,35 @@ def test_catalog_takes_tiers_and_prices_from_the_provider(
     assert spec.tier == "t1" and spec.prices is not None
 
 
+def test_a_model_gets_the_nearest_effort_its_endpoint_accepts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from stepswitch.compat.ir import Message, Request, TextPart
+
+    text = PROVIDER.replace('roles = ["planner"]', 'roles = ["planner"]\nefforts = ["low", "high"]')
+    (tmp_path / "acme.toml").write_text(text, encoding="utf-8")
+    monkeypatch.setattr(providers, "provider_dirs", lambda: [tmp_path])
+    monkeypatch.setenv("ACME_KEY", "test-key")
+    config = Config.model_validate({"endpoints": [{"name": "acme", "preset": "acme"}]})
+    catalog = Catalog.from_config(config, tmp_path, include_managed=False)
+    big, small = catalog.get("acme/big"), catalog.get("acme/small")
+    assert big.spec.efforts == ("low", "high") and small.spec.efforts is None
+    assert big.spec.as_dict()["efforts"] == ["low", "high"]
+
+    def sent(worker: object, effort: str) -> object:
+        request = Request(
+            model="",
+            messages=[Message(role="user", content=[TextPart(text="hi")])],
+            effort=effort,  # type: ignore[arg-type]
+        )
+        call, _report = worker.get_model().prepare(request)  # type: ignore[attr-defined]
+        return (call.json or {}).get("reasoning_effort")
+
+    # A model that refuses `none` gets its lowest effort; one without a list gets what is asked.
+    assert sent(big, "none") == "low" and sent(big, "medium") == "high"
+    assert sent(small, "none") == "none"
+
+
 def test_ledger_rows_carry_their_cost(tmp_path: Path) -> None:
     db = open_project_state(tmp_path)
     ledger = Ledger(db, "t1")
@@ -164,3 +193,33 @@ def test_a_dollar_budget_stops_the_task() -> None:
     tracker.charge(usd=0.007)
     assert tracker.exceeded() == "budget_usd"
     assert BudgetTracker(Budgets()).remaining()["usd"] is None
+
+
+@pytest.mark.parametrize("priced", [True, False])
+def test_a_task_result_carries_its_dollars(tmp_path: Path, priced: bool) -> None:
+    from stepswitch.compat.ir import Usage
+    from stepswitch.core.orchestrator import run_task
+    from stepswitch.core.task import TaskSpec
+    from stepswitch.workers.base import Worker, WorkerSpec
+    from stepswitch.workers.fake import Action, ScriptedModel
+    from tests.claims.toy import TOY_INSTRUCTION, toy_repo
+
+    model = ScriptedModel(
+        lambda request, index: (
+            Action(tool="finish", arguments={"summary": "Done."})
+            if request.tools
+            else Action(text="APPROVE")
+        ),
+        usage=Usage(input_tokens=100_000, output_tokens=10_000),
+    )
+    prices = Prices(input=1.0, output=3.0) if priced else None
+    spec = WorkerSpec(id="fake/w", endpoint="w", harness="fake", tier="t2", prices=prices)
+    repo = toy_repo("calc-bug", tmp_path / "repo")
+    task = TaskSpec(instruction=TOY_INSTRUCTION, repo=repo, max_steps=4)
+    result = run_task(task, root=repo, catalog=Catalog([Worker(spec, model)]))
+    if not priced:
+        assert result.cost_usd is None
+        return
+    calls = sum(int(counts["calls"]) for counts in result.usage_by_worker.values())
+    # Each call: 0.1 M input tokens at $1 plus 0.01 M output tokens at $3.
+    assert calls >= 1 and result.cost_usd == pytest.approx(0.13 * calls)

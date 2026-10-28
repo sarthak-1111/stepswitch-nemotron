@@ -160,7 +160,7 @@ def model_facts(
     if context is None and entry is not None:
         context = float(entry.context)
     probed = _number(capabilities.get("context_ok_tokens"))
-    if probed is not None and (context is None or probed < context):
+    if probed is not None and (context is None or (probed < context and _probe_hit_limit(profile))):
         context = probed
     calibration = calibration or {}
     family = table.get("family") if isinstance(table.get("family"), str) else None
@@ -196,6 +196,29 @@ def _table_tool_parser(table: Mapping[str, Any]) -> tuple[str | None, tuple[str,
     if isinstance(value, str) and value in parsers.PARSERS:
         return value, (f"tool calls parsed from text ({value}, configured)",)
     return None, (f"unknown tool parser {value!r} ignored",)
+
+
+def _probe_hit_limit(profile: Mapping[str, Any] | None) -> bool:
+    """Whether the probe's needle test found where the context ends: a needle it lost, or the
+    server's own limit. Without a known limit the test stops at its own cap, and finding every
+    needle up to it shows the model works that far, not that it stops there (ADR 0045). A profile
+    without the test's data counts as a limit, as before."""
+    checks = (profile or {}).get("checks")
+    check = checks.get("context_length") if isinstance(checks, Mapping) else None
+    if not isinstance(check, Mapping) or not isinstance(check.get("data"), Mapping):
+        return True
+    return check.get("ok") is False or check["data"].get("limit") is not None
+
+
+def _efforts(table: Mapping[str, Any]) -> tuple[str, ...] | None:
+    """A model table's `efforts`: the reasoning efforts its endpoint accepts (ADR 0044)."""
+    from stepswitch.compat.ir import EFFORT_LEVELS
+
+    value = table.get("efforts")
+    if not isinstance(value, list | tuple):
+        return None
+    known = tuple(level for level in EFFORT_LEVELS if level in value)
+    return known or None
 
 
 def _host_has_gpu(config: Config) -> bool:
@@ -383,6 +406,7 @@ class Catalog:
                     + ((SLOW_NOTE,) if slow else ()),
                     pin_only=slow,
                     reasoning=facts.reasoning,
+                    efforts=_efforts(table),
                     tokenizer=facts.tokenizer,
                     cache_ratio=facts.cache_ratio,
                     prices=prices_from_table(table),
@@ -512,6 +536,8 @@ def _endpoint_factory(
 
         target = Endpoint.from_config(endpoint, model=spec.model, fmt=spec.format)
         target.options.tool_parser = spec.tool_parser
+        if spec.efforts is not None:
+            target.options.extra["effort_levels"] = list(spec.efforts)
         if spec.format == "ollama-native" and spec.context:
             # The server's context is the one the agent plans for, never its own default, which
             # can differ per model and per machine (SPEC §4.2, ADR 0008, ADR 0037).

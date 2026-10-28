@@ -59,6 +59,9 @@ class WorkerSpec:
     notes: tuple[str, ...] = ()
     # The model reasons before answering, so a reasoning effort applies to it (TK10).
     reasoning: bool = False
+    # The reasoning efforts the model's endpoint accepts, when it accepts only some; others
+    # are sent as the nearest accepted one (ADR 0044).
+    efforts: tuple[str, ...] | None = None
     # The registry's tokenizer name for HANDOFF counts (SPEC §9), when it has one.
     tokenizer: str | None = None
     # Reported / predicted cached prompt tokens measured by `ssw calibrate --cache`.
@@ -96,6 +99,7 @@ class WorkerSpec:
             "gpu": self.gpu,
             "pin_only": self.pin_only,
             "reasoning": self.reasoning,
+            "efforts": list(self.efforts) if self.efforts is not None else None,
             "tokenizer": self.tokenizer,
             "cache_ratio": self.cache_ratio,
             "prices": self.prices.as_dict() if self.prices is not None else None,

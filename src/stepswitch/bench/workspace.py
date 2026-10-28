@@ -25,6 +25,10 @@ IDENTITY = (
     "commit.gpgsign=false",
     "-c",
     "core.autocrlf=false",
+    # Git for Windows stops at 260 characters, and a bench workspace sits several directories
+    # deep (run, contestant, task, seed); other platforms ignore the setting.
+    "-c",
+    "core.longpaths=true",
 )
 GENERATED = ("__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".git", "*.pyc")
 

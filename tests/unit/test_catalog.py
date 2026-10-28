@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -104,6 +105,29 @@ def test_model_facts_precedence() -> None:
     assert model_facts("x", local=True, table={"tool_calls": "native; harmony"}).tool_protocol == (
         "native"
     )
+
+
+@pytest.mark.parametrize(
+    ("check", "context"),
+    [
+        # Every needle found up to the test's own cap: the model works that far, no limit found.
+        ({"ok": True, "data": {"limit": None, "ok_tokens": 14956}}, 1_048_576),
+        # The needle was lost: the context ends there.
+        ({"ok": False, "data": {"limit": None, "ok_tokens": 7516}}, 7516),
+        # The server reported its window, so the test stopped below it.
+        ({"ok": True, "data": {"limit": 8192, "ok_tokens": 7516}}, 7516),
+    ],
+)
+def test_a_probe_caps_the_context_only_where_it_found_a_limit(
+    check: dict[str, Any], context: int
+) -> None:
+    ok_tokens = check["data"]["ok_tokens"]
+    profile = {
+        "capabilities": {"context_ok_tokens": ok_tokens},
+        "checks": {"context_length": check},
+    }
+    facts = model_facts("m", local=False, table={"context": 1_048_576}, profile=profile)
+    assert facts.context == context
 
 
 def test_catalog_from_config_endpoints_profiles_and_calibration(tmp_path: Path) -> None:

@@ -21,6 +21,9 @@ the run ended on an infrastructure error (`infra_error`).
 `--baseline` runs the Phase 2 configuration, every token optimization off (`optimize` false in
 `run.json`), for the comparison of SPEC §13 (claim C-011). Optimized runs also write
 `handoffs.jsonl`: one record per HANDOFF brief, with the suite, task, seed and contestant.
+`steps.jsonl` keeps each built-in agent run's routing from its trajectory: one record per
+decision, model call, tool call, gate run, review and escalation, with the model, tokens and
+dollars, and no prompt, model text or tool output (`STEP_EVENTS`; ADR 0044).
 
 Each run copies the task's repository into a fresh git repository under the project's state
 directory and calls `run_task` with the project's configuration, so endpoints and managed model
@@ -64,6 +67,40 @@ HARNESS_PREFIX = "harness:"
 BEST_OF_N = "best-of-n"
 POOLED = frozenset({ROUTER, BEST_OF_N})
 HANDOFFS_FILE = "handoffs.jsonl"
+STEPS_FILE = "steps.jsonl"
+# What `steps.jsonl` keeps of each task run's trajectory (`events.jsonl`): the routing, tokens,
+# dollars, gates, reviews and escalations a replay shows; never prompts, model texts or tool
+# output.
+STEP_EVENTS: dict[str, tuple[str, ...]] = {
+    "decision": ("step", "step_type", "chosen", "switched", "rule", "level"),
+    "step": (
+        "step",
+        "step_type",
+        "worker",
+        "tool_calls",
+        "effort",
+        "finish_reason",
+        "usage",
+        "cost_usd",
+        "wall_seconds",
+    ),
+    "tool": ("step", "name", "is_error", "changed_files"),
+    "gates": ("step", "run"),
+    "review": (
+        "step",
+        "reviewer",
+        "reviewer_family",
+        "author_families",
+        "approved",
+        "failed",
+        "blocking",
+        "cross_family",
+        "second_opinion",
+        "agrees",
+    ),
+    "escalation": ("step", "from", "to", "from_level", "to_level", "reason"),
+    "task_end": ("status", "stop_reason"),
+}
 SCORING = (
     "passes when every acceptance command exits with 0 on a fresh copy with the run's diff"
     " applied and the suite's protected paths restored"
@@ -435,6 +472,7 @@ def run_one(
     tokens = (result.tokens if result is not None else {}) or {}
     budget = (result.budget if result is not None else {}) or {}
     briefs = task_handoffs(result)
+    steps = task_steps(result)
     row.update(
         {
             "status": result.status if result is not None else "error",
@@ -481,9 +519,8 @@ def run_one(
         for worker, counts in sorted(usage.items())
     }
     # Dollars at the workers' prices (ADR 0044); None when no call had a price.
-    row["cost_usd"] = (
-        round(float(tokens.get("cost_usd") or 0.0), 6) if tokens.get("priced_calls") else None
-    )
+    cost = result.cost_usd if result is not None else None
+    row["cost_usd"] = round(float(cost), 6) if cost is not None else None
     row["hosted_tokens"] = hosted_tokens(row["models"])
     row["infra_error"] = "error" in row
     if not options.keep:
@@ -499,6 +536,9 @@ def run_one(
             }
             for record in briefs
         ]
+    if steps:
+        where = {"task": task.id, "seed": seed, "contestant": contestant.name}
+        row["_steps"] = [{**where, **record} for record in steps]
     return row
 
 
@@ -622,6 +662,36 @@ def task_handoffs(result: TaskResult | None) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
 
 
+def task_steps(result: TaskResult | None) -> list[dict[str, Any]]:
+    """The step records of a task's trajectory, trimmed to `STEP_EVENTS`."""
+    if result is None or not result.run_dir:
+        return []
+    path = Path(result.run_dir) / "events.jsonl"
+    if not path.is_file():
+        return []
+    records = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        event = json.loads(line) if line else {}
+        kind = event.get("type")
+        fields = STEP_EVENTS.get(kind) if isinstance(kind, str) else None
+        if fields is None:
+            continue
+        record = {"seq": event.get("seq"), "type": kind}
+        record.update({key: event[key] for key in fields if key in event})
+        if kind == "gates":
+            verdict = event.get("verdict") or {}
+            record["passed"] = verdict.get("passed")
+            record["failed_gate"] = verdict.get("failed_gate")
+            record["results"] = [
+                {key: gate.get(key) for key in ("name", "status", "seconds")}
+                for gate in verdict.get("results") or []
+            ]
+        elif kind == "review":
+            record["issues"] = len(event.get("issues") or [])
+        records.append(record)
+    return records
+
+
 def run_bench(
     suite: Suite,
     contestants: Sequence[Contestant],
@@ -714,6 +784,8 @@ def run_bench(
     results.write_text("", encoding="utf-8")
     handoffs = out_dir / HANDOFFS_FILE
     handoffs.unlink(missing_ok=True)
+    steps = out_dir / STEPS_FILE
+    steps.unlink(missing_ok=True)
     if manifest["preflight"].get("ok") is False:
         raise preflight.PreflightFailed(preflight.failure_message(manifest["preflight"]))
     total = len(contestants) * len(suite.tasks) * options.seeds
@@ -752,11 +824,16 @@ def run_bench(
         )
         spent += float(row.get("cost_usd") or 0.0)
         briefs = row.pop("_handoffs", [])
+        records = row.pop("_steps", [])
         with results.open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(json.dumps(row, sort_keys=True) + "\n")
         if briefs:
             with handoffs.open("a", encoding="utf-8", newline="\n") as handle:
                 for record in briefs:
+                    handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+        if records:
+            with steps.open("a", encoding="utf-8", newline="\n") as handle:
+                for record in records:
                     handle.write(json.dumps(record, ensure_ascii=False) + "\n")
         verdict = "passed" if row["passed"] else "failed"
         cost = f", ${row['cost_usd']:.4f}" if row.get("cost_usd") is not None else ""

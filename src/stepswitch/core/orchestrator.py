@@ -594,6 +594,7 @@ def run_task(
         uncertain=uncertain,
         review=review,
         usage_by_worker=usage_by_worker(ledger, known_catalog),
+        cost_usd=totals["cost_usd"] if totals.get("priced_calls") else None,
     )
     data = result.model_dump(mode="json", exclude={"diff"})
     trajectory.write_file("result.json", json.dumps(data, indent=2) + "\n")

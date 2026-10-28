@@ -158,3 +158,5 @@ class TaskResult(BaseModel):
     # (cached included), cached_input, output, and whether the worker is local (its endpoint
     # is local and does not forward to a hosted service, SPEC §15).
     usage_by_worker: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    # ADR 0044: US dollars at the workers' prices; None when no call had a price.
+    cost_usd: float | None = None

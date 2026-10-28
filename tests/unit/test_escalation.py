@@ -81,6 +81,7 @@ def test_budget_order_and_escalation_limit() -> None:
         "wall_seconds": 0.0,
         "gpu_seconds": 0.0,
         "escalations": 0,
+        "usd": None,  # no dollar budget set (ADR 0044)
     }
 
 
