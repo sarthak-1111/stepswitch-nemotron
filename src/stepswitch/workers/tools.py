@@ -8,9 +8,12 @@ raises for a tool problem: bad JSON, an unknown tool or bad arguments come back 
 model as is. Arguments are read forgivingly (common synonyms, numbers as strings, a bare
 string for a one-argument tool).
 
-All paths are relative to `root`. Absolute paths, paths that resolve outside `root` (also
-through symbolic links), the `.git` and `.stepswitch` directories, and paths matched by the
-config's `privacy.deny_paths` are refused. Output is bounded by `max_output_chars` (head and
+All paths are relative to `root`. An absolute path is taken only when it names a place inside
+`root` without doubt: the root's own absolute path, or a container-style path such as
+`/repo/src/x.py` or `/workspace/x.py` that names an existing file or directory of the root (the
+output then says how it was read). Other absolute paths, paths that resolve outside `root`
+(also through symbolic links), the `.git` and `.stepswitch` directories, and paths matched by
+the config's `privacy.deny_paths` are refused. Output is bounded by `max_output_chars` (head and
 tail with an elision note). `run` starts programs without a shell, in `root`, with a minimal
 environment that never carries secrets.
 """
@@ -49,6 +52,9 @@ READ_FILE_LIMIT = 10_000_000
 READ_LINE_CHARS = 500
 READ_WHOLE_LINES = 60  # files this short are always shown whole, whatever range is asked
 GREP_RESULTS = 100
+# Directories that sandboxes and container images commonly mount a repository at. Models trained
+# in them write `/repo/src/x.py` or `/workspace/x.py` for the file `src/x.py`.
+MOUNT_NAMES = frozenset({"repo", "repository", "workspace", "workdir", "project", "testbed"})
 LOCATION_RESULTS = 50
 
 _ANCHOR = {"type": "string", "description": "line:hash from read"}
@@ -511,6 +517,7 @@ class Toolbox:
         self.env = dict(env or {})
         self._deny = DenyList.from_config(config)
         self._seen: dict[str, edit_format.Seen] = {}
+        self._mapped: dict[str, str] = {}  # absolute path the model gave -> path used, this call
         self._repo_map: Any = None
         self._search: Any = None
         self._lsp: Any = lsp_manager
@@ -543,6 +550,7 @@ class Toolbox:
         if tool not in _SPECS:
             available = ", ".join([*TOOL_NAMES, *CONTROL_TOOLS])
             return ToolOutput(f"unknown tool {name!r}. Available tools: {available}.", True)
+        self._mapped = {}
         try:
             args = self._arguments(tool, arguments)
             handler: Callable[[dict[str, Any]], ToolOutput] = getattr(self, f"_tool_{tool}")
@@ -553,6 +561,10 @@ class Toolbox:
             output = ToolOutput(f"edit refused: {exc}", is_error=True)
         except Exception as exc:  # noqa: BLE001 - a tool failure must never end the agent loop
             output = ToolOutput(f"{tool} failed: {type(exc).__name__}: {exc}", is_error=True)
+        if self._mapped:
+            taken = "; ".join(f"{asked} was taken as {rel}" for asked, rel in self._mapped.items())
+            output.text = f"[{taken}: paths are relative to the repository root]\n" + output.text
+            output.data["mapped"] = dict(self._mapped)
         if len(output.text) > self.max_output_chars:
             output.raw = output.text
         output.text = bound(output.text, self.max_output_chars)
@@ -669,13 +681,14 @@ class Toolbox:
             raise ToolError("the path is empty; give a path relative to the repository root")
         normalized = text.replace("\\", "/")
         if normalized.startswith(("/", "~")) or re.match(r"^[A-Za-z]:", normalized):
-            hint = ""
-            with contextlib.suppress(ValueError, OSError):
-                inside = Path(text).expanduser().resolve().relative_to(self.root).as_posix()
-                hint = f" Use `{inside}`."
-            raise ToolError(
-                "absolute paths are not accepted; paths are relative to the repository root." + hint
-            )
+            mapped = self._mount(text, must_exist=must_exist)
+            if mapped is None:
+                raise ToolError(
+                    f"{text} is not in the repository; paths are relative to the repository root."
+                    + self._suggest(normalized.rsplit("/", 1)[-1])
+                )
+            self._mapped[text] = mapped[1]
+            return mapped
         while normalized.startswith("./"):
             normalized = normalized[2:]
         resolved = (self.root / normalized).resolve()
@@ -691,6 +704,38 @@ class Toolbox:
         if must_exist and not resolved.exists():
             raise ToolError(f"no such file or directory: {rel}.{self._suggest(Path(rel).name)}")
         return resolved, rel
+
+    def _mount(self, text: str, *, must_exist: bool) -> tuple[Path, str] | None:
+        """The place inside the root that an absolute path names without doubt, or None.
+
+        The root's own absolute path is taken as is. A POSIX path is tried without its leading
+        `/` (`/pkg/x.py`), then with everything up to a mount directory removed (`/repo/pkg/x.py`,
+        `/home/me/<root name>/pkg/x.py`). The first try must name something that exists; after a
+        mount directory, a file to create needs its directory to exist. Every try goes through
+        the checks of a relative path, and a refusal of something that exists is raised."""
+        with contextlib.suppress(ValueError, OSError):
+            inside = Path(text).expanduser().resolve().relative_to(self.root).as_posix()
+            return self.resolve(inside or ".", must_exist=must_exist)
+        parts = [part for part in text.replace("\\", "/").split("/") if part]
+        if not text.startswith("/") or not parts or ".." in parts:
+            return None
+        mounts = MOUNT_NAMES | {self.root.name}
+        cuts = [i for i, part in enumerate(parts) if part in mounts]
+        candidates = [("/".join(parts), True)]
+        candidates += [("/".join(parts[i + 1 :]) or ".", must_exist) for i in cuts]
+        refused: ToolError | None = None
+        for rel, existing in candidates:
+            try:
+                path, used = self.resolve(rel, must_exist=existing)
+            except ToolError as exc:
+                if refused is None and (self.root / rel).exists():
+                    refused = exc  # it is there, and a check refuses it: say which
+                continue
+            if path.exists() or path.parent.is_dir():
+                return path, used
+        if refused is not None:
+            raise refused
+        return None
 
     def _named(self, name: str, limit: int) -> list[str]:
         """Up to `limit` files of the repository whose file name is `name`."""

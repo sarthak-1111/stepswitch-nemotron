@@ -197,7 +197,13 @@ def test_short_files_are_always_shown_whole(box: T.Toolbox, root: Path) -> None:
 
 def test_paths_stay_inside_the_root(box: T.Toolbox, root: Path) -> None:
     absolute = box.execute("read", {"path": str(root / "pkg" / "calc.py")})
-    assert absolute.is_error and "Use `pkg/calc.py`" in absolute.text
+    assert not absolute.is_error and absolute.data["mapped"] == {
+        str(root / "pkg" / "calc.py"): "pkg/calc.py"
+    }
+    internal = box.execute("read", {"path": str(root / ".git" / "config")})
+    assert (
+        internal.text == ".git/config is internal state (.git or .stepswitch) and is not available"
+    )
     outside = box.execute("read", {"path": "../elsewhere.txt"})
     assert outside.is_error and "outside the repository" in outside.text
     internal = box.execute("read", {"path": ".git/config"})
@@ -212,6 +218,37 @@ def test_paths_stay_inside_the_root(box: T.Toolbox, root: Path) -> None:
     assert "secrets" not in box.execute("read", {"path": "."}).text
     folder = box.execute("read", {"path": "secrets"})
     assert folder.is_error and "privacy deny list" in folder.text
+
+
+def test_container_style_absolute_paths_are_read_when_they_name_a_file_of_the_root(
+    box: T.Toolbox, root: Path
+) -> None:
+    # Models trained in sandboxes write `/repo/...` or `/workspace/...` for the repository root.
+    mounted = box.execute("read", {"path": "/repo/pkg/calc.py"})
+    assert not mounted.is_error and mounted.data["mapped"] == {"/repo/pkg/calc.py": "pkg/calc.py"}
+    assert mounted.text.split("\n")[:2] == [
+        "[/repo/pkg/calc.py was taken as pkg/calc.py: paths are relative to the repository root]",
+        "pkg/calc.py lines 1-6 of 6",
+    ]
+    bare = box.execute("read", {"path": "/pkg/calc.py"})
+    assert bare.data["mapped"] == {"/pkg/calc.py": "pkg/calc.py"}
+    named = box.execute("read", {"path": f"/home/someone/{root.name}/README.md"})
+    assert named.data["mapped"] == {f"/home/someone/{root.name}/README.md": "README.md"}
+    listing = box.execute("read", {"path": "/workspace"})
+    assert not listing.is_error and "pkg/" in listing.text
+    created = box.execute("edit", {"path": "/workspace/pkg/new.py", "text": "x = 1\n", "create": 1})
+    assert not created.is_error and (root / "pkg" / "new.py").read_text("utf-8") == "x = 1\n"
+    # Nothing outside the root, and nothing that only might be meant.
+    for path in ("/tmp/output.json", "/etc/passwd", "/repo/../etc/passwd", "~/notes.md"):
+        refused = box.execute("read", {"path": path})
+        assert refused.is_error and "is not in the repository" in refused.text, path
+    assert box.execute("edit", {"path": "/tmp/new.py", "text": "x\n", "create": True}).is_error
+    assert not (root / "tmp").exists()
+    # The usual checks still apply to the path inside the root.
+    assert "privacy deny list" in box.execute("read", {"path": "/repo/secrets/token.txt"}).text
+    assert "internal state" in box.execute("read", {"path": "/workspace/.git/config"}).text
+    typo = box.execute("read", {"path": "/repo/calc.py"})  # the only calc.py is pkg/calc.py
+    assert not typo.is_error and "this is pkg/calc.py" in typo.text
 
 
 def test_symbolic_links_cannot_escape(box: T.Toolbox, root: Path, tmp_path: Path) -> None:
