@@ -1,0 +1,561 @@
+{
+  "claim": "C-030",
+  "text": "On the runs of C-029, a reviewer from another model family agreed with the Nemotron reviewer on at least 95% of the changes both reviewed, and Nemotron 3.5 Lightning ran the summarize steps with no more cut-off calls than Ultra, for under a tenth of its dollars per call.",
+  "scope": "The ladder's task runs of C-029. Ultra reviews each change after the gates pass and `gpt-oss-120b` gives a second opinion on the same change. Every reviewed change had passed the project's tests, so the agreement is on changes that pass their tests; no failing change was put to both reviewers. Where they disagreed, Ultra blocked a change that passed its tests and the second reviewer approved it. The small tier's steps are compared with Ultra alone's steps of the same type on the same tasks: the share of tool calls that returned an error, the share of calls cut off at the output limit, and dollars per call. The claim names summarize steps only. On navigate steps Lightning's tool calls returned errors more often than Ultra's (it guessed absolute paths and corrected them after the tool's message), and Ultra ran too few read steps to compare; the evidence reports both, and Lightning alone on the same suites, none of which is claimed.",
+  "thresholds": {
+    "runs": [
+      "2026-10-28-tf-mini-general",
+      "2026-10-28-tf-mini-science"
+    ],
+    "single": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+    "small": "tokenfactory/nvidia/Nemotron-3_5-Lightning",
+    "second": "tokenfactory/openai/gpt-oss-120b",
+    "small_step_types": [
+      "summarize"
+    ],
+    "max_usd_per_call_percent": 10,
+    "min_changes": 15,
+    "min_agreement_percent": 95,
+    "alone_runs": [
+      "2026-10-28-tf-mini-general-lightning",
+      "2026-10-28-tf-mini-science-lightning"
+    ]
+  },
+  "command": "the C-029 runs and the small tier alone (`ssw bench run --workers <small> --allow-remote --policy bench/policies/tokenfactory-ladder.toml`, each run.json records its command); uv run ssw prove --claim C-030",
+  "mode": "quick",
+  "source_digest": "a844eed4b8968389e429378b49268b3b8d383d95b875e4865f4f32eacab47dd0",
+  "stepswitch_version": "0.1.0.dev0",
+  "environment": {
+    "os": "windows",
+    "machine": "amd64",
+    "release": "11",
+    "python": "3.12.15",
+    "ci": false,
+    "runner_label": null,
+    "image_os": null,
+    "image_version": null
+  },
+  "updated": "2026-10-28T04:06:16+00:00",
+  "sections": {
+    "steps": {
+      "recorded": "2026-10-28T04:06:16+00:00",
+      "runs": [
+        "2026-10-28-tf-mini-general",
+        "2026-10-28-tf-mini-science"
+      ],
+      "reviews": {
+        "first_reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+        "second_reviewer": "tokenfactory/openai/gpt-oss-120b",
+        "changes": 21,
+        "agreeing": 20,
+        "agreement_percent": 95.2,
+        "both_approved": 20,
+        "both_blocked": 0,
+        "note": "reviews run after the gates pass, so every reviewed change passed its tests",
+        "pairs": [
+          {
+            "suite": "mini-general",
+            "task": "agenda-time-order",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "billing-month-end",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "calc-bug",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "entry-from-line",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "notes-corrupt-file",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "pager-first-page",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "playlist-own-tracks",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "post-slugs",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "recipe-scaling",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "rename-format-duration",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "restock-report-threshold",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "tags-ignore-case",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "temperature-units",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": false
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": false
+          },
+          {
+            "suite": "mini-general",
+            "task": "todo-priority",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-general",
+            "task": "upload-limits",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-science",
+            "task": "baseline-end-points",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-science",
+            "task": "centroid-intensity-weights",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-science",
+            "task": "moving-average-alignment",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-science",
+            "task": "trapezoid-end-weights",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-science",
+            "task": "vectorize-gaussian-sum",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          },
+          {
+            "suite": "mini-science",
+            "task": "wavenumber-to-wavelength",
+            "seed": 0,
+            "first": {
+              "reviewer": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+              "approved": true
+            },
+            "second": {
+              "reviewer": "tokenfactory/openai/gpt-oss-120b",
+              "approved": true
+            },
+            "agrees": true
+          }
+        ]
+      },
+      "small_tier": {
+        "worker": "tokenfactory/nvidia/Nemotron-3_5-Lightning",
+        "single": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b",
+        "step_types": {
+          "edit": {
+            "small": {
+              "calls": 0,
+              "tool_calls": 0,
+              "tool_errors": 0,
+              "tool_error_percent": 0.0,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": null,
+              "usd_per_call": null
+            },
+            "single": {
+              "calls": 63,
+              "tool_calls": 63,
+              "tool_errors": 5,
+              "tool_error_percent": 7.9,
+              "cut_off": 1,
+              "cut_off_percent": 1.6,
+              "tokens_per_call": 5313,
+              "usd_per_call": 0.005853
+            }
+          },
+          "navigate": {
+            "small": {
+              "calls": 21,
+              "tool_calls": 71,
+              "tool_errors": 10,
+              "tool_error_percent": 14.1,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": 2257,
+              "usd_per_call": 0.000156
+            },
+            "single": {
+              "calls": 21,
+              "tool_calls": 61,
+              "tool_errors": 0,
+              "tool_error_percent": 0.0,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": 2089,
+              "usd_per_call": 0.002281
+            },
+            "usd_per_call_percent_of_single": 6.8,
+            "as_well": false
+          },
+          "plan": {
+            "small": {
+              "calls": 0,
+              "tool_calls": 0,
+              "tool_errors": 0,
+              "tool_error_percent": 0.0,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": null,
+              "usd_per_call": null
+            },
+            "single": {
+              "calls": 21,
+              "tool_calls": 0,
+              "tool_errors": 0,
+              "tool_error_percent": 0.0,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": 479,
+              "usd_per_call": 0.001025
+            }
+          },
+          "read": {
+            "small": {
+              "calls": 5,
+              "tool_calls": 13,
+              "tool_errors": 1,
+              "tool_error_percent": 7.7,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": 4893,
+              "usd_per_call": 0.000328
+            },
+            "single": {
+              "calls": 3,
+              "tool_calls": 2,
+              "tool_errors": 2,
+              "tool_error_percent": 100.0,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": 7212,
+              "usd_per_call": 0.007342
+            },
+            "usd_per_call_percent_of_single": 4.5,
+            "as_well": true
+          },
+          "review": {
+            "small": {
+              "calls": 0,
+              "tool_calls": 0,
+              "tool_errors": 0,
+              "tool_error_percent": 0.0,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": null,
+              "usd_per_call": null
+            },
+            "single": {
+              "calls": 21,
+              "tool_calls": 0,
+              "tool_errors": 0,
+              "tool_error_percent": 0.0,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": 570,
+              "usd_per_call": 0.000605
+            }
+          },
+          "run": {
+            "small": {
+              "calls": 0,
+              "tool_calls": 0,
+              "tool_errors": 0,
+              "tool_error_percent": 0.0,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": null,
+              "usd_per_call": null
+            },
+            "single": {
+              "calls": 87,
+              "tool_calls": 73,
+              "tool_errors": 3,
+              "tool_error_percent": 4.1,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": 5889,
+              "usd_per_call": 0.005813
+            }
+          },
+          "summarize": {
+            "small": {
+              "calls": 21,
+              "tool_calls": 0,
+              "tool_errors": 0,
+              "tool_error_percent": 0.0,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": 537,
+              "usd_per_call": 4.5e-05
+            },
+            "single": {
+              "calls": 21,
+              "tool_calls": 0,
+              "tool_errors": 0,
+              "tool_error_percent": 0.0,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": 523,
+              "usd_per_call": 0.000663
+            },
+            "usd_per_call_percent_of_single": 6.8,
+            "as_well": true
+          },
+          "triage": {
+            "small": {
+              "calls": 0,
+              "tool_calls": 0,
+              "tool_errors": 0,
+              "tool_error_percent": 0.0,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": null,
+              "usd_per_call": null
+            },
+            "single": {
+              "calls": 29,
+              "tool_calls": 29,
+              "tool_errors": 0,
+              "tool_error_percent": 0.0,
+              "cut_off": 0,
+              "cut_off_percent": 0.0,
+              "tokens_per_call": 5820,
+              "usd_per_call": 0.005705
+            }
+          }
+        }
+      },
+      "small_tier_alone": {
+        "mini-general": {
+          "run": "2026-10-28-tf-mini-general-lightning",
+          "task_runs": 15,
+          "passed": 14,
+          "cost_per_task_usd": 0.005925,
+          "tokens_per_task": 103440,
+          "stopped": null
+        },
+        "mini-science": {
+          "run": "2026-10-28-tf-mini-science-lightning",
+          "task_runs": 6,
+          "passed": 5,
+          "cost_per_task_usd": 0.009962,
+          "tokens_per_task": 197690,
+          "stopped": null
+        }
+      },
+      "problems": []
+    }
+  }
+}

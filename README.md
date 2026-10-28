@@ -1,6 +1,93 @@
 # Stepswitch
 
-[![prove](https://github.com/sarthak-1111/stepswitch/actions/workflows/prove.yml/badge.svg)](https://github.com/sarthak-1111/stepswitch/actions/workflows/prove.yml)
+[![prove](https://github.com/sarthak-1111/stepswitch-nemotron/actions/workflows/prove.yml/badge.svg)](https://github.com/sarthak-1111/stepswitch-nemotron/actions/workflows/prove.yml)
+
+<!-- hackathon:start -->
+## Built for the Nebius x NVIDIA Global AI Hackathon
+
+Stepswitch sends each step of a coding task to the right Nemotron model on Token Factory,
+verifies every change with your tests and a reviewer from another model family, and makes every
+claim re-runnable with `ssw prove`.
+
+- **Demo:** [replays of the recorded Token Factory runs](https://sarthak-1111.github.io/stepswitch-nemotron/),
+  step by step: the model of each step, its tokens and dollars, the gates and the reviews.
+  Read-only, no login.
+- **Video:** link added at submission.
+- **Submission:** [hackathon/SUBMISSION.md](hackathon/SUBMISSION.md). **Feedback on Token
+  Factory, Sandboxes and Nemotron, with measurements:** [hackathon/FEEDBACK.md](hackathon/FEEDBACK.md).
+
+### The Nemotron ladder
+
+One policy file, [`bench/policies/tokenfactory-ladder.toml`](bench/policies/tokenfactory-ladder.toml),
+routes each step by its type. List prices are US dollars per million tokens, input and output;
+the last column is each model's share of the ladder's dollars in the runs below.
+
+| Model on Token Factory | Steps | Why | Price in / out | Share of dollars |
+|---|---|---|---|---|
+| `nvidia/Nemotron-3_5-Lightning` | navigate, read, summarize, write text | Short steps where a slip costs little: finding files, reading them, condensing tool output | <!-- num:C-029:sections.comparison.prices_per_million.Nemotron_3_5_Lightning.input_per_million -->0.06<!-- /num --> / <!-- num:C-029:sections.comparison.prices_per_million.Nemotron_3_5_Lightning.output_per_million -->0.24<!-- /num --> | <!-- num:C-029:sections.comparison.ladder_dollars_by_model.Nemotron_3_5_Lightning.percent -->2.8<!-- /num --> % |
+| `nvidia/nemotron-3-super-120b-a12b` | edit, run the tests, triage failures | The work itself, at a mid price, with prompt cache hits across a long agent loop | <!-- num:C-029:sections.comparison.prices_per_million.nemotron_3_super_120b_a12b.input_per_million -->0.30<!-- /num --> / <!-- num:C-029:sections.comparison.prices_per_million.nemotron_3_super_120b_a12b.output_per_million -->0.90<!-- /num --> | <!-- num:C-029:sections.comparison.ladder_dollars_by_model.nemotron_3_super_120b_a12b.percent -->80.0<!-- /num --> % |
+| `nvidia/Nemotron-3-Ultra-550b-a55b` | plan, review, and the work once the gates have failed twice | Few calls where a wrong call costs the whole task | <!-- num:C-029:sections.comparison.prices_per_million.Nemotron_3_Ultra_550b_a55b.input_per_million -->1.00<!-- /num --> / <!-- num:C-029:sections.comparison.prices_per_million.Nemotron_3_Ultra_550b_a55b.output_per_million -->3.00<!-- /num --> | <!-- num:C-029:sections.comparison.ladder_dollars_by_model.Nemotron_3_Ultra_550b_a55b.percent -->16.0<!-- /num --> % |
+| `openai/gpt-oss-120b` | a second opinion on each review | A reviewer from another model family checks Ultra's verdict | <!-- num:C-029:sections.comparison.prices_per_million.gpt_oss_120b.input_per_million -->0.15<!-- /num --> / <!-- num:C-029:sections.comparison.prices_per_million.gpt_oss_120b.output_per_million -->0.60<!-- /num --> | <!-- num:C-029:sections.comparison.ladder_dollars_by_model.gpt_oss_120b.percent -->1.2<!-- /num --> % |
+
+### Results on Token Factory: the ladder against Ultra alone
+
+Both contestants ran on Token Factory, interleaved, on the same tasks of the two mini suites
+(small bug fixes, features, refactors and numerical tasks in Python), one task run per task,
+with the same gates. Ultra alone runs every step and reviews its own changes. `ssw prove
+--render-readme` writes this table from the evidence of claim C-029.
+
+<!-- results:nemotron:start -->
+| | Nemotron ladder | `Nemotron-3-Ultra-550b-a55b` alone |
+|---|---|---|
+| Task runs compared | <!-- num:C-029:sections.comparison.results.ladder.runs -->21<!-- /num --> | <!-- num:C-029:sections.comparison.results.single.runs -->21<!-- /num --> |
+| Task runs passed | <!-- num:C-029:sections.comparison.results.ladder.pass_rate_percent -->100.0<!-- /num --> % | <!-- num:C-029:sections.comparison.results.single.pass_rate_percent -->100.0<!-- /num --> % |
+| US dollars per task run | <!-- num:C-029:sections.comparison.results.ladder.cost_per_task_usd -->0.0101<!-- /num --> | <!-- num:C-029:sections.comparison.results.single.cost_per_task_usd -->0.0551<!-- /num --> |
+| Tokens per task run, cached included | <!-- num:C-029:sections.comparison.results.ladder.tokens_per_task -->47,156<!-- /num --> | <!-- num:C-029:sections.comparison.results.single.tokens_per_task -->53,067<!-- /num --> |
+| Uncached tokens per task run | <!-- num:C-029:sections.comparison.results.ladder.uncached_tokens_per_task -->22,878<!-- /num --> | <!-- num:C-029:sections.comparison.results.single.uncached_tokens_per_task -->50,787<!-- /num --> |
+| Minutes per task run | <!-- num:C-029:sections.comparison.results.ladder.minutes_per_task -->0.75<!-- /num --> | <!-- num:C-029:sections.comparison.results.single.minutes_per_task -->0.68<!-- /num --> |
+| Escalations | <!-- num:C-029:sections.comparison.results.ladder.escalations -->0<!-- /num --> | <!-- num:C-029:sections.comparison.results.single.escalations -->0<!-- /num --> |
+
+Evidence: [C-029](claims/evidence/C-029.json).
+<!-- results:nemotron:end -->
+
+- **Dollars:** the ladder spent <!-- num:C-029:sections.comparison.cost_share.saving_percent -->81.6<!-- /num --> %
+  fewer dollars per task run than Ultra alone. The claim's bootstrap interval over tasks puts
+  the ladder's share of Ultra's dollars between
+  <!-- num:C-029:sections.comparison.cost_share.interval.low -->13.8<!-- /num --> % and
+  <!-- num:C-029:sections.comparison.cost_share.interval.high -->23.6<!-- /num --> %.
+  It also sent fewer uncached tokens: Super and Lightning hit the prompt cache, Ultra rarely did.
+- **Reviews:** `gpt-oss-120b` agreed with Ultra's verdict on
+  <!-- num:C-030:sections.steps.reviews.agreeing -->20<!-- /num --> of the
+  <!-- num:C-030:sections.steps.reviews.changes -->21<!-- /num --> changes both reviewed (claim
+  C-030). Where they differed, Ultra blocked a change that passed its tests over a design
+  concern, the second reviewer approved it, and Super revised it.
+- **Time:** the ladder took a little longer per task run than Ultra alone, and no task needed an
+  escalation: Super's changes passed the gates within its two attempts each time.
+- **The bill:** every hosted bench run of this submission, pilots, a crashed run, the
+  small-model runs and the escalation demos included, cost US$
+  <!-- num:C-029:sections.comparison.bill.total_usd -->2.18<!-- /num --> by Stepswitch's ledger
+  at list prices. [hackathon/SUBMISSION.md](hackathon/SUBMISSION.md) lists each run and
+  the console's reading.
+
+### Try it
+
+```sh
+# 1. Get it, and re-check the results above from the recorded runs (no key, nothing billed)
+git clone https://github.com/sarthak-1111/stepswitch-nemotron && cd stepswitch-nemotron
+uv run ssw prove --claim C-029 --claim C-030
+
+# 2. Point it at Token Factory; the key stays in your environment
+mkdir -p .stepswitch && cp examples/tokenfactory/local.toml.example .stepswitch/local.toml
+export NEBIUS_API_KEY=<your key>    # PowerShell: $env:NEBIUS_API_KEY = "<your key>"
+
+# 3. One task on the ladder, stopped at five cents
+uv run ssw bench run --suite mini-science --tasks wavenumber-to-wavelength --workers router --allow-remote --policy bench/policies/tokenfactory-ladder.toml --budget-usd-total 0.05 --out bench/results/my-ladder-run
+```
+
+On your own repository, put the policy in your `stepswitch.toml`
+([`examples/tokenfactory/stepswitch.toml`](examples/tokenfactory/stepswitch.toml)) and use
+`ssw run "<task>"`.
+<!-- hackathon:end -->
 
 An open-source orchestrator for coding agents on models you run yourself. It sends each step of
 a task (plan, read, edit, test, review) to the model that suits it, checks the change with your
@@ -221,6 +308,8 @@ generated by `ssw prove --render-readme` and lists only claims whose tests curre
 - **C-026** <!-- claim:C-026 -->On SWE-bench Verified Mini, Stepswitch and mini-SWE-agent each ran once on the same local open-weight model, graded by the official SWE-bench harness, and sent no token to a hosted model.<!-- /claim --> ([evidence](claims/evidence/C-026.json); Stepswitch resolved <!-- num:C-026:sections.swebench.results.stepswitch.resolved_percent -->49.0<!-- /num --> %, mini-SWE-agent resolved <!-- num:C-026:sections.swebench.results.mini_swe_agent.resolved_percent -->14.3<!-- /num --> %)
 - **C-027** <!-- claim:C-027 -->On SWE-bench Verified Mini, Stepswitch resolves at least as many instances as mini-SWE-agent with the same local model.<!-- /claim --> ([evidence](claims/evidence/C-027.json); Stepswitch resolved <!-- num:C-027:sections.swebench.results.stepswitch.resolved -->24<!-- /num --> instances, mini-SWE-agent resolved <!-- num:C-027:sections.swebench.results.mini_swe_agent.resolved -->7<!-- /num --> instances)
 - **C-028** <!-- claim:C-028 -->On SWE-bench Verified Mini, Stepswitch uses fewer tokens per instance than mini-SWE-agent with the same local model, counting cached tokens.<!-- /claim --> ([evidence](claims/evidence/C-028.json); fewer tokens than mini-SWE-agent <!-- num:C-028:sections.swebench.tokens.tokens.percent -->32.3<!-- /num --> %)
+- **C-029** <!-- claim:C-029 -->On the mini suites, the Nemotron ladder on Token Factory passes as many task runs as Nemotron 3 Ultra alone, for under a quarter of its dollars per task run.<!-- /claim --> ([evidence](claims/evidence/C-029.json); fewer dollars per task run than Ultra alone <!-- num:C-029:sections.comparison.cost_share.saving_percent -->81.6<!-- /num --> %)
+- **C-030** <!-- claim:C-030 -->On the runs of C-029, a reviewer from another model family agreed with the Nemotron reviewer on at least 95% of the changes both reviewed, and Nemotron 3.5 Lightning ran the summarize steps with no more cut-off calls than Ultra, for under a tenth of its dollars per call.<!-- /claim --> ([evidence](claims/evidence/C-030.json); changes both reviewers judged alike <!-- num:C-030:sections.steps.reviews.agreeing -->20<!-- /num -->, changes reviewed by both <!-- num:C-030:sections.steps.reviews.changes -->21<!-- /num -->)
 
 Withdrawn: **C-021** ([why](docs/decisions/0041-claims-withdrawn-after-phase-12.md)), **C-024** ([why](docs/decisions/0041-claims-withdrawn-after-phase-12.md)), **C-025** ([why](docs/decisions/0041-claims-withdrawn-after-phase-12.md))
 <!-- claims:end -->

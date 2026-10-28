@@ -845,7 +845,7 @@ claims:
     evidence: [claims/evidence/C-029.json]
     readme_numbers:
       - {key: sections.comparison.cost_share.saving_percent, label: fewer dollars per task run than Ultra alone, unit: "%", digits: 1}
-    status: pending
+    status: passing
 
   - id: C-030
     text: "On the runs of C-029, a reviewer from another model family agreed with the Nemotron reviewer on at least 95% of the changes both reviewed, and Nemotron 3.5 Lightning ran the summarize steps with no more cut-off calls than Ultra, for under a tenth of its dollars per call."
@@ -883,4 +883,4 @@ claims:
     readme_numbers:
       - {key: sections.steps.reviews.agreeing, label: changes both reviewers judged alike}
       - {key: sections.steps.reviews.changes, label: changes reviewed by both}
-    status: pending
+    status: passing
