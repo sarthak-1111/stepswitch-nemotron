@@ -101,6 +101,12 @@ class RouterState:
     # posterior means the samples were drawn from.
     learned: dict[str, float] = field(default_factory=dict)
     means: dict[str, float] = field(default_factory=dict)
+    # Escalations so far in this task: rules can match on it (`when = { escalations = 0 }`),
+    # so a step type can move to another model once the ladder has escalated (ADR 0044).
+    escalations: int = 0
+    # A second opinion on a review (ADR 0044): rules that pin the review step are set aside,
+    # so the review goes to a family outside `avoid_families`.
+    cross_check: bool = False
 
 
 @dataclass
@@ -255,7 +261,11 @@ def route(
     # User rules: excludes and bonuses from every matching rule, the first pinning `to` wins.
     rule_name: str | None = "--worker" if state.worker_pin is not None else None
     pinned_set: set[str] | None = None
-    context = {**features.context(step_type), "track": state.track}
+    context = {
+        **features.context(step_type),
+        "track": state.track,
+        "escalations": state.escalations,
+    }
     if state.worker_pin is None:
         matching = [rule for rule in rules if when_matches(rule.when, context)]
         for rule in matching:
@@ -266,6 +276,9 @@ def route(
                     candidates[spec.id].bonus += rule.bonus
         for rule in matching:
             if not rule.to:
+                continue
+            if state.cross_check and step_type == "review":
+                notes.append(f"rule {rule.name} set aside for a second opinion")
                 continue
             selected = {
                 s.id

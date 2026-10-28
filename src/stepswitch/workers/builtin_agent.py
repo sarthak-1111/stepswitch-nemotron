@@ -74,6 +74,7 @@ from stepswitch.context.settings import ContextSettings
 from stepswitch.core.budget import BudgetTracker
 from stepswitch.core.task import TaskSpec
 from stepswitch.ledger import Ledger, LedgerRow, estimate_tokens, gpu_seconds_of, usage_row_fields
+from stepswitch.pricing import row_cost
 from stepswitch.router import cost
 from stepswitch.router.budgets import RoleBudget, role_budget
 from stepswitch.router.cache import Chain, PrefixRegistry, chain_of
@@ -398,6 +399,9 @@ class AgentLoop:
     effort_raised: int = 0
     compactions: int = 0
     relayed: bool = False
+    # While a second opinion on a review is asked for: the families it must avoid (ADR 0044).
+    cross_check: frozenset[str] | None = None
+    second_result: review_module.Review | None = None
     progress: Progress = field(default_factory=Progress)
     registry: PrefixRegistry = field(default_factory=PrefixRegistry)
     records: list[prune.ResultRecord] = field(default_factory=list)
@@ -560,10 +564,16 @@ class AgentLoop:
             base_rates=dict(self.base_rates) if self.optimize else {},
             families=self.families,
             avoid_families=(
-                frozenset(self._author_families()) if step_type == "review" else frozenset()
+                self.cross_check
+                if self.cross_check is not None and step_type == "review"
+                else frozenset(self._author_families())
+                if step_type == "review"
+                else frozenset()
             ),
             learned=dict(self.learned),
             means=dict(self.means),
+            escalations=len(self.ladder.history),
+            cross_check=self.cross_check is not None and step_type == "review",
         )
         decision = recorded or route(
             self.features,
@@ -746,6 +756,7 @@ class AgentLoop:
             response.usage, request_chars=self._chars(request), response_chars=reply_chars
         )
         gpu = gpu_seconds_of(response, wall, gpu=spec.gpu)
+        cost = row_cost(getattr(spec, "prices", None), fields)
         self.ledger.record(
             LedgerRow(
                 task_id=self.task_id,
@@ -761,10 +772,15 @@ class AgentLoop:
                     "finish_reason": response.finish_reason,
                     "losses": [loss.model_dump() for loss in completion.report.losses],
                 },
+                cost_usd=cost,
                 **fields,
             )
         )
-        self.budget.charge(tokens=fields["input_tokens"] + fields["output_tokens"], gpu_seconds=gpu)
+        self.budget.charge(
+            tokens=fields["input_tokens"] + fields["output_tokens"],
+            gpu_seconds=gpu,
+            usd=cost or 0.0,
+        )
         self.spent_tokens += fields["input_tokens"] + fields["output_tokens"]
         self.spent_seconds += wall
         if work:
@@ -784,6 +800,7 @@ class AgentLoop:
             effort=request.effort,
             finish_reason=response.finish_reason,
             usage={k: v for k, v in fields.items()},
+            cost_usd=cost,
             wall_seconds=round(wall, 3),
             gpu_seconds=round(gpu, 3),
             response_blob=self.trajectory.blob(response.model_dump_json()),
@@ -812,6 +829,7 @@ class AgentLoop:
             response_chars=len(response.message.text_content()),
         )
         gpu = gpu_seconds_of(response, wall, gpu=spec.gpu)
+        cost = row_cost(spec.prices, fields)
         self.ledger.record(
             LedgerRow(
                 task_id=self.task_id,
@@ -827,10 +845,15 @@ class AgentLoop:
                     "attempts": completion.attempts,
                     "finish_reason": response.finish_reason,
                 },
+                cost_usd=cost,
                 **fields,
             )
         )
-        self.budget.charge(tokens=fields["input_tokens"] + fields["output_tokens"], gpu_seconds=gpu)
+        self.budget.charge(
+            tokens=fields["input_tokens"] + fields["output_tokens"],
+            gpu_seconds=gpu,
+            usd=cost or 0.0,
+        )
         self.spent_tokens += fields["input_tokens"] + fields["output_tokens"]
         self.spent_seconds += wall
         if spec.endpoint not in self.endpoints:
@@ -845,6 +868,7 @@ class AgentLoop:
             endpoint=spec.endpoint,
             model=spec.model,
             usage=dict(fields),
+            cost_usd=cost,
             wall_seconds=round(wall, 3),
             response_blob=self.trajectory.blob(response.model_dump_json()),
         )
@@ -1667,12 +1691,71 @@ class AgentLoop:
 
     def _review(self) -> dict[str, Any] | None:
         """Review the change with a worker of another model family when there is one
-        (SPEC §8.5): the schema-constrained answer when optimized, Phase 2's text otherwise."""
+        (SPEC §8.5): the schema-constrained answer when optimized, Phase 2's text otherwise.
+
+        With `[review] second_opinion = true`, a review that a worker of the authors' own family
+        gave (a rule may pin reviews to it) gets a second one from another family, on the same
+        diff. Either reviewer's issues go back to the author; both verdicts are recorded, with
+        whether they agree (ADR 0044)."""
         self.review_result = None
         limit = self._limit()
         if limit is not None:
             return None
         authors = self._author_families()
+        first = self._one_review(authors)
+        if first is None:
+            return None
+        second = self._second_opinion(authors, first)
+        if second is None:
+            return first
+        combined = review_module.combine(first, second)
+        if second.get("approved") is False and first.get("approved") is not False:
+            self.review_result = self.second_result
+        self.last_review = combined
+        return combined
+
+    def _second_opinion(self, authors: set[str], first: dict[str, Any]) -> dict[str, Any] | None:
+        if not review_module.second_opinion_enabled(self.config):
+            return None
+        if self.spec.worker or self.relay is not None or self._limit() is not None:
+            return None
+        reviewer = first.get("reviewer")
+        if reviewer is None or reviewer not in self.catalog.workers:
+            return None
+        family = self.catalog.get(reviewer).spec.family_key
+        if family not in authors:
+            return None  # the review was already cross-family
+        avoid = frozenset(authors | {family})
+        remote_ok = self.allow_remote and not self.offline
+        others = [
+            s
+            for s in self.catalog.specs()
+            if s.family_key not in avoid
+            and not s.pin_only
+            and s.id not in self.failed
+            and (s.local or remote_ok)
+        ]
+        if not others:
+            return None
+        primary_result = self.review_result
+        self.review_result = None
+        self.cross_check = avoid
+        try:
+            second = self._one_review(authors, second_opinion=True, first=first)
+        finally:
+            self.cross_check = None
+            self.second_result = self.review_result
+            self.review_result = primary_result
+        return second
+
+    def _one_review(
+        self,
+        authors: set[str],
+        *,
+        second_opinion: bool = False,
+        first: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | None:
+        """One reviewer's verdict on the diff, recorded as a `review` event."""
         constrained = self.optimize
         if constrained:
             text = self._text_step(
@@ -1726,6 +1809,9 @@ class AgentLoop:
                 "reviewer": self.last_worker,
             }
             self.work_log.append(f"step {self.step}: no review took place ({reason})")
+        if second_opinion and first is not None:
+            review["second_opinion"] = True
+            review["agrees"] = review_module.verdicts_agree(first, review)
         self.last_review = review
         self.trajectory.emit("review", step=self.step, **review)
         return review

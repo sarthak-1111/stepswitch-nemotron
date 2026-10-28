@@ -147,6 +147,47 @@ class Review:
         }
 
 
+def second_opinion_enabled(config: Any) -> bool:
+    """`[review] second_opinion = true` in the project's configuration (ADR 0044)."""
+    extra = getattr(config, "model_extra", None) or {}
+    section = extra.get("review") if isinstance(extra, dict) else None
+    return isinstance(section, dict) and section.get("second_opinion") is True
+
+
+def verdicts_agree(first: dict[str, Any], second: dict[str, Any]) -> bool | None:
+    """Whether two reviews of one diff reach the same verdict; None when either has none."""
+    a, b = first.get("approved"), second.get("approved")
+    if a is None or b is None:
+        return None
+    return bool(a) == bool(b)
+
+
+def combine(first: dict[str, Any], second: dict[str, Any]) -> dict[str, Any]:
+    """One verdict from a review and its second opinion: approved only when neither reviewer
+    disapproved, with the issues of each reviewer that disapproved (ADR 0044)."""
+    verdicts = [r.get("approved") for r in (first, second)]
+    disapproved = [r for r in (first, second) if r.get("approved") is False]
+    if disapproved:
+        approved: bool | None = False
+    elif all(v is None for v in verdicts):
+        approved = None
+    else:
+        approved = True
+    combined = dict(first)
+    combined["approved"] = approved
+    if approved is not None:
+        combined.pop("failed", None)
+    if disapproved:
+        combined["text"] = "\n".join(str(r.get("text") or "") for r in disapproved).strip()
+    combined["second_opinion"] = {
+        key: second.get(key)
+        for key in ("approved", "reviewer", "reviewer_family", "blocking", "text", "failed")
+        if key in second
+    }
+    combined["agrees"] = verdicts_agree(first, second)
+    return combined
+
+
 def request_text(instruction: str, acceptance: Sequence[str], diff: str) -> str:
     """The user message of a review: task, acceptance commands and the diff (cut if long)."""
     shown = diff if len(diff) <= DIFF_CHARS else diff[:DIFF_CHARS] + "\n[diff cut]"
