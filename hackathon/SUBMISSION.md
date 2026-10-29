@@ -248,17 +248,17 @@ evidence recomputes this table from the committed result rows):
 | `2026-10-29-tf-mini-science-lightning-first` | exploratory: edits start on Lightning, science suite | 6 | 0.0535 |
 | **All bench runs** | | | **5.6512** |
 
-The Token Factory console (Billing, Transactions and Usage, read 2026-10-28 21:00 UTC) showed
-US$ 5.89 of consumption for October, tax included, for every call on the account up to then,
-all of it on 2026-10-28 (the exploratory runs came on 2026-10-29):
-the bench runs above, the probes of five models, a few direct API checks, the canary call each
+The Token Factory console (Billing, Transactions and Usage, read 2026-10-29 23:57 UTC, usage
+last updated 22:31 UTC) showed US$ 6.06 of consumption for October, tax included, for every
+call on the account, all of it on 2026-10-28 and 2026-10-29: the bench runs above, the probes of five models, a few direct API checks, the canary call each
 bench run makes to every worker before it starts, two live test runs outside the bench (a toy
 `ssw run`, US$ 0.0111, and the README quickstart in a fresh clone, US$ 0.0105), and the first
-pilot's fourth task run, which ended without a result row. An earlier reading, at 11:39 UTC,
-showed US$ 5.64: the last bench run had ended five minutes before and not all of its
-consumption had posted yet. No call was made after 11:34 UTC. The account started at
-US$ 0.00, received a card payment of US$ 5.00 and two grants of US$ 25.00 of program credits,
-and had US$ 49.11 left. `hackathon/bill.json` records the reading.
+pilot's fourth task run, which ended without a result row. Two earlier readings: US$ 5.89 on
+2026-10-28 at 21:00 UTC, before the exploratory runs (the console's figure then rose by
+US$ 0.17; their ledger cost is US$ 0.1729), and US$ 5.64 at 11:39 UTC that day, five minutes
+after that day's last bench run ended, before all of its consumption had posted. The account
+started at US$ 0.00, received a card payment of US$ 5.00 and two grants of US$ 25.00 of
+program credits, and had US$ 48.94 left. `hackathon/bill.json` records the reading.
 
 ## What changed during the submission period
 

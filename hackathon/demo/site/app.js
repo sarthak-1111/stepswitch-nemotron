@@ -398,7 +398,7 @@ function renderHeadline(data) {
     const c = bill.console;
     $("#bill").textContent = `The whole bill: every hosted bench run, failed ones included, came to ${usd(bill.total_usd, 2)} `
       + `at list prices on Stepswitch’s ledger. The Token Factory console showed ${usd(c.consumption_usd_incl_tax, 2)} `
-      + `including tax for the day when read (${when(c.read)}); it also covers ${c.not_in_the_ledger}.`;
+      + `including tax for every call on the account when read (${when(c.read)}); it also covers ${c.not_in_the_ledger}.`;
   }
 }
 

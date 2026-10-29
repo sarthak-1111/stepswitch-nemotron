@@ -82,7 +82,9 @@ everything since.
   per task run (C-029's ladder 0.0101, C-032's 0.0108), 125,013 tokens per task run against
   47,156, 57 of Lightning's 314 tool calls refused. billing-month-end escalated at step 36 of
   40 and ran out of steps on Super, so a step budget per rung is on the list. The two runs cost
-  US$ 0.1729; the ledger total is now US$ 5.6512.
+  US$ 0.1729; the ledger total is now US$ 5.6512. The console posted them by 22:31 UTC that
+  day: US$ 6.06 for every call on the account (up US$ 0.17 from 5.89), US$ 48.94 left; usage
+  had still shown 11:18 UTC at 13:32 UTC, while the balance had already dropped.
 - The demo page is tabbed: the story hero, then Results, Replay a task, How it routes,
   Reviews, More runs (the exploratory and Lightning-alone runs) and Sources, with deep links
   (`#replay`, `?run=...&task=...`), arrow-key navigation and the old anchors kept.

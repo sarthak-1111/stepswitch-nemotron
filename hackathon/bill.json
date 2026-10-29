@@ -1,12 +1,12 @@
 {
-  "read": "2026-10-28T21:00Z",
-  "page": "Token Factory console, Billing, Transactions and Usage (usage last updated 19:27 UTC)",
-  "consumption_usd_incl_tax": 5.89,
+  "read": "2026-10-29T23:57Z",
+  "page": "Token Factory console, Billing, Transactions and Usage (usage last updated 22:31 UTC)",
+  "consumption_usd_incl_tax": 6.06,
   "starting_balance_usd": 0.0,
   "added_usd": 55.0,
   "added": "a card payment of 5.00 and two grants of 25.00 of program credits",
-  "balance_after_usd": 49.11,
-  "earlier_reading": "5.64 at 11:39 UTC, five minutes after the last bench run ended, before all of its consumption had posted; no call was made after 11:34 UTC",
-  "covers": "every call on the account in October 2026, all of it on 2026-10-28: the bench runs, the probes of five models, direct API checks, the bench runs' canary calls, and two live test runs outside the bench (a toy ssw run and the README quickstart in a fresh clone)",
+  "balance_after_usd": 48.94,
+  "earlier_reading": "5.89 at 2026-10-28 21:00 UTC, before the exploratory runs of 2026-10-29 (the console's figure rose by 0.17, their ledger cost was 0.1729); and 5.64 at 2026-10-28 11:39 UTC, five minutes after the last bench run of that day ended, before all of its consumption had posted",
+  "covers": "every call on the account in October 2026, all of it on 2026-10-28 and 2026-10-29: the bench runs, the probes of five models, direct API checks, the bench runs' canary calls, and two live test runs outside the bench (a toy ssw run and the README quickstart in a fresh clone)",
   "not_in_the_ledger": "the probes, the direct API checks, the canary call each bench run makes to every worker before it starts, the two live test runs (0.0111 and 0.0105 by their own ledgers), and the first pilot's fourth task run, which ended without a result row"
 }
