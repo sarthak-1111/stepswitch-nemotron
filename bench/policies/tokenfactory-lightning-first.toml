@@ -1,0 +1,62 @@
+# The Nemotron ladder with the work steps starting on Lightning (ADR 0044). Exploratory, not
+# for the claims: C-029 and C-030 use tokenfactory-ladder.toml. It asks whether the edit loop,
+# where Super spends most of the ladder's dollars, can start one rung lower.
+#
+#   Nemotron 3.5 Lightning   navigate, read, summarize, write-text; edit, run and triage until
+#                            the gates fail twice
+#   Nemotron 3 Super         edit, run and triage after the first escalation
+#   Nemotron 3 Ultra         plan, review, and the work steps after a second escalation
+#   gpt-oss-120b             a second opinion on Ultra's review, from another model family
+#
+# `escalations` counts how often the gates failed enough times to move the task up the ladder.
+# Lightning (t1), Super (t3) and Ultra (remote) sit on three rungs, so each escalation moves the
+# work one model up.
+schema = 1
+
+[privacy]
+mode = "default"
+redact = "remote"
+deny_paths = [".env", ".env.*", "secrets/**", "*.pem", "*.key"]
+
+[budgets]
+usd = 0.50
+wall_seconds = 1800
+
+[budgets.roles.summarize]
+effort = "none"
+
+[budgets.roles.write-text]
+effort = "none"
+
+[budgets.roles.review]
+effort = "none"
+max_output_tokens = 2000
+
+[review]
+second_opinion = true
+
+[[policy.rules]]
+name = "lightning-reads-and-summarizes"
+when = { step_type = ["navigate", "read", "summarize", "write-text"] }
+to = { model = "nvidia/Nemotron-3_5-Lightning" }
+
+[[policy.rules]]
+name = "lightning-tries-the-work-first"
+when = { step_type = ["edit", "run", "triage"], escalations = 0 }
+to = { model = "nvidia/Nemotron-3_5-Lightning" }
+
+[[policy.rules]]
+name = "super-takes-the-first-escalation"
+when = { step_type = ["edit", "run", "triage"], escalations = 1 }
+to = { model = "nvidia/nemotron-3-super-120b-a12b" }
+
+[[policy.rules]]
+name = "ultra-plans-reviews-and-takes-the-second"
+when = { step_type = ["plan", "review", "edit", "run", "triage"] }
+to = { model = "nvidia/Nemotron-3-Ultra-550b-a55b" }
+
+[tracks.general]
+gates = ["format", "lint", "typecheck", "impacted_tests", "full_tests"]
+
+[tracks.science]
+offline = false

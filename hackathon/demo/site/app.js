@@ -11,6 +11,7 @@ const KINDS = {
   demo: "escalation demo: edits start on Nano",
   alone: "Lightning alone",
   pilot: "pilot",
+  explore: "exploratory: edits start on Lightning",
 };
 const kindOf = (run) => run.kind || "main";
 const MODELS = [
@@ -67,7 +68,9 @@ function badge(worker) {
 }
 
 function contestantLabel(name, kind) {
-  if (name === LADDER) return kind === "demo" ? "Nemotron ladder, edits starting on Nano" : "Nemotron ladder (Stepswitch)";
+  if (name === LADDER && kind === "demo") return "Nemotron ladder, edits starting on Nano";
+  if (name === LADDER && kind === "explore") return "Nemotron ladder, edits starting on Lightning";
+  if (name === LADDER) return "Nemotron ladder (Stepswitch)";
   return `${model(name).label} alone`;
 }
 
@@ -128,6 +131,64 @@ function setupTheme() {
     label();
     redrawCharts();
   });
+}
+
+// ---- tabs ---------------------------------------------------------------------------------
+
+// Old anchors still land on the panel that now holds them.
+const TAB_ALIASES = { provenance: "sources", "step-types": "ladder" };
+const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+let selectTab = () => {};
+
+function setupTabs() {
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  const panelOf = (id) => tabs.find((t) => t.getAttribute("aria-controls") === (TAB_ALIASES[id] || id));
+  selectTab = (id, { focus = false, scroll = false, remember = true, instant = false } = {}) => {
+    const chosen = panelOf(id) || tabs[0];
+    for (const tab of tabs) {
+      const on = tab === chosen;
+      tab.setAttribute("aria-selected", String(on));
+      tab.tabIndex = on ? 0 : -1;
+      document.getElementById(tab.getAttribute("aria-controls")).hidden = !on;
+    }
+    if (focus) chosen.focus();
+    // Keep the chosen tab in sight when the bar scrolls sideways on a narrow screen.
+    const bar = chosen.parentElement;
+    bar.scrollLeft = chosen.offsetLeft - (bar.clientWidth - chosen.offsetWidth) / 2;
+    if (remember) {
+      const url = new URL(location.href);
+      url.hash = chosen.getAttribute("aria-controls");
+      history.replaceState(null, "", url);
+    }
+    // The panel's top, just under the sticky nav and tab bar. Once the bar is stuck, every
+    // switch starts the new panel at its top; above it, only a click or a link scrolls.
+    const covered = $(".nav").offsetHeight + $("#tabbar").offsetHeight;
+    const top = $("#main").getBoundingClientRect().top + scrollY - covered;
+    if (scroll || scrollY > top + 1) window.scrollTo({ top, behavior: scroll && !instant && !reducedMotion() ? "smooth" : "auto" });
+    redrawCharts();
+  };
+  tabs.forEach((tab, i) => {
+    tab.addEventListener("click", () => selectTab(tab.getAttribute("aria-controls"), { scroll: true }));
+    tab.addEventListener("keydown", (event) => {
+      const moves = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 };
+      if (!(event.key in moves)) return;
+      event.preventDefault();
+      selectTab(tabs[(moves[event.key] + tabs.length) % tabs.length].getAttribute("aria-controls"), { focus: true });
+    });
+  });
+  // A link to a panel (#replay, #results, ...) opens its tab instead of jumping to a hidden section.
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest('a[href^="#"]');
+    if (!link || event.defaultPrevented || !panelOf(link.hash.slice(1))) return;
+    event.preventDefault();
+    selectTab(link.hash.slice(1), { scroll: true });
+  });
+  window.addEventListener("hashchange", () => { if (panelOf(location.hash.slice(1))) selectTab(location.hash.slice(1), { scroll: true, remember: false }); });
+  const start = location.hash.slice(1);
+  const replayLink = new URLSearchParams(location.search).has("run");
+  selectTab(panelOf(start) ? start : replayLink ? "replay" : "results", { remember: false });
+  // Called again once the data has filled the hero, which moves the panels down the page.
+  return () => { if (panelOf(start)) selectTab(start, { scroll: true, remember: false, instant: true }); };
 }
 
 // ---- tooltip ------------------------------------------------------------------------------
@@ -442,6 +503,17 @@ function renderResults(data) {
     const rows = complete.flatMap((run) => run.rows.map((r) => ({ ...r, task: `${run.suite}/${r.task}` })));
     cards.append(suiteCard("both mini suites", rows));
   }
+  // The exploratory runs, beside what the ladder and Ultra alone spent on the same tasks in
+  // C-029's runs (other runs on another day: a reference, not a comparison).
+  const explore = data.runs.filter((r) => kindOf(r) === "explore");
+  for (const run of explore) {
+    const ref = evidence?.per_suite?.[run.suite]?.results;
+    const note = ref
+      ? `run ${run.name}. In C-029’s runs on the same tasks: the ladder ${usd(ref.ladder.cost_per_task_usd)} and Ultra alone ${usd(ref.single.cost_per_task_usd)} per task run.`
+      : `run ${run.name}`;
+    $("#explore-cards").append(suiteCard(`${run.suite}, edits starting on Lightning`, run.rows, note));
+  }
+  $("#explore-block").hidden = !explore.length;
   const alone = $("#alone-cards");
   for (const run of data.runs.filter((r) => kindOf(r) === "alone")) {
     alone.append(suiteCard(run.suite, run.rows, `run ${run.name}: a separate run on the same tasks, after the main runs`));
@@ -595,7 +667,7 @@ function renderReplay(data) {
   $("#hero-escalation")?.addEventListener("click", (event) => {
     if (!watchEscalation) return;
     event.preventDefault();
-    $("#replay").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    selectTab("replay", { scroll: true });
     watchEscalation();
   });
   if (!data.runs.some((run) => escalated(run).length)) $("#show-escalation")?.remove();
@@ -703,6 +775,7 @@ function renderProvenance(data) {
 }
 
 setupTheme();
+const openLinkedTab = setupTabs();
 fetch("data.json")
   .then((r) => r.json())
   .then((data) => {
@@ -714,6 +787,7 @@ fetch("data.json")
     renderReviews(data);
     renderStepTypes(data);
     renderProvenance(data);
+    openLinkedTab();
   })
   .catch((err) => {
     document.querySelector("main").prepend(el("p", { class: "error" }, `Could not load the recorded runs (${err}). Reload the page; the same data is in the repository at hackathon/demo/site/data.json.`));

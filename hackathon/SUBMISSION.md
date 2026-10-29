@@ -185,6 +185,15 @@ second model family, and publishes only numbers that anyone can re-run.
 - **One task can move an interval.** With 21 tasks and one run each, one task on which Super's
   output was cut off four times cost the ladder 77.6% of Ultra's dollars on that task (15.4% in
   C-029's runs), and the second pair's interval reached 27.7% (23.6% for the first).
+- **Moving the edit loop down a rung saves little and costs a task (exploratory).** With edit,
+  run and triage starting on Lightning, Super after the first escalation and Ultra after a
+  second (`bench/policies/tokenfactory-lightning-first.toml`, one run per task on 2026-10-29),
+  20 of 21 passed for US$ 0.0082 per task run: 81% of the ladder's 0.0101 in C-029's runs, 76%
+  of its 0.0108 in C-032's, which ran nearer the current code. It used 125,013 tokens per task
+  run against the ladder's 47,156, took 1.00 minutes against 0.75, and 57 of Lightning's 314
+  tool calls were refused. In the failure, Lightning's change failed the tests twice and the
+  task reached Super at step 36 of its 40, so Super had four steps left. A cheap first rung
+  spends the step budget the next rung needs. The ladder with Super editing stays the default.
 
 ## What's next
 
@@ -192,6 +201,8 @@ second model family, and publishes only numbers that anyone can re-run.
   verdicts as local gates on every task run ([sandboxes.md](sandboxes.md)).
 - A ladder that learns from these step records which step types each model handles, per
   repository, and the Nano tier for the shortest steps.
+- A step budget per rung, so that an escalation arrives with steps to spend (the
+  Lightning-first run above lost its one task that way).
 - The ladder on SWE-bench Verified Mini, which so far ran on a local model only.
 - More tasks per suite before the next claim is registered, so that one task cannot move its
   interval past the bound. More seeds would not do it: pooled, our two pairs of runs put the
@@ -233,11 +244,13 @@ evidence recomputes this table from the committed result rows):
 | `2026-10-28-tf-long-path-diagnosis` | one task run of Ultra alone, kept to read the gate's error | 1 | 0.2061 |
 | `2026-10-28-tf-mini-general-replication-2` | C-032, general suite (withdrawn, ADR 0048) | 30 | 0.9794 |
 | `2026-10-28-tf-mini-science-replication-2` | C-032, science suite (withdrawn, ADR 0048) | 12 | 0.5082 |
-| **All bench runs** | | | **5.4783** |
+| `2026-10-29-tf-mini-general-lightning-first` | exploratory: edits start on Lightning, general suite | 15 | 0.1195 |
+| `2026-10-29-tf-mini-science-lightning-first` | exploratory: edits start on Lightning, science suite | 6 | 0.0535 |
+| **All bench runs** | | | **5.6512** |
 
 The Token Factory console (Billing, Transactions and Usage, read 2026-10-28 21:00 UTC) showed
-US$ 5.89 of consumption for October, tax included, for every call on the account, all of it on
-2026-10-28:
+US$ 5.89 of consumption for October, tax included, for every call on the account up to then,
+all of it on 2026-10-28 (the exploratory runs came on 2026-10-29):
 the bench runs above, the probes of five models, a few direct API checks, the canary call each
 bench run makes to every worker before it starts, two live test runs outside the bench (a toy
 `ssw run`, US$ 0.0111, and the README quickstart in a fresh clone, US$ 0.0105), and the first
@@ -270,7 +283,8 @@ submission is the commits after `de1cf95` on the `hackathon` branch:
   read's prefixes stripped from new text too, and a test selector that repeats the pytest
   command;
 - the long-path fix for the gates' git queries on Windows, and claim C-032, a replication of
-  C-029 registered before its runs and withdrawn when it missed its bound (ADR 0047, 0048).
+  C-029 registered before its runs and withdrawn when it missed its bound (ADR 0047, 0048);
+- an exploratory run with the edit loop starting on Lightning, and the demo page in tabs.
 
 ## Built with
 

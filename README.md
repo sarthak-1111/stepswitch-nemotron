@@ -90,12 +90,14 @@ Evidence: [C-029](claims/evidence/C-029.json).
   ([why](docs/decisions/0048-c032-withdrawn.md)), and the interval above holds for C-029's runs
   only.
 - **The bill:** every hosted bench run of this submission, pilots, a crashed run, the
-  small-model runs, the escalation demos and both replication attempts included, cost US$
-  <!-- num:C-029:sections.comparison.bill.total_usd -->5.48<!-- /num --> by Stepswitch's ledger
-  at list prices. The Token Factory console showed US$
+  small-model runs, the escalation demos, both replication attempts and an exploratory run
+  included, cost US$
+  <!-- num:C-029:sections.comparison.bill.total_usd -->5.65<!-- /num --> by Stepswitch's ledger
+  at list prices. Before the exploratory run, the Token Factory console showed US$
   <!-- num:C-029:sections.comparison.bill.console.consumption_usd_incl_tax -->5.89<!-- /num -->
-  for every call on the account that day, tax included, with the probes and two test runs
-  outside the bench. [hackathon/SUBMISSION.md](hackathon/SUBMISSION.md) lists each run.
+  for every call on the account, tax included, with the probes and two test runs outside the
+  bench.
+  [hackathon/SUBMISSION.md](hackathon/SUBMISSION.md) lists each run.
 
 ### Try it
 

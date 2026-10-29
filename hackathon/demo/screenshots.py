@@ -24,9 +24,10 @@ SHOTS = ("1-overview.png", "2-results.png", "3-escalation.png", "4-reviews.png",
 
 def shot(page: Page, name: str, selector: str, *, offset: int = 0, height: int = 900) -> None:
     page.locator(selector).first.scroll_into_view_if_needed()
+    # 124 px: the sticky nav and the tab bar under it, and a little air.
     page.evaluate(
         "([sel, off]) => window.scrollTo(0, document.querySelector(sel).getBoundingClientRect().top"
-        " + window.scrollY - 76 + off)",
+        " + window.scrollY - 124 + off)",
         [selector, offset],
     )
     page.wait_for_timeout(400)
@@ -48,8 +49,11 @@ def main() -> None:
             # The installed Chrome, as the dashboard's browser test uses (pyproject.toml, e2e).
             browser = p.chromium.launch(channel="chrome")
             for scheme in ("light", "dark"):
+                # Reduced motion: a tab switch then scrolls at once, not while a shot is taken.
                 page = browser.new_page(
-                    viewport={"width": 1440, "height": 900}, color_scheme=scheme
+                    viewport={"width": 1440, "height": 900},
+                    color_scheme=scheme,
+                    reduced_motion="reduce",
                 )
                 page.goto(url)
                 page.wait_for_selector("#kpis .kpi")
@@ -64,11 +68,14 @@ def main() -> None:
                 page.wait_for_timeout(300)
                 page.screenshot(path=str(OUT / "1-overview.png"))
                 print(f"wrote {(OUT / '1-overview.png').relative_to(ROOT)}")
+                # Each section is a tab: open it before the shot.
                 shot(page, "2-results.png", "#kpis", offset=-150)
+                page.click("#tab-replay")
                 page.click("#show-escalation")
                 page.click("#show-all")
                 shot(page, "3-escalation.png", ".ev.escalation", offset=-420)
-                shot(page, "4-reviews.png", "#reviews")
+                page.click("#tab-reviews")
+                shot(page, "4-reviews.png", "#reviews", offset=12)
                 page.close()
             browser.close()
     finally:

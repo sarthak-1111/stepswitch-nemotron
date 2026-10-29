@@ -26,10 +26,10 @@
     "image_os": null,
     "image_version": null
   },
-  "updated": "2026-10-28T21:01:37+00:00",
+  "updated": "2026-10-29T12:24:41+00:00",
   "sections": {
     "comparison": {
-      "recorded": "2026-10-28T21:01:36+00:00",
+      "recorded": "2026-10-29T12:24:41+00:00",
       "contestants": {
         "ladder": "router",
         "single": "tokenfactory/nvidia/Nemotron-3-Ultra-550b-a55b"
@@ -301,9 +301,21 @@
             "task_runs": 12,
             "cost_usd": 0,
             "stopped": null
+          },
+          "2026-10-29-tf-mini-general-lightning-first": {
+            "suite": "mini-general",
+            "task_runs": 15,
+            "cost_usd": 0.119471,
+            "stopped": null
+          },
+          "2026-10-29-tf-mini-science-lightning-first": {
+            "suite": "mini-science",
+            "task_runs": 6,
+            "cost_usd": 0.053459,
+            "stopped": null
           }
         },
-        "total_usd": 5.478286,
+        "total_usd": 5.651216,
         "source": "result rows (Stepswitch's ledger)",
         "console": {
           "read": "2026-10-28T21:00Z",

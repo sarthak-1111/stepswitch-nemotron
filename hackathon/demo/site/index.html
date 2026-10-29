@@ -21,15 +21,6 @@
 <header class="nav">
   <div class="wrap nav-row">
     <a class="wordmark" href="#top" translate="no" aria-label="Stepswitch, back to the top">Stepswitch</a>
-    <nav aria-label="Sections">
-      <ul class="nav-links">
-        <li><a href="#results">Results</a></li>
-        <li><a href="#ladder">Ladder</a></li>
-        <li><a href="#replay">Replay</a></li>
-        <li><a href="#reviews">Reviews</a></li>
-        <li><a href="#provenance">Sources</a></li>
-      </ul>
-    </nav>
     <div class="nav-actions">
       <button id="theme" class="icon-btn" type="button" aria-label="Switch to the dark theme" title="Theme">
         <svg class="moon" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
@@ -71,8 +62,21 @@
   </div>
 </header>
 
+<div id="tabbar" class="tabbar">
+  <div class="wrap">
+    <div class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" type="button" id="tab-results" aria-controls="results" aria-selected="true">Results</button>
+      <button class="tab" role="tab" type="button" id="tab-replay" aria-controls="replay" aria-selected="false" tabindex="-1">Replay a task</button>
+      <button class="tab" role="tab" type="button" id="tab-ladder" aria-controls="ladder" aria-selected="false" tabindex="-1">How it routes</button>
+      <button class="tab" role="tab" type="button" id="tab-reviews" aria-controls="reviews" aria-selected="false" tabindex="-1">Reviews</button>
+      <button class="tab" role="tab" type="button" id="tab-more" aria-controls="more" aria-selected="false" tabindex="-1">More runs</button>
+      <button class="tab" role="tab" type="button" id="tab-sources" aria-controls="sources" aria-selected="false" tabindex="-1">Sources</button>
+    </div>
+  </div>
+</div>
+
 <main id="main" class="wrap">
-  <section id="results" aria-labelledby="results-h">
+  <section id="results" class="panel" role="tabpanel" aria-labelledby="tab-results">
     <p class="overline">Claim C-029</p>
     <h2 id="results-h">The ladder against Nemotron 3 Ultra alone</h2>
     <p class="sub">Both contestants run every step on Token Factory, on the same tasks, with the
@@ -122,27 +126,10 @@
       <div id="result-cards" class="cards"></div>
     </details>
     <p id="bill" class="bill"></p>
-
-    <h3 class="minor">Nemotron 3.5 Lightning alone, and the pilot</h3>
-    <p class="sub">The ladder’s smallest model doing every step itself, in separate runs on the same tasks
-      after the main runs, and the five-task pilot that calibrated the dollar caps. Not part of
-      the comparison above.</p>
-    <div id="alone-cards" class="cards"></div>
+    <p class="next"><a class="btn btn-ghost" href="#replay">Next: replay a task <span aria-hidden="true">→</span></a></p>
   </section>
 
-  <section id="ladder" aria-labelledby="ladder-h">
-    <p class="overline">The policy</p>
-    <h2 id="ladder-h">The ladder</h2>
-    <p class="sub">Three rules in <code translate="no">stepswitch.toml</code> decide which model takes each step.
-      When a change fails the gates twice, the task moves up to Ultra.</p>
-    <div class="table-wrap"><table id="ladder-table">
-      <caption class="visually-hidden">Models of the ladder, the steps each takes, and their list prices</caption>
-      <thead><tr><th scope="col">Model</th><th scope="col">Steps</th><th scope="col" class="num">Price per million tokens (in / cached / out)</th></tr></thead>
-      <tbody></tbody>
-    </table></div>
-  </section>
-
-  <section id="replay" aria-labelledby="replay-h">
+  <section id="replay" class="panel" role="tabpanel" aria-labelledby="tab-replay" hidden>
     <p class="overline">Recorded runs</p>
     <h2 id="replay-h">Replay a task</h2>
     <p class="sub">Every model call, gate and review of a recorded task, in order. The escalation
@@ -158,18 +145,21 @@
     </div>
     <p id="task-tags" class="sub"></p>
     <div id="lanes" class="lanes" aria-live="polite"></div>
+    <p class="next"><a class="btn btn-ghost" href="#ladder">Next: how it routes <span aria-hidden="true">→</span></a></p>
   </section>
 
-  <section id="reviews" aria-labelledby="reviews-h">
-    <p class="overline">Claim C-030</p>
-    <h2 id="reviews-h">Two reviewers, two model families</h2>
-    <p class="sub">In the ladder, Nemotron 3 Ultra reviews each change and gpt-oss-120b gives a
-      second opinion on the same diff. The change is approved only when neither objects.</p>
-    <div id="review-stats" class="kpis"></div>
-  </section>
+  <section id="ladder" class="panel" role="tabpanel" aria-labelledby="tab-ladder" hidden>
+    <p class="overline">The policy</p>
+    <h2 id="ladder-h">The ladder</h2>
+    <p class="sub">Three rules in <code translate="no">stepswitch.toml</code> decide which model takes each step.
+      When a change fails the gates twice, the task moves up to Ultra.</p>
+    <div class="table-wrap"><table id="ladder-table">
+      <caption class="visually-hidden">Models of the ladder, the steps each takes, and their list prices</caption>
+      <thead><tr><th scope="col">Model</th><th scope="col">Steps</th><th scope="col" class="num">Price per million tokens (in / cached / out)</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
 
-  <section id="step-types" aria-labelledby="step-types-h">
-    <h2 id="step-types-h">Per step type</h2>
+    <h3 id="step-types" class="minor">Per step type</h3>
     <p class="sub">Model calls of each step type in the complete runs: which model the ladder
       used, and what a call cost on average compared with Ultra doing the same kind of step.</p>
     <div class="table-wrap"><table id="step-table">
@@ -179,9 +169,39 @@
         <th scope="col" class="num">Tool errors (ladder / Ultra)</th></tr></thead>
       <tbody></tbody>
     </table></div>
+    <p class="next"><a class="btn btn-ghost" href="#reviews">Next: reviews <span aria-hidden="true">→</span></a></p>
   </section>
 
-  <section id="provenance" aria-labelledby="prov-h">
+  <section id="reviews" class="panel" role="tabpanel" aria-labelledby="tab-reviews" hidden>
+    <p class="overline">Claim C-030</p>
+    <h2 id="reviews-h">Two reviewers, two model families</h2>
+    <p class="sub">In the ladder, Nemotron 3 Ultra reviews each change and gpt-oss-120b gives a
+      second opinion on the same diff. The change is approved only when neither objects.</p>
+    <div id="review-stats" class="kpis"></div>
+    <p class="next"><a class="btn btn-ghost" href="#more">Next: more runs <span aria-hidden="true">→</span></a></p>
+  </section>
+
+  <section id="more" class="panel" role="tabpanel" aria-labelledby="tab-more" hidden>
+    <p class="overline">Not part of the comparison</p>
+    <h2 id="more-h">More runs on the same tasks</h2>
+    <p class="sub">Separate runs on the same 21 tasks. Each is a recorded run you can replay;
+      none is a claim.</p>
+    <div id="explore-block" hidden>
+      <h3 class="minor">Edits starting on Lightning (exploratory)</h3>
+      <p class="sub">The ladder with edit, run and triage starting on Lightning: Super takes them
+        after the first escalation, Ultra after a second. One run per task, to see whether the
+        edit loop, where Super spends most of the ladder’s dollars, can start one rung lower.</p>
+      <div id="explore-cards" class="cards"></div>
+    </div>
+    <h3 class="minor">Lightning alone, and the pilot</h3>
+    <p class="sub">The ladder’s smallest model doing every step itself, after the main runs, and
+      the five-task pilot that calibrated the dollar caps.</p>
+    <div id="alone-cards" class="cards"></div>
+    <p class="next"><a class="btn btn-ghost" href="#sources">Next: sources <span aria-hidden="true">→</span></a></p>
+  </section>
+
+  <section id="sources" class="panel" role="tabpanel" aria-labelledby="tab-sources" hidden>
+    <p class="overline">Provenance</p>
     <h2 id="prov-h">Where the numbers come from</h2>
     <p class="sub">Each run, the commit it ran on, its policy, and the command that re-runs it.</p>
     <div id="prov" class="prov"></div>

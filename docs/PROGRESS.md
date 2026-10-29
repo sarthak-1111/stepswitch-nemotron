@@ -76,6 +76,16 @@ everything since.
   canary calls and test runs outside the bench included (11:39 UTC had shown US$ 5.64, before
   the last run's consumption had posted). The account had US$ 49.11 left of a US$ 5.00 card
   payment and two grants of US$ 25.00 of program credits.
+- Exploratory, not a claim: the ladder with edit, run and triage starting on Lightning
+  (`bench/policies/tokenfactory-lightning-first.toml`; Super after the first escalation, Ultra
+  after a second), one run per task on 2026-10-29 at 4164432: 20 of 21 passed for US$ 0.0082
+  per task run (C-029's ladder 0.0101, C-032's 0.0108), 125,013 tokens per task run against
+  47,156, 57 of Lightning's 314 tool calls refused. billing-month-end escalated at step 36 of
+  40 and ran out of steps on Super, so a step budget per rung is on the list. The two runs cost
+  US$ 0.1729; the ledger total is now US$ 5.6512.
+- The demo page is tabbed: the story hero, then Results, Replay a task, How it routes,
+  Reviews, More runs (the exploratory and Lightning-alone runs) and Sources, with deep links
+  (`#replay`, `?run=...&task=...`), arrow-key navigation and the old anchors kept.
 - No third replication: pooling the two pairs we have puts the interval at 13.8% to 24.1%, and
   simulated three-seed reruns of the same 21 tasks kept the upper bound under 25% in about 60%
   of cases. The spread is between tasks, so more seeds barely narrow it; the next claim needs

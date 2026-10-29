@@ -21,11 +21,14 @@ RESULTS = ROOT / "bench" / "results"
 OUT = Path(__file__).resolve().parent / "site" / "data.json"
 
 # The runs the demo shows, with their kind: the C-029 runs of both mini suites ("main"),
-# Lightning alone on the same tasks ("alone"), the escalation demo ("demo") and the pilot.
+# Lightning alone on the same tasks ("alone"), the escalation demo ("demo"), the pilot, and
+# the exploratory ladder with the work steps starting on Lightning ("explore").
 RUNS = (
     ("2026-10-28-tf-mini-general", "main"),
     ("2026-10-28-tf-mini-science", "main"),
     ("2026-10-28-tf-escalation-demo-nano", "demo"),
+    ("2026-10-29-tf-mini-general-lightning-first", "explore"),
+    ("2026-10-29-tf-mini-science-lightning-first", "explore"),
     ("2026-10-28-tf-mini-general-lightning", "alone"),
     ("2026-10-28-tf-mini-science-lightning", "alone"),
     ("2026-10-28-tf-pilot", "pilot"),
