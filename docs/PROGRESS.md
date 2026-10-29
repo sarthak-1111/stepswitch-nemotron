@@ -107,7 +107,7 @@ everything since.
 
 ### Waiting on the maintainer
 
-- Watch the 2:56 cut of the video (made outside the repository from `hackathon/VIDEO.md`),
+- Watch the 2:58 cut of the video (made outside the repository from `hackathon/VIDEO.md`),
   approve its voice, upload it as public, and put its link in the README's hackathon section
   and the form.
 - Fill the submission form (track: Coding and Agentic Engineering; leave the city empty) and

@@ -1,7 +1,7 @@
-# Video script (2:56)
+# Video script (2:58)
 
 The event asks for a public video under three minutes that shows the project working and how
-Token Factory and Nemotron are used. The cut runs 2:56; the timecodes below are the cut's.
+Token Factory and Nemotron are used. The cut runs 2:58; the timecodes below are the cut's.
 Terminal shots come from the VHS tapes in [tapes/](tapes/) (or any screen recorder running the
 same commands); browser shots come from the demo page,
 https://sarthak-1111.github.io/stepswitch-nemotron/, and the README. The cut's music is a score
@@ -64,15 +64,15 @@ spent 81.6% fewer dollars per task. About 1 cent, against 5.5 cents. It also sen
 half the uncached tokens. A reviewer from another model family agreed with Ultra on 20 of 21
 changes."
 
-## 2:09 to 2:27: the bill
+## 2:09 to 2:29: the bill
 
 **Shot:** the bill as the README states it, then the replication line under the table.
 
-**Voice:** "We publish the whole bill: every hosted bench run, failed ones included, cost $5.48.
+**Voice:** "We publish the whole bill: every hosted bench run, failed ones included, cost $5.65.
 We ran it again, registered in advance: the same 18% of Ultra's dollars, but it missed its
 bound on one task, so we withdrew that claim."
 
-## 2:27 to 2:42: prove it yourself
+## 2:29 to 2:44: prove it yourself
 
 **Shot:** `tapes/prove.tape` (terminal), at its real speed: `uv run ssw prove --claim C-029
 --claim C-030` ends with both claims passing.
@@ -80,7 +80,7 @@ bound on one task, so we withdrew that claim."
 **Voice:** "Every number in the README has a test. Clone the repository and run ssw prove: it
 re-checks these claims from the recorded runs. No key needed, and it costs nothing."
 
-## 2:42 to 2:56: close
+## 2:44 to 2:58: close
 
 **Shot:** the wordmark, the code and replay links, and the demo page playing **Watch a failed
 gate escalate**.
