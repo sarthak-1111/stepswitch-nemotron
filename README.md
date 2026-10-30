@@ -21,7 +21,7 @@ and a model from another family gives a second opinion. **All
 model's change fails your tests twice, Ultra takes the task over. And you can re-check each of
 these numbers with one command, without an API key.
 
-- **Watch:** the video (link added at submission).
+- **Watch:** [the video](https://youtu.be/YTB3fQzbfys), under three minutes.
 - **See it:** [replays of the recorded runs](https://sarthak-1111.github.io/stepswitch-nemotron/),
   step by step: which model took each step, what it cost, the tests and the reviews.
   Read-only, no login.

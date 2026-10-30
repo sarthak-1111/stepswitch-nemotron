@@ -109,11 +109,11 @@ everything since.
 
 ### Waiting on the maintainer
 
-- Watch the 2:58 cut of the video (made outside the repository from `hackathon/VIDEO.md`),
-  approve its voice, upload it as public, and put its link in the README's hackathon section
-  and the form.
-- Fill the submission form (track: Coding and Agentic Engineering; leave the city empty) and
-  press Submit before 2026-10-30 10:00 PT.
+- The video is public on YouTube (https://youtu.be/YTB3fQzbfys) and linked from the README,
+  SUBMISSION.md and the Devpost project.
+- The Devpost project is filled in (story, links, gallery, video, track, answers); the
+  maintainer fills the personal declarations (submitter type, country, eligibility) and
+  presses Submit before 2026-10-30 10:00 PT.
 - Optional: request Sandboxes beta access on the console for C-031.
 
 ## After Phase 13: public repository and CI
