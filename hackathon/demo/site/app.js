@@ -76,12 +76,12 @@ function contestantLabel(name, kind) {
 
 const USD = new Map();
 const usd = (v, digits = 4) => {
-  if (v === null || v === undefined) return "–";
+  if (v === null || v === undefined) return "n/a";
   if (!USD.has(digits)) USD.set(digits, new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: digits, maximumFractionDigits: digits }));
   return USD.get(digits).format(v);
 };
 const INT = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
-const int = (v) => (v === null || v === undefined ? "–" : INT.format(Math.round(v)));
+const int = (v) => (v === null || v === undefined ? "n/a" : INT.format(Math.round(v)));
 const UTC = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" });
 const when = (iso) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? iso : `${UTC.format(d)} UTC`; };
 const pct = (v) => `${(100 * v).toFixed(0)}%`;
@@ -476,7 +476,7 @@ function suiteCard(title, rows, note) {
         el("dt", {}, "passed"), el("dd", {}, `${s.passed} of ${s.runs}`),
         el("dt", {}, "dollars per task"), el("dd", {}, usd(s.costPerTask)),
         el("dt", {}, "tokens per task"), el("dd", {}, int(s.tokensPerTask)),
-        el("dt", {}, "minutes per task"), el("dd", {}, s.minutesPerTask === null ? "–" : s.minutesPerTask.toFixed(2)),
+        el("dt", {}, "minutes per task"), el("dd", {}, s.minutesPerTask === null ? "n/a" : s.minutesPerTask.toFixed(2)),
         el("dt", {}, "escalations"), el("dd", {}, int(s.escalations)),
       ),
     );
@@ -545,10 +545,10 @@ function renderLadder(data) {
     rows.set(target, [...(rows.get(target) || []), ...parts]);
   }
   if (run?.policy?.review?.second_opinion) rows.set("openai/gpt-oss-120b", ["a second review of each change, from another model family"]);
-  const money = (v) => (v === null || v === undefined ? "–" : `$${Number(v).toFixed(2)}`);
+  const money = (v) => (v === null || v === undefined ? "n/a" : `$${Number(v).toFixed(2)}`);
   for (const [target, steps] of rows) {
     const price = Object.entries(prices).find(([id]) => id.endsWith(target))?.[1];
-    const priceText = price ? `${money(price.input_per_million)} / ${money(price.cached_input_per_million)} / ${money(price.output_per_million)}` : "–";
+    const priceText = price ? `${money(price.input_per_million)} / ${money(price.cached_input_per_million)} / ${money(price.output_per_million)}` : "n/a";
     body.append(el("tr", {}, el("td", {}, badge(target)), el("td", {}, steps.join("; ")), el("td", { class: "num" }, priceText)));
   }
 }
@@ -717,7 +717,7 @@ function renderReviews(data) {
   }
   $("#review-stats").replaceChildren(
     kpi("Changes with both reviews", int(pairs)),
-    kpi("Verdicts agree", pairs ? `${agree} of ${pairs}` : "–", `${disagree} disagree, ${noVerdict} without a verdict on one side`),
+    kpi("Verdicts agree", pairs ? `${agree} of ${pairs}` : "n/a", `${disagree} disagree, ${noVerdict} without a verdict on one side`),
     kpi("Approved by Nemotron 3 Ultra", int(firstApproved)),
     kpi("Approved by gpt-oss-120b", int(secondApproved)),
   );
@@ -750,7 +750,7 @@ function renderStepTypes(data) {
   for (const type of order) {
     const s = stats[type];
     if (!s) continue;
-    const per = (side, f) => (s[side].calls ? f(s[side]) : "–");
+    const per = (side, f) => (s[side].calls ? f(s[side]) : "n/a");
     body.append(el("tr", {},
       el("td", {}, type),
       el("td", {}, [...s.ladder.models].map((w) => badge(w))),

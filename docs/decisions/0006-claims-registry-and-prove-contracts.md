@@ -12,7 +12,7 @@ claims, and README numbers that come from evidence files. Several details are le
 
 - which documents are "public" and therefore linted;
 - the marker syntax for claim text and templated numbers;
-- how a claim whose parts land in different phases (C-005 is "P2–P3") is represented;
+- how a claim whose parts land in different phases (C-005 is "P2-P3") is represented;
 - how `scripts/phase_check.py` can tell that a `ssw prove` report reflects the current code;
 - how `ssw prove --quick` (CPU-only, under 10 minutes) can cover bench-based claims that the
   phase goals require (C-011 in Phase 5, C-012 in Phase 6).

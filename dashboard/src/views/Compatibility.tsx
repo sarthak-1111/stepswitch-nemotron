@@ -3,7 +3,7 @@ import { Badge, Empty, PageHeader, ResourceView, Section, TableWrap, TimeText } 
 import { formatValue } from "../format";
 import { useResource } from "../hooks";
 
-const CELL_MARKS: Record<string, string> = { yes: "✓", no: "✗", skipped: "–", error: "!" };
+const CELL_MARKS: Record<string, string> = { yes: "✓", no: "✗", skipped: "-", error: "!" };
 
 function toolPathText(result: CompatResult): string {
   if (!result.tool_path) return "-";

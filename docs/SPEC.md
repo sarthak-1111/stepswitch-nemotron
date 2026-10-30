@@ -257,9 +257,9 @@ confirmation.
 
 | Tier | Hardware | Candidate defaults | Typical roles |
 |---|---|---|---|
-| T0 | CPU only, 8–16 GB RAM | Qwen3-4B-Instruct-2507 (router, summarizer), Qwen3-Embedding-0.6B (embeddings), Qwen2.5-Coder-1.5B (FIM, optional); alternates Qwen3.5 4B / 2B / 0.8B, Gemma 4 E2B / E4B | router/classifier, summarizer, log triage, commit messages, search ranking, handoff writer, embeddings |
-| T1 | one GPU, 12–24 GB | Qwen3.8-27B (4-bit needs 24 GB; smaller cards need 3-bit or offload), Devstral-Small-2-24B-Instruct-2512, Qwen3.6-35B-A3B with expert offload, gpt-oss-20b, Gemma 4 26B-A4B | editor for small repos, reviewer, budget planner |
-| T2 | workstation, 96–192 GB | Qwen3.8-Flash-Next (~111 GB Q4 GGUF; community license), gpt-oss-120b, GLM-5.3-Flash (192 GB at IQ4_XS only), MiMo-V2.6-Flash-MOPD, Mistral-Small-4-119B | editor, planner, reviewer |
+| T0 | CPU only, 8-16 GB RAM | Qwen3-4B-Instruct-2507 (router, summarizer), Qwen3-Embedding-0.6B (embeddings), Qwen2.5-Coder-1.5B (FIM, optional); alternates Qwen3.5 4B / 2B / 0.8B, Gemma 4 E2B / E4B | router/classifier, summarizer, log triage, commit messages, search ranking, handoff writer, embeddings |
+| T1 | one GPU, 12-24 GB | Qwen3.8-27B (4-bit needs 24 GB; smaller cards need 3-bit or offload), Devstral-Small-2-24B-Instruct-2512, Qwen3.6-35B-A3B with expert offload, gpt-oss-20b, Gemma 4 26B-A4B | editor for small repos, reviewer, budget planner |
+| T2 | workstation, 96-192 GB | Qwen3.8-Flash-Next (~111 GB Q4 GGUF; community license), gpt-oss-120b, GLM-5.3-Flash (192 GB at IQ4_XS only), MiMo-V2.6-Flash-MOPD, Mistral-Small-4-119B | editor, planner, reviewer |
 | T3 | multi-GPU nodes | GLM-5.3, Kimi K3, MiMo-V2.6-Pro-MOPD, DeepSeek V4.1 Flash (vLLM and SGLang only for now) | hardest edits, planning, greenfield builds |
 | SL | slow lane; requirements per engine (ADR 0008) | T3 MoE models via CPU-GPU hybrid MoE (KTransformers, llama.cpp expert offload) or layer streaming (AirLLM) | asynchronous second opinions, overnight review, best-of-N candidates |
 | R | remote endpoints | any endpoint in a supported API format | opt-in escalation; disabled in zero-egress mode |
@@ -562,7 +562,7 @@ on by default): no code reuse and no adapter.
   escalation rate, cache hit rate, and a reference-cost-equivalent at a user-set price per
   million tokens.
 - Outputs: `results.jsonl`, `leaderboard.md`, `leaderboard.json`, charts, dashboard view.
-- Built-in suites: `mini-general` (10–20 small tasks on bundled toy repos), `mini-science`
+- Built-in suites: `mini-general` (10-20 small tasks on bundled toy repos), `mini-science`
   (synthetic numerical tasks), `own` (user-defined, the main selling point).
 - Deterministic fake workers for CI, so the bench machinery is testable without models.
 - Every published number links to its results file, command, hardware and date.
@@ -632,7 +632,7 @@ its entry, tests and evidence, is no longer proven, and is listed in the README 
 | C-002 | Switches models between steps inside a single task. | One task's trajectory contains ≥ 2 distinct endpoints across typed steps; every switch has a logged reason and cost estimate. | P2 |
 | C-003 | Only switches models when the expected gain outweighs the cost of re-reading context. | Property test over randomized scenarios: switch iff gain − cost > margin; no switch otherwise. | P5 |
 | C-004 | Speaks the chat-completions, responses, messages and generate-content API formats, plus engine-native formats. | Conformance tests against mock servers per format (streaming, tool calls, parallel tool calls, errors, usage); round-trip translation tests preserve messages and tool calls. | P1 |
-| C-005 | Works with any open-weight model your installed engines can serve, including models without native tool calling. | A model with no native tool calling completes a tool-using task through the fallback protocol; probe suite passes on the CI model set (≥ 4 families); compatibility matrix generated from results. | P2–P3 |
+| C-005 | Works with any open-weight model your installed engines can serve, including models without native tool calling. | A model with no native tool calling completes a tool-using task through the fallback protocol; probe suite passes on the CI model set (≥ 4 families); compatibility matrix generated from results. | P2-P3 |
 | C-006 | In offline mode, makes no network connections except to local endpoints. | Full flow under a socket-level guard plus OS-level network isolation in CI; zero non-local connections observed; audit log matches observed connections exactly. | P9 |
 | C-007 | Sends no telemetry. | Default-config flow with no remote endpoints configured opens zero outbound connections. | P1 |
 | C-008 | The science gate catches numerical regressions beyond your tolerances. | Mutation test: injected perturbations above tolerance are all caught; perturbations below tolerance are not flagged. | P2 |
@@ -768,7 +768,7 @@ only complete when every claim assigned to it (§18.5) is `passing` in `ssw prov
 - **P4 Dashboard and task API**: all §17 views and endpoints, SSE, Playwright smoke test,
   README claims section generated by `ssw prove --render-readme`.
 - **→ v0.1 launch candidate.** `ssw prove --quick` passes on all three OSes.
-- **P5 Token and cache optimization**: TK1–TK12, HANDOFF v0.1, cache-aware switching with
+- **P5 Token and cache optimization**: TK1-TK12, HANDOFF v0.1, cache-aware switching with
   calibration. Claims: C-003, C-010, C-011.
 - **P6 Best-of-N, disagreement, cross-family review.** Claims: C-012, C-013.
 - **P7 Learning router, fork/replay.** Claims: C-014, C-015.
@@ -793,7 +793,7 @@ only complete when every claim assigned to it (§18.5) is `passing` in `ssw prov
   CI tests 3.15.
 - Contributor magnets: add a model with `ssw models add` and submit its probe result; add a bench
   task in YAML; add an API codec or engine adapter against a small interface; labeled
-  good-first issues; public roadmap issue for P5–P10.
+  good-first issues; public roadmap issue for P5-P10.
 - Releases: v0.1 after P4, then frequent minor releases while momentum lasts. Changelog kept.
 - Launch posts: a "show" post on a major developer forum, local-LLM communities, a short video,
   and a separate post about the science track in research-software communities.
