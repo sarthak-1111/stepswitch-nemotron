@@ -8,9 +8,7 @@ https://sarthak-1111.github.io/stepswitch-nemotron/, and the README. The cut's m
 generated for it and released as CC0; if you add other music, use a track you hold the rights
 to.
 
-The cut is public on YouTube: https://youtu.be/YTB3fQzbfys. Its bill scene shows the console
-figure read before the exploratory run (US$ 5.89, labelled so); the console's final reading,
-US$ 6.06, is in `hackathon/bill.json` and the README.
+The cut is public on YouTube: https://youtu.be/c9DYQCcCNo0.
 
 Every number spoken below is in the README's hackathon section, in
 `claims/evidence/C-029.json` and `claims/evidence/C-030.json`, in `hackathon/bill.json`, or in
@@ -100,5 +98,5 @@ reviewer. The code and the replay are linked below."
 - VHS reads the tapes: `vhs hackathon/tapes/live-run.tape` and `vhs hackathon/tapes/prove.tape`,
   with `NEBIUS_API_KEY` set in the shell for the live run only. The key is never typed on screen.
 - The demo page plays a replay with **Play**; **Show all steps** shows the whole run at once.
-- Uploaded as public on YouTube (https://youtu.be/YTB3fQzbfys); the link is in the README's
+- Uploaded as public on YouTube (https://youtu.be/c9DYQCcCNo0); the link is in the README's
   hackathon section and the submission form.

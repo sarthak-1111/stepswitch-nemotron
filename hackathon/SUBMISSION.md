@@ -6,7 +6,7 @@ Ultra where a wrong call costs the task, and your tests deciding what counts as 
 - Track: **Coding and Agentic Engineering**
 - Repository: https://github.com/sarthak-1111/stepswitch-nemotron (MIT)
 - Demo: https://sarthak-1111.github.io/stepswitch-nemotron/ (read-only replays, no login)
-- Video: https://youtu.be/YTB3fQzbfys (2:58, public on YouTube)
+- Video: https://youtu.be/c9DYQCcCNo0 (2:58, public on YouTube)
 - Feedback on Token Factory, Sandboxes and Nemotron: [FEEDBACK.md](FEEDBACK.md)
 
 ## The story in 30 seconds

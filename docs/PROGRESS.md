@@ -109,7 +109,7 @@ everything since.
 
 ### Waiting on the maintainer
 
-- The video is public on YouTube (https://youtu.be/YTB3fQzbfys) and linked from the README,
+- The video is public on YouTube (https://youtu.be/c9DYQCcCNo0) and linked from the README,
   SUBMISSION.md and the Devpost project.
 - The Devpost project is filled in (story, links, gallery, video, track, answers); the
   maintainer fills the personal declarations (submitter type, country, eligibility) and

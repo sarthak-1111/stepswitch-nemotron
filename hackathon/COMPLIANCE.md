@@ -32,7 +32,7 @@ Legend: ✅ done and checked · 🟡 in progress · 👤 the entrant does it by 
 | 8 | An open-source licence file, "detectable and visible at the top of the repository page (in the About section)" | [LICENSE](../LICENSE) (MIT) at the root | ✅ file; ✅ "MIT license" shows in the About box |
 | 9 | A README with setup instructions and clear guidance for running the project | [README.md](../README.md), section "Built for the Nebius x NVIDIA Global AI Hackathon" | ✅ |
 | 10 | The README highlights how NVIDIA Nemotron is used, where Token Factory accelerated the workflow, and any other Nebius tools used | same section: model table, results, bill | ✅ |
-| 11 | A demo video **under 3 minutes**, public on YouTube, showing the project working and how Token Factory and Nemotron are used; no third-party trademarks or copyrighted music without permission | [hackathon/VIDEO.md](VIDEO.md) (script, shot list, tapes) | ✅ the 2:58 cut, public on YouTube: https://youtu.be/YTB3fQzbfys (script, tapes, a generated CC0 score) |
+| 11 | A demo video **under 3 minutes**, public on YouTube, showing the project working and how Token Factory and Nemotron are used; no third-party trademarks or copyrighted music without permission | [hackathon/VIDEO.md](VIDEO.md) (script, shot list, tapes) | ✅ the 2:58 cut, public on YouTube: https://youtu.be/c9DYQCcCNo0 (script, tapes, a generated CC0 score) |
 | 12 | The track is named | Coding and Agentic Engineering | 👤 in the form |
 | 13 | Feedback on Nebius Token Factory, AI Cloud and NVIDIA tools or models used | [hackathon/FEEDBACK.md](FEEDBACK.md) | ✅ |
 | 14 | If the project existed before the submission period, what was significantly updated during it | [hackathon/SUBMISSION.md](SUBMISSION.md), "What changed during the submission period" | ✅ |
